@@ -20,7 +20,7 @@ pip install .
 ## Usage
 ```bash
 fc-test --config configs/default_config.yaml
-fc-ui
+streamlit run ui/dashboard.py
 ```
 
 ## Docker
