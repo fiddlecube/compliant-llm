@@ -8,7 +8,9 @@ pyenv virtualenv 3.11.4 fc_prompt
 
 # Activate the virtualenv
 pyenv activate fc_prompt
-```
+
+# Install dependencies
+pip install -r requirements.txt
 
 **Note**: You need to ensure that the virtualenv is activated before you initiate a local run, including tests, static analysis and linting.
 
