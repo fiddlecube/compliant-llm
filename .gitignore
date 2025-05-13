@@ -1,0 +1,167 @@
+# Byte-compiled, optimized, and DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Builds
+/build
+*/build
+*.so
+/dist
+/lib
+/lib-types
+/server
+
+# Cache
+.cache
+.pytest_cache/
+.webassets-cache
+.mypy_cache/
+.mf
+.rollup.cache
+tsconfig.tsbuildinfo
+
+# Celery (Python's asynchronous task queues framework)
+celerybeat-schedule
+erl_crash.dump
+
+# Code editor (IntelliJ & VSCode)
+*.iml
+*.ipr
+*.iws
+.idea/
+.classpath
+.project
+.settings/
+.vscode/
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Database-related
+*.sqlite3
+*.db
+postgres-data
+
+# Distributions package
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pnpm-store/
+
+# Documentation
+/site
+docs/_build/
+
+# Dotenvs
+/.pnp
+.pnp.js
+.env
+.env.docker
+env/
+ENV/
+env.bak/
+prod_env/
+dev_env/
+test_env/
+test.env
+dev.env
+prod.env
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Flutter
+*.class
+*.lock
+*.log
+*.pyc
+*.swp
+.atom/
+.buildlog/
+.history
+.svn/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Log Files
+logs
+*.log
+pip-log.txt
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+backend/src/config/log.txt
+
+# Project settings
+local_settings.py
+instance/
+.spyderproject
+.spyproject
+.ropeproject
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Rust compiled file
+target/
+
+# SageMath (Python#s open-source mathematics framework)
+*.sage.py
+
+# Scraping tool
+.scrapy
+
+# Translations:
+*.mo
+*.pot
+
+# Tests and coverage reports:
+htmlcov/
+.tox/
+.coverage
+coverage/**
+nosetests.xml
+coverage.html
+coverage.xml
+cov.xml
+cov.html
+*.cover
+.hypothesis/
+
+
+# Virtual Environment & packages
+.python-version
+.venv
+venv/
+venv.bak/
+node_modules/
+
+# Yarn
+.yarn/*
+!.yarn/releases
