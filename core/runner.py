@@ -308,7 +308,8 @@ def execute_prompt_tests(config_path=None, config_dict=None):
     Execute prompt testing based on the provided configuration.
     
     This function serves as the main entry point for running prompt tests.
-    It can accept either a path to a configuration file or a configuration dictionary.
+    It can accept either a path to a configuration file or a configuration
+    dictionary.
     
     Args:
         config_path: Path to a YAML configuration file (optional)
@@ -370,7 +371,12 @@ def execute_prompt_tests(config_path=None, config_dict=None):
     output_path = config.get('output_path', 'reports/report.json')
     
     # Display configuration details
-    console.print(f"[bold]System prompt:[/bold] {system_prompt[:100]}..." if len(system_prompt) > 100 else f"[bold]System prompt:[/bold] {system_prompt}")
+    # Display truncated prompt if it's too long
+    if len(system_prompt) > 100:
+        prompt_display = f"{system_prompt[:100]}..."
+    else:
+        prompt_display = system_prompt
+    console.print(f"[bold]System prompt:[/bold] {prompt_display}")
     console.print(f"[bold]Provider:[/bold] {provider_name}")
     console.print(f"[bold]Strategies:[/bold] {', '.join(strategy_list)}")
     
@@ -385,6 +391,7 @@ def execute_prompt_tests(config_path=None, config_dict=None):
             # Check for custom prompts in strategy configuration
             if isinstance(config.get('strategies_config'), dict) and strategy in config['strategies_config']:
                 strategy_config = config['strategies_config'][strategy]
+                # Get any custom prompts defined for this strategy
                 custom_prompts = get_custom_prompts(strategy_config)
                 if custom_prompts:
                     all_prompts.extend(custom_prompts)

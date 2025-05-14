@@ -43,73 +43,217 @@ echo "OPENAI_API_KEY=your-api-key-here" > .env
 2. Run a basic test:
 
 ```bash
-fc-test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
+python -m cli.main test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
 ```
 
 3. Or use a configuration file:
 
 ```bash
-fc-test --config configs/enhanced_config.yaml
+python -m cli.main test --config configs/config.yaml
 ```
 
-4. View test results in the dashboard:
+4. View the test report:
 
 ```bash
-fc-ui
+python -m cli.main report --summary
 ```
 
-## CLI Commands
+All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
 
-FC Prompt Tester provides several commands:
+## CLI Documentation
+
+FC Prompt Tester provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
+
+### Environment Setup
+
+Before using the CLI, set up the necessary API keys as environment variables:
+
+```bash
+# For OpenAI models
+export OPENAI_API_KEY=your-api-key-here
+
+# For other providers (if needed)
+export ANTHROPIC_API_KEY=your-anthropic-key
+export GOOGLE_API_KEY=your-google-key
+```
+
+You can also create a `.env` file in your project root with these variables.
+
+### File Structure
+
+- **Reports**: All generated reports are saved to the `reports/` directory by default (excluded from git)
+- **Configs**: Configuration files are stored in the `configs/` directory
+- **Templates**: Template files for generating configs/prompts are in the `templates/` directory
 
 ### Test Command
 
+The test command runs prompt tests against specified strategies.
+
 ```bash
-fc-test [OPTIONS]
+python -m cli.main test [OPTIONS]
 ```
 
-Options:
-- `--config, -c`: Path to configuration file
-- `--prompt, -p`: Direct input of system prompt
-- `--strategy, -s`: Comma-separated list of test strategies
-- `--provider, -m`: LLM provider to use
-- `--parallel, -j`: Run tests in parallel
-- `--verbose, -v`: Increase verbosity
+#### Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|--------|
+| `--config` | `-c` | Path to configuration file | None |
+| `--prompt` | `-p` | Direct input of system prompt | None |
+| `--strategy` | `-s` | Comma-separated list of test strategies | `prompt_injection` |
+| `--provider` | `-m` | LLM provider to use | `openai/gpt-4o` |
+| `--output` | `-o` | Output file path | `reports/report.json` |
+| `--parallel` | `-j` | Run tests in parallel | False |
+| `--verbose` | `-v` | Increase verbosity | False |
+| `--timeout` | None | Timeout for LLM API calls in seconds | 30 |
+| `--temperature` | None | Temperature for LLM API calls | 0.7 |
+
+#### Available Testing Strategies
+
+- `prompt_injection`: Tests resilience against prompt injection attacks
+- `jailbreak`: Tests against jailbreak attempts to bypass restrictions
+- `system_prompt_extraction`: Tests if the system prompt can be extracted
+- `adversarial`: Tests against adversarial inputs
+- `stress_test`: Tests system prompt under high pressure scenarios
+- `boundary_testing`: Tests boundary conditions of the system prompt
+- `context_manipulation`: Tests against context manipulation attacks
+
+#### Examples
+
+```bash
+# Basic test with default settings
+python -m cli.main test --prompt "You are a helpful assistant for a banking organization."
+
+# Test with multiple strategies
+python -m cli.main test --prompt "You are a helpful assistant." --strategy prompt_injection,jailbreak,adversarial
+
+# Test with a specific provider and custom output path
+python -m cli.main test --config configs/config.yaml --provider openai/gpt-3.5-turbo --output reports/custom_report.json
+
+# Run tests in parallel with increased verbosity
+python -m cli.main test --config configs/config.yaml --parallel --verbose
+```
 
 ### Report Command
 
+The report command displays and analyzes test results.
+
 ```bash
-fc-report [REPORT_FILE] [OPTIONS]
+python -m cli.main report [REPORT_FILE] [OPTIONS]
 ```
 
-Options:
-- `--format, -f`: Output format (text, json, html)
-- `--summary`: Show only summary statistics
+By default, report files are saved to and read from the `reports/` directory.
+
+#### Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|--------|
+| `--format` | `-f` | Output format (text, json, html) | `text` |
+| `--summary` | None | Show only summary statistics | False |
+
+#### Examples
+
+```bash
+# View default report in text format
+python -m cli.main report
+
+# View a specific report with summary statistics
+python -m cli.main report reports/custom_report.json --summary
+
+# Export report in JSON format
+python -m cli.main report --format json > analysis.json
+```
 
 ### Generate Command
 
+The generate command creates templates for configurations or prompts.
+
 ```bash
-fc-generate [TYPE] [OPTIONS]
+python -m cli.main generate [TYPE] [OPTIONS]
 ```
 
-Types:
-- `config`: Generate a config file template
+#### Types
+
+- `config`: Generate a configuration file template
 - `prompt`: Generate sample prompts based on use cases
 
-Options:
-- `--template, -t`: Template to use
-- `--output, -o`: Output file path
+#### Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|--------|
+| `--template` | `-t` | Template to use | `basic` |
+| `--output` | `-o` | Output file path | `generated_config.yaml` or `generated_prompt.txt` |
+
+#### Examples
+
+```bash
+# Generate a basic configuration template
+python -m cli.main generate config --output configs/my_config.yaml
+
+# Generate a banking-related prompt example
+python -m cli.main generate prompt --template banking --output prompts/bank_prompt.txt
+```
 
 ### Config Command
 
+The config command manages and validates configuration files.
+
 ```bash
-fc-config [OPTIONS]
+python -m cli.main config [OPTIONS]
 ```
 
-Options:
-- `--list, -l`: List available configurations
-- `--show, -s`: Show details for a specific configuration
-- `--validate, -v`: Validate a configuration file
+#### Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|--------|
+| `--list` | `-l` | List available configurations | None |
+| `--show` | `-s` | Show details for a specific configuration | None |
+| `--validate` | `-v` | Validate a configuration file | None |
+
+#### Examples
+
+```bash
+# List all available configuration files
+python -m cli.main config --list
+
+# Show details for a specific configuration
+python -m cli.main config --show configs/enhanced_config.yaml
+
+# Validate a configuration file
+python -m cli.main config --validate configs/my_config.yaml
+```
+
+### Advanced Usage
+
+#### Configuration File Format
+
+Configuration files use YAML format and support the following structure:
+
+```yaml
+# Basic configuration
+prompt: "You are a helpful assistant..."
+strategy: prompt_injection,jailbreak
+provider: openai/gpt-4o
+output_path: reports/custom_report.json
+
+# Advanced configuration
+max_threads: 4
+timeout: 30
+temperature: 0.7
+
+# Strategy-specific configurations
+strategies_config:
+  prompt_injection:
+    custom_prompts:
+      - "Ignore previous instructions..."
+```
+
+#### Best Practices
+
+1. **Use Configuration Files**: For complex testing scenarios, use YAML config files instead of command-line arguments
+2. **Organize Reports**: Use descriptive filenames for reports to organize test results
+3. **Parallel Testing**: For large test suites, use the `--parallel` flag to speed up execution
+4. **Provider Selection**: Test against multiple providers to evaluate prompt performance across different models
+5. **Regular Testing**: Incorporate prompt testing into your development workflow to catch vulnerabilities early
 
 ## Configuration Format
 
