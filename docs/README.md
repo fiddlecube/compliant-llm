@@ -1,6 +1,6 @@
-# FC Prompt Tester Documentation
+# Prompt Secure Documentation
 
-This directory contains detailed documentation for the FC Prompt Tester project.
+This directory contains detailed documentation for the Prompt Secure project.
 
 ## Contents
 

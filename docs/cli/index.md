@@ -1,6 +1,6 @@
 # CLI Documentation
 
-FC Prompt Tester provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
+Prompt Secure provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
 
 ## Command Overview
 

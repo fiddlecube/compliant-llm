@@ -1,6 +1,6 @@
-# Contributing to FC Prompt Tester
+# Contributing to Prompt Secure
 
-Thank you for considering contributing to FC Prompt Tester! This document outlines the process for contributing to the project.
+Thank you for considering contributing to Prompt Secure! This document outlines the process for contributing to the project.
 
 ## Code of Conduct
 
@@ -35,8 +35,8 @@ By participating in this project, you agree to abide by our Code of Conduct.
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/fc-prompt-tester.git
-   cd fc-prompt-tester
+   git clone https://github.com/yourusername/prompt_secure.git
+   cd prompt_secure
    ```
 
 2. Create a virtual environment

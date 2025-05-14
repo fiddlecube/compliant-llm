@@ -1,5 +1,5 @@
 """
-Configuration management for FC Prompt Tester.
+Configuration management for Prompt Secure.
 
 This module handles configuration loading, validation, and template processing.
 """
@@ -13,7 +13,7 @@ from datetime import datetime
 
 
 class ConfigManager:
-    """Manages configuration for FC Prompt Tester."""
+    """Manages configuration for Prompt Secure."""
 
     def __init__(self, config_path: Optional[str] = None):
         """

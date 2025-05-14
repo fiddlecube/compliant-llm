@@ -1,5 +1,5 @@
 """
-Enhanced test runner for FC Prompt Tester.
+Enhanced test runner for Prompt Secure.
 
 This module provides a more advanced test runner that supports
 parallel execution, advanced config options, and more detailed reporting.
@@ -320,7 +320,7 @@ def execute_prompt_tests(config_path=None, config_dict=None):
     """
     from core.config import ConfigManager, load_and_validate_config
     
-    console.print(f"[bold green]FC Prompt Tester[/bold green]")
+    console.print(f"[bold green]Prompt Secure[/bold green]")
     console.print(f"Starting test run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     start_time = time.time()

@@ -1,10 +1,10 @@
-# FC Prompt Tester Documentation
+# Prompt Secure Documentation
 
-Welcome to the FC Prompt Tester documentation. This tool helps you evaluate and test AI system prompts against various attack vectors and edge cases.
+Welcome to the Prompt Secure documentation. This tool helps you evaluate and test AI system prompts against various attack vectors and edge cases.
 
 ## Overview
 
-FC Prompt Tester is designed to help AI developers and security researchers test the robustness of their system prompts by simulating various attack strategies such as prompt injection, jailbreaking, adversarial inputs, and more.
+Prompt Secure is designed to help AI developers and security researchers test the robustness of their system prompts by simulating various attack strategies such as prompt injection, jailbreaking, adversarial inputs, and more.
 
 ## Getting Started
 

@@ -1,14 +1,12 @@
 """
-Enhanced CLI commands for FC Prompt Tester.
+Enhanced CLI commands for Prompt Secure.
 """
 import os
 import sys
 import json
 import yaml
 import click
-from datetime import datetime
-from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any, Optional
 from core.runner import execute_prompt_tests as run_tests
 
 # Constants
@@ -16,9 +14,9 @@ CONFIG_DIRS = [
     # Package configs
     os.path.join(os.path.dirname(os.path.dirname(__file__)), "configs"),
     # User configs
-    os.path.expanduser(os.path.join("~", ".config", "fc-prompt-tester")),
+    os.path.expanduser(os.path.join("~", ".config", "prompt_secure")),
     # Project configs (current directory)
-    os.path.join(os.getcwd(), ".fc-prompt-tester")
+    os.path.join(os.getcwd(), ".prompt_secure")
 ]
 
 
@@ -114,7 +112,7 @@ def resolve_config(config_dict: Dict[str, Any]) -> Dict[str, Any]:
 
 @click.group()
 def cli():
-    """FC Prompt Tester - Test your AI system prompts for vulnerabilities."""
+    """Prompt Secure - Test your AI system prompts for vulnerabilities."""
     pass
 
 
@@ -224,7 +222,7 @@ def report(report_file, format, summary):
             # Generate HTML report
             html_path = report_file.replace('.json', '.html')
             with open(html_path, 'w') as f:
-                f.write("<html><head><title>FC Prompt Test Report</title></head><body>")
+                f.write("<html><head><title>Prompt Secure Test Report</title></head><body>")
                 f.write(f"<h1>Test Report</h1>")
                 # Add more HTML formatting here
                 f.write("</body></html>")

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script for FC Prompt Tester CLI commands.
+Test script for Prompt Secure CLI commands.
 Checks if the CLI can run attacks and generate reports for a single prompt.
 """
 import os
@@ -9,8 +9,8 @@ import subprocess
 
 
 def test_cli_commands():
-    """Test the FC Prompt Tester CLI commands for running attacks and generating reports."""
-    print("Starting FC Prompt Tester CLI test...")
+    """Test the Prompt Secure CLI commands for running attacks and generating reports."""
+    print("Starting Prompt Secure CLI test...")
     
     # Define our test report path - note the CLI uses the reports directory
     report_path = "reports/report.json"

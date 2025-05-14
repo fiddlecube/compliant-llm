@@ -1,6 +1,6 @@
 # Example Use Cases
 
-This section provides practical examples of using FC Prompt Tester for different scenarios. Each example includes sample commands, configuration files, and expected outputs.
+This section provides practical examples of using Prompt Secure for different scenarios. Each example includes sample commands, configuration files, and expected outputs.
 
 ## Available Examples
 
