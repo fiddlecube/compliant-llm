@@ -16,6 +16,12 @@ Prompt Secure helps developers evaluate the robustness of their AI assistant sys
 - Parallel testing for faster execution
 - Detailed reporting and analysis
 
+## Dependencies
+
+- Python 3.8 or higher
+- pip (Python package installer)
+- Access to at least one LLM provider API (OpenAI, Anthropic, or Google)
+
 ## Installation
 
 ### Using pip
@@ -64,6 +70,18 @@ All reports are automatically saved to the `reports/` directory, which is exclud
 
 Prompt Secure provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
 More details in documentation folder.
+
+## Development
+
+### Development Installation
+
+```bash
+git clone https://github.com/yourusername/prompt_secure.git
+cd prompt_secure
+
+pip install -r requirements.txt
+
+```
 
 ### Environment Setup
 
