@@ -4,3 +4,4 @@ click
 rich
 litellm
 python-dotenv
+pytest
