@@ -165,3 +165,7 @@ node_modules/
 # Yarn
 .yarn/*
 !.yarn/releases
+
+# Local Report
+report.json
+
