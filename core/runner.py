@@ -357,8 +357,8 @@ def execute_prompt_tests(config_path=None, config_dict=None):
         else:
             system_prompt = str(prompt_config)
     
-    # Extract test parameters
-    strategy_list = config.get('strategies', ['prompt_injection'])
+    # Extract test parameters - support both 'strategy' and 'strategies' keys
+    strategy_list = config.get('strategies', config.get('strategy', 'prompt_injection'))
     if isinstance(strategy_list, str):
         strategy_list = strategy_list.split(',')
     
@@ -367,7 +367,7 @@ def execute_prompt_tests(config_path=None, config_dict=None):
     max_threads = config.get('max_threads', 4)
     timeout = config.get('timeout', 30)
     temperature = config.get('temperature', 0.7)
-    output_path = config.get('output_path', 'report.json')
+    output_path = config.get('output_path', 'reports/report.json')
     
     # Display configuration details
     console.print(f"[bold]System prompt:[/bold] {system_prompt[:100]}..." if len(system_prompt) > 100 else f"[bold]System prompt:[/bold] {system_prompt}")

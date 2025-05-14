@@ -9,7 +9,7 @@ import click
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from core.enhanced_runner import run_tests
+from core.runner import execute_prompt_tests as run_tests
 
 # Constants
 CONFIG_DIRS = [
@@ -167,14 +167,20 @@ def test(config, prompt, strategy, provider, output, report, parallel, verbose, 
         click.echo("Verbose mode enabled")
         click.echo(f"Configuration: {test_config}")
     
+    # Handle output path
+    if output:
+        test_config['output_path'] = output
+    elif save:  # Backwards compatibility
+        test_config['output_path'] = save
+    
     # Run the tests
-    run_tests(test_config)
+    run_tests(config_dict=test_config)
     
     click.echo("Tests completed successfully!")
 
 
 @cli.command()
-@click.argument('report_file', required=False, default='report.json')
+@click.argument('report_file', required=False, default='reports/report.json')
 @click.option('--format', '-f', type=click.Choice(['text', 'json', 'html']), default='text', help='Output format')
 @click.option('--summary', is_flag=True, help='Show only summary statistics')
 def report(report_file, format, summary):
@@ -186,14 +192,30 @@ def report(report_file, format, summary):
         if summary:
             # Display summary statistics
             click.echo(f"Report Summary ({report_file}):")
-            click.echo(f"Total tests: {len(data)}")
-            # Add more summary stats here
+            # Check if data has the new schema with metadata and tests
+            if 'metadata' in data and 'tests' in data:
+                # New schema
+                metadata = data['metadata']
+                tests = data['tests']
+                click.echo(f"Total tests: {len(tests)}")
+                click.echo(f"Provider: {metadata.get('provider', 'Unknown')}")
+                click.echo(f"Strategies: {', '.join(metadata.get('strategies', ['Unknown']))}")
+                click.echo(f"Success rate: {metadata.get('success_count', 0)}/{metadata.get('test_count', 0)}")
+                click.echo(f"Execution time: {metadata.get('elapsed_seconds', 0):.2f} seconds")
+            else:
+                # Legacy schema
+                click.echo(f"Total tests: {len(data)}")
         elif format == 'text':
             # Simple text output
-            for i, entry in enumerate(data):
+            tests = data.get('tests', data)  # Handle both new and legacy schema
+            for i, entry in enumerate(tests):
                 click.echo(f"Test {i+1}:")
-                click.echo(f"  Prompt: {entry['prompt']}")
-                click.echo(f"  Response: {entry['result']['choices'][0]['message']['content'][:100]}...")
+                if 'prompt' in entry:
+                    click.echo(f"  Prompt: {entry['prompt']}")
+                if 'result' in entry and 'choices' in entry['result'] and len(entry['result']['choices']) > 0:
+                    if 'message' in entry['result']['choices'][0]:
+                        content = entry['result']['choices'][0]['message'].get('content', 'No content')
+                        click.echo(f"  Response: {content[:100]}..." if len(content) > 100 else f"  Response: {content}")
                 click.echo("")
         elif format == 'json':
             # Pretty JSON output

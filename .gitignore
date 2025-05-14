@@ -49,6 +49,9 @@ erl_crash.dump
 postgres-data
 
 # Distributions package
+
+# Report files
+reports/*.json
 .Python
 build/
 develop-eggs/
