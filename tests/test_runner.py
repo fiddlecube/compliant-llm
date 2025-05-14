@@ -194,6 +194,6 @@ def test_run_single_test(mock_completion):
 #     ({"invalid": "config"}, KeyError)  # Missing required sections
 # ])
 # def test_execute_prompt_tests_errors(config_input, expected_exception):
-    """Test error handling in execute_prompt_tests."""
-    with pytest.raises(expected_exception):
-        execute_prompt_tests(config_dict=config_input)
+    # """Test error handling in execute_prompt_tests."""
+    # with pytest.raises(expected_exception):
+    #     execute_prompt_tests(config_dict=config_input)
