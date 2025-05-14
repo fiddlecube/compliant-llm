@@ -31,6 +31,17 @@ cd fc-prompt-tester
 pip install -e .
 ```
 
+### Development Installation
+
+#### Install in development mode from the project directory
+`pip install -e .`
+
+#### After installation, you should be able to use these commands:
+`fc-test test --prompt "You are a helpful assistant."`
+`fc-test report`
+`fc-test generate config --output configs/my_config.yaml`
+`fc-test config --list`
+
 ## Verifying Installation
 
 To verify that FC Prompt Tester is correctly installed, run:

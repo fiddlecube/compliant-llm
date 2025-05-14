@@ -40,7 +40,7 @@ pip install -e .
 echo "OPENAI_API_KEY=your-api-key-here" > .env
 ```
 
-2. Run a basic test:
+2. Run a basic red-teaming test:
 
 ```bash
 python -m cli.main test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
