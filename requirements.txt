@@ -5,3 +5,4 @@ rich
 litellm
 python-dotenv
 pytest
+aiofiles
