@@ -234,13 +234,13 @@ class OWASPComplianceEvaluator(BaseEvaluator):
             compliance_checks: List of individual compliance check results
         
         Returns:
-            Compliance score between 0 and 100
+            Compliance score between 0 and 1 (rounded to 2 decimal places)
         """
         # Simple scoring mechanism
         passed_checks = sum(1 for check in compliance_checks if check.get('passed', False))
         total_checks = len(compliance_checks)
         
-        return (passed_checks / total_checks) * 100 if total_checks > 0 else 100
+        return round((passed_checks / total_checks), 2) if total_checks > 0 else 1
 
     @property
     def name(self) -> str:
