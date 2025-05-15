@@ -1,27 +1,20 @@
 import streamlit as st
 import json
-import plotly.express as px
-import plotly.graph_objects as go
-import pandas as pd
 
-def load_report(file_path):
-    """Load JSON report file"""
-    try:
-        with open(file_path, 'r') as f:
-            return json.load(f)
-    except Exception as e:
-        st.error(f"Error loading report: {e}")
-        return None
+from utils.report_loader import load_report
+from components.owasp_compliance import render_owasp_compliance
+from components.risk_severity import render_risk_severity
+from components.security_findings import render_security_findings
+from components.strategy_table import render_strategy_table
 
 def create_dashboard():
-    """Create Streamlit dashboard for prompt security reports"""
     st.set_page_config(
-        page_title="Prompt Security Report Dashboard", 
+        page_title="AI Security Risk Dashboard", 
         page_icon=":shield:", 
         layout="wide"
     )
     
-    st.title("🛡️ Prompt Security Analysis Dashboard")
+    st.title("🛡️ AI Security Risk Assessment")
     
     # Sidebar for file upload
     st.sidebar.header("Report Upload")
@@ -48,62 +41,28 @@ def create_dashboard():
         st.error("Unable to load report data")
         return
     
-    # Dashboard Sections
-    st.header("Overview")
+    # Sidebar for risk configuration
+    st.sidebar.header("Risk Configuration")
+    risk_tolerance = st.sidebar.slider("Risk Tolerance", 0, 100, 30)
     
-    # Metadata Section
+    # Main dashboard sections
     col1, col2, col3 = st.columns(3)
+    
     with col1:
-        st.metric("Total Tests", report_data['metadata']['test_count'])
+        st.metric("Total Security Tests", report_data['metadata']['test_count'], 
+                  help="Number of security assessments performed")
     with col2:
-        st.metric("Successful Tests", report_data['metadata']['success_count'])
+        st.metric("Passed Tests", report_data['metadata']['success_count'], 
+                  help="Tests that passed security checks")
     with col3:
-        st.metric("Failed Tests", report_data['metadata']['failure_count'])
+        st.metric("Failed Tests", report_data['metadata']['failure_count'], 
+                  help="Tests that failed security checks")
     
-    # Strategy Performance
-    st.header("Strategy Performance")
-    
-    # Prepare strategy performance data
-    strategy_performance = {}
-    for test in report_data['tests']:
-        strategy = test.get('strategy', 'Unknown')
-        
-        # Handle different possible representations of 'passed'
-        passed = test.get('evaluation', {}).get('passed', False)
-    
-    # Convert to boolean if it's a string
-    if isinstance(passed, str):
-        passed = passed.lower() in ['true', '1', 'yes']
-    
-    if strategy not in strategy_performance:
-        strategy_performance[strategy] = {'total': 0, 'passed': 0}
-    
-    strategy_performance[strategy]['total'] += 1
-    strategy_performance[strategy]['passed'] += 1 if passed else 0
-    
-    # Create DataFrame for strategy performance
-    strategy_df = pd.DataFrame([
-        {
-            'Strategy': strategy, 
-            'Pass Rate': perf['passed'] / perf['total'] * 100,
-            'Total Tests': perf['total']
-        } for strategy, perf in strategy_performance.items()
-    ])
-    
-    # Bar chart of strategy performance
-    fig_strategy = px.bar(
-        strategy_df, 
-        x='Strategy', 
-        y='Pass Rate', 
-        title='Strategy Performance (Pass Rate)',
-        labels={'Pass Rate': 'Pass Rate (%)'}
-    )
-    st.plotly_chart(fig_strategy, use_container_width=True)
-    
-    # Detailed Test Results
-    st.header("Detailed Test Results")
-    detailed_results_df = pd.DataFrame(report_data['tests'])
-    st.dataframe(detailed_results_df)
+    # Render dashboard components
+    render_owasp_compliance(report_data)
+    render_risk_severity(report_data)
+    render_security_findings(report_data)
+    render_strategy_table(report_data)
 
 def main():
     create_dashboard()

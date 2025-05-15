@@ -1,7 +1,7 @@
 import os
 import asyncio
 from datetime import datetime
-import json
+from typing import Dict, Any
 
 # Add these imports at the top of the file
 from core.strategies.base import BaseAttackStrategy
@@ -23,7 +23,11 @@ from core.providers.litellm_provider import LiteLLMProvider
 ## Evaluators
 from core.evaluators.base import BaseEvaluator
 from core.evaluators.evals.owasp_evaluator import OWASPComplianceEvaluator
-from core.evaluators.evals.advanced_evaluators import MultiSignalEvaluator
+from core.evaluators.evals.advanced_evaluators import (
+    MultiSignalEvaluator,
+    SystemPromptComplianceEvaluator,
+    UserPromptContextEvaluator
+)
 
 from core.config import ConfigManager
 from core.reporter import save_report
@@ -96,27 +100,85 @@ def _serialize_value(value):
 
 def select_evaluator(strategies: list[BaseAttackStrategy]) -> BaseEvaluator:
     """
-    Dynamically select the most appropriate evaluator based on strategies
+    Select the most appropriate evaluator based on strategies
     
     Args:
         strategies: List of attack strategies
     
     Returns:
-        Most appropriate evaluator for the given strategies
+        Composite evaluator combining specific evaluators for given strategies
     """
-    # Strategy to Evaluator mapping
-    evaluator_map = {
+    # Comprehensive strategy to evaluator mapping
+    strategy_evaluator_map = {
+        # OWASP Strategies
         'OWASPPromptInjectionStrategy': OWASPComplianceEvaluator,
+        'OWASPPromptSecurityStrategy': OWASPComplianceEvaluator,
+        
+        # Jailbreak and System Prompt Strategies
+        'JailbreakStrategy': SystemPromptComplianceEvaluator,
+        'SystemPromptExtractionStrategy': SystemPromptComplianceEvaluator,
+        
+        # User Context and Prompt Strategies
+        'UserContextStrategy': UserPromptContextEvaluator,
+        'PromptInjectionStrategy': UserPromptContextEvaluator,
+        
+        # Information and Context Manipulation Strategies
+        'InformationExtractionStrategy': MultiSignalEvaluator,
+        'ContextManipulationStrategy': MultiSignalEvaluator,
+        
+        # Stress and Boundary Testing Strategies
+        'StressTesterStrategy': MultiSignalEvaluator,
+        'BoundaryTestingStrategy': MultiSignalEvaluator
     }
     
-    # Priority-based evaluator selection
+    # Collect specific evaluators
+    specific_evaluators = []
+    
+    # Collect evaluators based on strategies
     for strategy in strategies:
         strategy_name = strategy.__class__.__name__
-        if strategy_name in evaluator_map:
-            return evaluator_map[strategy_name]()
+        if strategy_name in strategy_evaluator_map:
+            specific_evaluators.append(strategy_evaluator_map[strategy_name]())
     
-    # Fallback to multi-signal evaluator
-    return MultiSignalEvaluator()
+    # If no specific evaluators found, use multi-signal evaluator
+    if not specific_evaluators:
+        return MultiSignalEvaluator()
+    
+    # If only one evaluator, return it
+    if len(specific_evaluators) == 1:
+        return specific_evaluators[0]
+    
+    # If multiple evaluators, create a composite evaluator
+    class CompositeEvaluator(BaseEvaluator):
+        def __init__(self, evaluators):
+            self.evaluators = evaluators
+        
+        async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any]) -> Dict[str, Any]:
+            # Run all evaluators concurrently
+            evaluation_results = await asyncio.gather(
+                *[evaluator.evaluate(system_prompt, user_prompt, llm_response) 
+                  for evaluator in self.evaluators]
+            )
+            
+            # Combine results
+            combined_results = {
+                'passed': all(result.get('passed', False) for result in evaluation_results),
+                'evaluations': evaluation_results,
+                'compliance_scores': [
+                    result.get('compliance_score', result.get('intent_alignment_score', 0.0)) 
+                    for result in evaluation_results
+                ]
+            }
+            
+            # Calculate overall compliance score
+            combined_results['overall_compliance_score'] = (
+                sum(combined_results['compliance_scores']) / 
+                len(combined_results['compliance_scores'])
+            ) if combined_results['compliance_scores'] else 0.0
+            
+            return combined_results
+    
+    return CompositeEvaluator(specific_evaluators)
 
 def execute_prompt_tests_with_orchestrator(
     strategies=None, 
@@ -170,7 +232,7 @@ def execute_prompt_tests_with_orchestrator(
     # Determine strategies
     if strategies is None:
         # Default to Jailbreak strategy if no strategies specified
-        strategies = [OWASPPromptInjectionStrategy()]
+        strategies = [OWASPPromptInjectionStrategy(), JailbreakStrategy(), PromptInjectionStrategy(), ContextManipulationStrategy(), InformationExtractionStrategy(), StressTesterStrategy(), BoundaryTestingStrategy(), SystemPromptExtractionStrategy()]
     elif isinstance(strategies, str):
         # Convert string to strategy
         strategy_map = {
@@ -198,6 +260,8 @@ def execute_prompt_tests_with_orchestrator(
     
     # Select evaluator based on strategies
     evaluator = select_evaluator(strategies)
+
+    print("Evaluator::", evaluator)
     
     # Create orchestrator
     orchestrator = AttackOrchestrator(
