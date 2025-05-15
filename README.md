@@ -16,9 +16,9 @@ Prompt Secure helps developers evaluate the robustness of their AI assistant sys
 - Parallel testing for faster execution
 - Detailed reporting and analysis
 
-## Dependencies
+## Requirements
 
-- Python 3.8 or higher
+- Python 3.9+
 - pip (Python package installer)
 - Access to at least one LLM provider API (OpenAI, Anthropic, or Google)
 
@@ -38,27 +38,44 @@ cd prompt_secure
 pip install -e .
 ```
 
-## Quick Start
+### Setting Up the Environment
 
-1. Set up your OpenAI API key:
+1. Make sure you have Python 3.9 or newer installed:
 
 ```bash
-echo "OPENAI_API_KEY=your-api-key-here" > .env
+python --version
 ```
 
-2. Run a basic red-teaming test:
+2. Create and activate a virtual environment (recommended):
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Set up environment variables for your API keys:
+
+```bash
+# Create a .env file in the project root
+echo "OPENAI_API_KEY=your-api-key-here" > .env
+echo "ANTHROPIC_API_KEY=your-api-key-here" >> .env
+```
+
+## Quick Start
+
+1. Run a basic red-teaming test:
 
 ```bash
 python -m cli.main test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
 ```
 
-3. Or use a configuration file:
+2. Or use a configuration file:
 
 ```bash
 python -m cli.main test --config configs/config.yaml
 ```
 
-4. View the test report:
+3. View the test report:
 
 ```bash
 python -m cli.main report --summary
