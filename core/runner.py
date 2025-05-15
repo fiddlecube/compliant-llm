@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 from litellm import completion
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
-
+from core.config import ConfigManager, load_and_validate_config
 from core.models.LLMResponse import LLMResponse, Choices, Message
 from core.reporter import save_report
 
@@ -318,7 +318,6 @@ def execute_prompt_tests(config_path=None, config_dict=None):
     Returns:
         Dictionary containing the test results and metadata
     """
-    from core.config import ConfigManager, load_and_validate_config
     
     console.print(f"[bold green]Prompt Secure[/bold green]")
     console.print(f"Starting test run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -362,7 +361,7 @@ def execute_prompt_tests(config_path=None, config_dict=None):
     strategy_list = config.get('strategies', config.get('strategy', 'prompt_injection'))
     if isinstance(strategy_list, str):
         strategy_list = strategy_list.split(',')
-    
+
     # Extract other parameters
     parallel = config.get('parallel', False)
     max_threads = config.get('max_threads', 4)
@@ -457,4 +456,3 @@ def execute_prompt_tests(config_path=None, config_dict=None):
     console.print(f"Failed tests: {failure_count}")
     
     return report_data
-
