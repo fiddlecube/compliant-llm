@@ -5,7 +5,7 @@ This module provides an adapter for using attack enhancers with the orchestrator
 from typing import List, Dict, Any
 
 from core.strategies.base import BaseAttackStrategy
-from core.strategies.attack_enhancers.basic_attacks.base import AttackEnhancement  # noqa: E501
+from core.strategies._attack_enhancers.basic_attacks.base import AttackEnhancement   # noqa: E501
 
 
 class EnhancedAttackStrategy(BaseAttackStrategy):
