@@ -53,8 +53,6 @@ def test_run_single_test(mock_completion):
         api_key="test_key"
     )
     
-    print("======= result", result)
-    
     # Verify the result structure
     assert "prompt" in result
     assert "result" in result
@@ -203,13 +201,3 @@ def test_strategy_functions():
     """Test that strategy functions return non-empty lists."""
     assert len(prompt_injection_tests()) > 0
     assert len(jailbreak_tests()) > 0
-
-
-# @pytest.mark.parametrize("config_input,expected_exception", [
-#     (None, ValueError),  # Neither config_path nor config_dict
-#     ({"invalid": "config"}, KeyError)  # Missing required sections
-# ])
-# def test_execute_prompt_tests_errors(config_input, expected_exception):
-#     """Test error handling in execute_prompt_tests."""
-#     with pytest.raises(expected_exception):
-#         execute_prompt_tests(config_dict=config_input)
