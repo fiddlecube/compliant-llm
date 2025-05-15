@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import get_args, Literal, Optional, Union
 from urllib.parse import urlparse
 
-import aiofiles
+import aiofiles  # type: ignore
 
 logger = logging.getLogger(__name__)
 

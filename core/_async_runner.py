@@ -22,8 +22,8 @@ from core.providers.base import LLMProvider
 from core.providers.litellm_provider import LiteLLMProvider
 from core.evaluators.base import BaseEvaluator
 from core.evaluators.compliance import ComplianceEvaluator
-from core.orchestrator import AttackOrchestrator
-from core.engine import TestEngine
+from core.test_engine.orchestrator import AttackOrchestrator
+from core.test_engine.engine import TestEngine
 from core.reporter import save_report
 from core.config import load_and_validate_config
 
