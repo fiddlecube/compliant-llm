@@ -7,9 +7,9 @@ from pydantic import BaseModel
 from tqdm import tqdm
 from tqdm.asyncio import tqdm as async_tqdm_bar
 
-from src.safety.attack_enhancers.base import AttackEnhancementResult
-from src.safety.attack_enhancers.deep_eval.base import AttackEnhancement
-from src.services.llm.base import FiddlecubeLLM
+from core.strategies._attack_enhancers.base import AttackEnhancementResult
+from core.strategies._attack_enhancers.basic_attacks.base import AttackEnhancement
+from core.providers.llm.base import LLMProvider
 
 from .schema import ImprovementPrompt, NonRefusal, Rating
 from .template import JailBreakingTemplate
@@ -29,8 +29,8 @@ class TreeNode:
 class JailbreakingTree(AttackEnhancement):
     def __init__(
         self,
-        target_model: FiddlecubeLLM,
-        synthesizer_model: FiddlecubeLLM,
+        target_model: LLMProvider,
+        synthesizer_model: LLMProvider,
     ):
         self.target_model = target_model
         self.synthesizer_model = synthesizer_model

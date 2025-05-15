@@ -6,10 +6,10 @@ that combine existing strategies with attack enhancers.
 from typing import List, Dict, Any
 
 from core.strategies.base import BaseAttackStrategy
-from core.strategies.attack_enhancers.basic_attacks.base import (
+from core.strategies._attack_enhancers.basic_attacks.base import (
     AttackEnhancement,
 )
-from core.strategies.attack_enhancers.enhanced_strategy import (
+from core.strategies._attack_enhancers._enhanced_strategy import (
     EnhancedAttackStrategy,
 )
 

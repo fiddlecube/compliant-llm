@@ -7,7 +7,7 @@ from typing import List, Dict, Any, Optional, Callable
 from abc import abstractmethod
 
 from .base import BaseAttackStrategy
-from .attack_enhancers.basic_attacks.base import AttackEnhancement
+from ._attack_enhancers.basic_attacks.base import AttackEnhancement
 
 # TODO: [@Vini] this can be simplified.
 class EnhancedAttackStrategy(BaseAttackStrategy):

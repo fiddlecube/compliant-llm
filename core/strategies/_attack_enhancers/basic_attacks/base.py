@@ -5,7 +5,7 @@ from typing import Dict
 from core.models.prompt_converter import (
     PromptDataType as AttackEnhancementDataType,
 )
-from core.strategies.attack_enhancers.base import AttackEnhancementResult
+from core.strategies._attack_enhancers.base import AttackEnhancementResult
 
 
 class AttackEnhancement(ABC):
