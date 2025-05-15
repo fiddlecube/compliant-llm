@@ -3,9 +3,9 @@ import os
 from pathlib import Path
 
 
-def save_report(report, out_path="reports/report.json"):
+def save_report(report_data, output_path="reports/report.json"):
     # Create directories if they don't exist
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     
     # Save the report
-    Path(out_path).write_text(json.dumps(report, indent=2))
+    Path(output_path).write_text(json.dumps(report_data, indent=2))

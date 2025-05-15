@@ -11,6 +11,22 @@ def run_cli():
     """Run the Prompt Secure CLI."""
     cli()
 
+@cli.command()
+def dashboard():
+    """Launch Streamlit dashboard for prompt security reports"""
+    import subprocess
+    import sys
+    import os
+
+    # Get the absolute path to the dashboard.py file
+    dashboard_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+        'ui', 
+        'dashboard.py'
+    )
+    
+    subprocess.run([sys.executable, "-m", "streamlit", "run", dashboard_path])
+
 
 if __name__ == "__main__":
     run_cli()

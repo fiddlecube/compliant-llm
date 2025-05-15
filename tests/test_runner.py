@@ -1,34 +1,19 @@
 import pytest
+import asyncio
 from unittest.mock import patch, MagicMock, call
 import tempfile
 import sys
 from unittest import mock
 sys.modules['litellm'] = mock.MagicMock()
 
-# Import the functions to test
-from core.runner import (
-    execute_prompt_tests,
-    run_single_test,
-    run_tests_sequentially,
-    get_custom_prompts,
-    prompt_injection_tests,
-    jailbreak_tests
+# Import orchestrator and strategies
+from core.test_engine.orchestrator import AttackOrchestrator
+from core.strategies.attack_strategies.strategy import (
+    JailbreakStrategy, 
+    PromptInjectionStrategy
 )
-
-
-def test_get_custom_prompts():
-    """Test extracting custom prompts from strategy configuration."""
-    # Empty config
-    assert get_custom_prompts({}) == []
-    
-    # Config with custom_prompts
-    strategy_config = {
-        "custom_prompts": ["prompt1", "prompt2"]
-    }
-    assert get_custom_prompts(strategy_config) == ["prompt1", "prompt2"]
-    
-    # Config without custom_prompts
-    assert get_custom_prompts({"other_key": "value"}) == []
+from core.providers.litellm_provider import LiteLLMProvider
+from core.evaluators.base import BaseEvaluator
 
 
 @patch('core.runner.completion')
@@ -201,5 +186,134 @@ def test_execute_prompt_tests_with_config_dict(mock_save_report, mock_run_seq):
 
 def test_strategy_functions():
     """Test that strategy functions return non-empty lists."""
+    # Backward compatibility functions
+    def prompt_injection_tests():
+        strategy = PromptInjectionStrategy()
+        return asyncio.run(strategy.get_attack_prompts({}))
+    
+    def jailbreak_tests():
+        strategy = JailbreakStrategy()
+        return asyncio.run(strategy.get_attack_prompts({}))
+    
     assert len(prompt_injection_tests()) > 0
     assert len(jailbreak_tests()) > 0
+
+@pytest.mark.asyncio
+async def test_orchestrator_single_strategy():
+    """Test running tests with a single strategy using the orchestrator."""
+    # Mock provider
+    provider = MagicMock(spec=LiteLLMProvider)
+    provider.execute_prompt = MagicMock(return_value={
+        'response': {
+            'id': 'test-id',
+            'created': 12345,
+            'model': 'test-model',
+            'object': 'chat.completion',
+            'choices': [{
+                'message': {
+                    'content': 'Test response',
+                    'role': 'assistant'
+                }
+            }]
+        }
+    })
+    
+    # Create evaluator
+    evaluator = MagicMock(spec=BaseEvaluator)
+    evaluator.evaluate = MagicMock(return_value={'pass': True})
+    
+    # Create strategy
+    strategy = JailbreakStrategy()
+    
+    # Create orchestrator
+    config = {
+        'system_prompt': 'You are a helpful AI assistant',
+        'provider': {'name': 'test-model'}
+    }
+    orchestrator = AttackOrchestrator(
+        strategies=[strategy],
+        provider=provider,
+        evaluator=evaluator,
+        config=config
+    )
+    
+    # Collect attack prompts
+    attack_prompts = await orchestrator.collect_attack_prompts()
+    
+    # Execute attacks
+    results = []
+    for attack_data in attack_prompts:
+        result = await orchestrator.execute_single_attack(
+            system_prompt=config['system_prompt'],
+            attack_data=attack_data
+        )
+        results.append(result)
+    
+    # Assertions
+    assert len(results) > 0
+    assert all('user_prompt' in r for r in results)
+    assert all('strategy' in r for r in results)
+    assert all('response' in r for r in results)
+    assert all('evaluation' in r for r in results)
+
+@pytest.mark.asyncio
+async def test_orchestrator_multiple_strategies():
+    """Test running tests with multiple strategies."""
+    # Mock provider
+    provider = MagicMock(spec=LiteLLMProvider)
+    provider.execute_prompt = MagicMock(return_value={
+        'response': {
+            'id': 'test-id',
+            'created': 12345,
+            'model': 'test-model',
+            'object': 'chat.completion',
+            'choices': [{
+                'message': {
+                    'content': 'Test response',
+                    'role': 'assistant'
+                }
+            }]
+        }
+    })
+    
+    # Create evaluator
+    evaluator = MagicMock(spec=BaseEvaluator)
+    evaluator.evaluate = MagicMock(return_value={'pass': True})
+    
+    # Create strategies
+    strategies = [
+        JailbreakStrategy(),
+        PromptInjectionStrategy()
+    ]
+    
+    # Create orchestrator
+    config = {
+        'system_prompt': 'You are a helpful AI assistant',
+        'provider': {'name': 'test-model'}
+    }
+    orchestrator = AttackOrchestrator(
+        strategies=strategies,
+        provider=provider,
+        evaluator=evaluator,
+        config=config
+    )
+    
+    # Collect attack prompts
+    attack_prompts = await orchestrator.collect_attack_prompts()
+    
+    # Execute attacks
+    results = []
+    for attack_data in attack_prompts:
+        result = await orchestrator.execute_single_attack(
+            system_prompt=config['system_prompt'],
+            attack_data=attack_data
+        )
+        results.append(result)
+    
+    # Assertions
+    assert len(results) > 0
+    assert len(results) > len(strategies)  # Multiple prompts per strategy
+    assert all('user_prompt' in r for r in results)
+    assert all('strategy' in r for r in results)
+    assert all('response' in r for r in results)
+    assert all('evaluation' in r for r in results)
