@@ -8,7 +8,7 @@ import re
 import asyncio
 from typing import Dict, Any, List
 
-from .base import BaseEvaluator
+from core.evaluators.base import BaseEvaluator
 
 class SystemPromptComplianceEvaluator(BaseEvaluator):
     """

@@ -2,10 +2,12 @@ import os
 import asyncio
 from datetime import datetime
 import json
-from core.models.LLMResponse import Message, Choices, LLMResponse
 
 # Add these imports at the top of the file
+from core.strategies.base import BaseAttackStrategy
 from core.test_engine.orchestrator import AttackOrchestrator
+
+## Attack Strategies
 from core.strategies.attack_strategies.strategy import (
     JailbreakStrategy, 
     PromptInjectionStrategy,
@@ -13,10 +15,16 @@ from core.strategies.attack_strategies.strategy import (
     InformationExtractionStrategy,
     StressTesterStrategy,
     BoundaryTestingStrategy,
-    SystemPromptExtractionStrategy
+    SystemPromptExtractionStrategy,
 )
+from core.strategies.attack_strategies.strategies.owasp_strategy import OWASPPromptInjectionStrategy
 from core.providers.litellm_provider import LiteLLMProvider
-from core.evaluators.advanced_evaluators import MultiSignalEvaluator
+
+## Evaluators
+from core.evaluators.base import BaseEvaluator
+from core.evaluators.evals.owasp_evaluator import OWASPComplianceEvaluator
+from core.evaluators.evals.advanced_evaluators import MultiSignalEvaluator
+
 from core.config import ConfigManager
 from core.reporter import save_report
 from core.config import load_and_validate_config
@@ -86,6 +94,29 @@ def _serialize_value(value):
     except Exception:
         return repr(value)
 
+def select_evaluator(strategies: list[BaseAttackStrategy]) -> BaseEvaluator:
+    """
+    Dynamically select the most appropriate evaluator based on strategies
+    
+    Args:
+        strategies: List of attack strategies
+    
+    Returns:
+        Most appropriate evaluator for the given strategies
+    """
+    # Strategy to Evaluator mapping
+    evaluator_map = {
+        'OWASPPromptInjectionStrategy': OWASPComplianceEvaluator,
+    }
+    
+    # Priority-based evaluator selection
+    for strategy in strategies:
+        strategy_name = strategy.__class__.__name__
+        if strategy_name in evaluator_map:
+            return evaluator_map[strategy_name]()
+    
+    # Fallback to multi-signal evaluator
+    return MultiSignalEvaluator()
 
 def execute_prompt_tests_with_orchestrator(
     strategies=None, 
@@ -139,7 +170,7 @@ def execute_prompt_tests_with_orchestrator(
     # Determine strategies
     if strategies is None:
         # Default to Jailbreak strategy if no strategies specified
-        strategies = [JailbreakStrategy(), PromptInjectionStrategy(), ContextManipulationStrategy(), InformationExtractionStrategy(), StressTesterStrategy(), BoundaryTestingStrategy(), SystemPromptExtractionStrategy()]
+        strategies = [OWASPPromptInjectionStrategy()]
     elif isinstance(strategies, str):
         # Convert string to strategy
         strategy_map = {
@@ -149,7 +180,8 @@ def execute_prompt_tests_with_orchestrator(
             'information_extraction': InformationExtractionStrategy,
             'stress_tester': StressTesterStrategy,
             'boundary_testing': BoundaryTestingStrategy,
-            'system_prompt_extraction': SystemPromptExtractionStrategy
+            'system_prompt_extraction': SystemPromptExtractionStrategy,
+            'owasp': OWASPPromptInjectionStrategy
         }
         strategies = [strategy_map.get(strategies.lower(), JailbreakStrategy)()]
     
@@ -164,8 +196,8 @@ def execute_prompt_tests_with_orchestrator(
     # Create provider
     provider = LiteLLMProvider()
     
-    # Create evaluator
-    evaluator = MultiSignalEvaluator()
+    # Select evaluator based on strategies
+    evaluator = select_evaluator(strategies)
     
     # Create orchestrator
     orchestrator = AttackOrchestrator(
