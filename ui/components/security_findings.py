@@ -83,9 +83,8 @@ def render_security_findings(report_data):
                 vulnerability_table = []
                 for vuln in findings['vulnerabilities']:
                     vulnerability_table.append({
-                        'Test Details': vuln.get('details', 'No details'),
                         'Prompt': vuln.get('user_prompt', 'N/A'),
-                        'Response': vuln.get('llm_response', 'N/A')
+                        'Response': vuln.get('response', {}).get('response', {}).get('choices', [{}])[0].get('message', {}).get('content', 'N/A')
                     })
                 
                 st.table(vulnerability_table)
