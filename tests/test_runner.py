@@ -62,7 +62,53 @@ def test_strategy_functions():
 @pytest.mark.asyncio
 async def test_orchestrator_single_strategy():
     """Test running tests with a single strategy using the orchestrator."""
-    # [existing single strategy test code remains the same]
+    # Mock provider
+    provider = MagicMock(spec=LiteLLMProvider)
+    provider.execute_prompt = MagicMock(return_value={
+        'response': {
+            'id': 'test-id',
+            'created': 12345,
+            'model': 'test-model',
+            'object': 'chat.completion',
+            'choices': [{
+                'message': {
+                    'content': 'Test response',
+                    'role': 'assistant'
+                }
+            }]
+        }
+    })
+    
+    # Create evaluator
+    evaluator = MagicMock(spec=BaseEvaluator)
+    evaluator.evaluate = MagicMock(return_value={'passed': True})
+    
+    # Create strategy
+    strategy = JailbreakStrategy()
+    
+    # Create orchestrator
+    config = {
+        'system_prompt': 'You are a helpful AI assistant',
+        'provider': {'name': 'test-model'}
+    }
+    orchestrator = AttackOrchestrator(
+        strategies=[strategy],
+        provider=provider,
+        evaluator=evaluator,
+        config=config
+    )
+    
+    # Collect attack prompts
+    attack_prompts = await orchestrator.collect_attack_prompts()
+    
+    # Execute attacks
+    results = []
+    for attack_data in attack_prompts:
+        result = await orchestrator.execute_single_attack(
+            system_prompt=config['system_prompt'],
+            attack_data=attack_data
+        )
+        results.append(result)
     
     # Assertions
     assert len(results) > 0
