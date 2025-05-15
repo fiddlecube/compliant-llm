@@ -9,7 +9,6 @@ sys.modules['litellm'] = mock.MagicMock()
 from core.runner import (
     execute_prompt_tests,
     run_single_test,
-    run_tests_in_parallel,
     run_tests_sequentially,
     get_custom_prompts,
     prompt_injection_tests,

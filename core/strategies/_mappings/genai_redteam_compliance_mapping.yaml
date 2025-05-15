@@ -1,0 +1,612 @@
+# GenAI Red-Team Methods to InfoSec Regulations Mapping
+# This file maps different red-teaming methods for GenAI systems to various
+# information security regulations and compliance frameworks across global regions.
+
+# Regional compliance frameworks by geography:
+# North America:
+#   - USA: NIST, HIPAA, GLBA, CCPA, FERPA, COPPA, FedRAMP
+#   - Canada: PIPEDA, PHIPA
+# Europe:
+#   - EU: GDPR, NIS2, AI Act
+#   - UK: UK GDPR, DPA 2018
+#   - Switzerland: FADP
+# Asia-Pacific:
+#   - China: PIPL, CSL, DSL, AI Regulations
+#   - Singapore: PDPA, Cybersecurity Act
+#   - Japan: APPI, AI Guidelines
+#   - South Korea: PIPA, Network Act
+#   - India: DPDPB, IT Act
+#   - Australia: Privacy Act, CDR
+# Latin America:
+#   - Brazil: LGPD
+#   - Argentina: PDPL
+#   - Mexico: Federal Law on Protection of Personal Data
+#   - Chile: Privacy Law
+# Middle East:
+#   - UAE: Data Protection Law, AI Strategy 2031
+#   - Saudi Arabia: Data Protection Law, Data Management Standards
+#   - Israel: Privacy Protection Law
+
+compliance_mappings:
+  base_64_encoding:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST Cybersecurity Framework (CSF)"
+        controls: ["PR.DS-2", "PR.PT-4"]
+        explanation: "Maps to NIST's data protection controls. Base64 encoding can test if systems appropriately handle encoded malicious content, validating CSF's Data Security protections."
+
+      ISO:
+        region: "Global"
+        country: "International"
+        framework: "ISO/IEC 27001:2013"
+        controls: ["A.14.1.3", "A.14.2.1"]
+        explanation: "Relates to secure system engineering principles. Testing with encoded inputs verifies application security controls are robust against obfuscated attacks."
+
+      SOC2:
+        region: "North America"
+        country: "USA"
+        framework: "SOC2 Trust Services Criteria"
+        controls: ["CC5.2", "CC7.1"]
+        explanation: "Tests logical access security controls. Base64 encoding can bypass input validation, testing the system's access control mechanisms."
+
+      China_PIPL:
+        region: "Asia-Pacific"
+        country: "China"
+        framework: "Personal Information Protection Law (PIPL)"
+        controls: ["Article 51", "Article 55"]
+        explanation: "Tests if systems can detect attempts to hide or obfuscate personal information processing through encoding, which would violate China's requirements for transparency in data handling."
+
+      Singapore_PDPA:
+        region: "Asia-Pacific"
+        country: "Singapore"
+        framework: "Personal Data Protection Act (PDPA)"
+        controls: ["Section 24", "Section 26"]
+        explanation: "Tests protection obligation and data breach notification requirements by evaluating if systems can detect sensitive data even when encoded."
+
+  rot13:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["SI-10", "SI-7"]
+        explanation: "Tests input validation and software integrity. ROT13 obfuscation checks if systems can identify potentially harmful content despite simple encoding."
+
+      HIPAA:
+        region: "North America"
+        country: "USA"
+        framework: "HIPAA Security Rule"
+        controls: ["164.306(a)(1)", "164.312(c)(1)"]
+        explanation: "Verifies systems maintain integrity of PHI by testing if simplistic obfuscation techniques can bypass content filters."
+
+      PCI-DSS:
+        region: "Global"
+        country: "International"
+        framework: "PCI DSS v4.0"
+        controls: ["6.2.4", "11.4.1"]
+        explanation: "Tests code obfuscation vulnerabilities in payment systems, assessing if encoded malicious payloads can escape detection."
+
+  leetspeak:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["SC-7", "SI-10"]
+        explanation: "Tests boundary protection and input validation. Leetspeak can bypass text-based filters while remaining human-readable."
+
+      GDPR:
+        region: "Europe"
+        country: "EU"
+        framework: "GDPR"
+        controls: ["Article 32"]
+        explanation: "Tests security of processing by evaluating if systems can detect attempts to obfuscate harmful inputs or extract personal data."
+
+      FERPA:
+        region: "North America"
+        country: "USA"
+        framework: "FERPA"
+        controls: ["§99.30", "§99.31"]
+        explanation: "Tests if systems protecting educational records can identify unauthorized access attempts using obfuscated text."
+
+  prompt_injection:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["SI-10", "AC-4", "SC-18"]
+        explanation: "Tests input validation, information flow enforcement, and mobile code. Directly addresses AI prompt injection vulnerabilities."
+
+      ISO:
+        region: "Global"
+        country: "International"
+        framework: "ISO/IEC 27001:2013"
+        controls: ["A.12.6.1", "A.14.2.8"]
+        explanation: "Tests management of technical vulnerabilities and system security testing. Prompt injection is a novel attack vector specific to GenAI systems."
+
+      SOC2:
+        region: "North America"
+        country: "USA"
+        framework: "SOC2 Trust Services Criteria"
+        controls: ["CC6.6", "CC7.2"]
+        explanation: "Tests if the system operates as intended and vulnerabilities are identified. Prompt injection directly tests AI system boundaries."
+
+      GLBA:
+        region: "North America"
+        country: "USA"
+        framework: "GLBA Safeguards Rule"
+        controls: ["16 CFR Part 314"]
+        explanation: "Tests if financial information can be compromised through AI system manipulation, which would violate customer data protection requirements."
+
+      Brazil_LGPD:
+        region: "Latin America"
+        country: "Brazil"
+        framework: "General Data Protection Law (LGPD)"
+        controls: ["Article 6", "Article 46"]
+        explanation: "Tests security principle and security measures by evaluating if prompt injection can bypass safeguards meant to protect personal data processing in Brazil."
+
+      UAE_AI_Strategy:
+        region: "Middle East"
+        country: "UAE"
+        framework: "UAE National AI Strategy 2031"
+        controls: ["Responsible AI Guidelines"]
+        explanation: "Tests ethical AI deployment principles by evaluating if systems used in UAE's AI initiatives are resilient against manipulation that could lead to unauthorized data access."
+
+  jailbreaking_tree_deep_eval:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST AI Risk Management Framework (AI RMF)"
+        controls: ["Govern 1.7", "Map 2.2", "Measure 3.3"]
+        explanation: "Directly tests AI-specific controls in the NIST AI RMF, validating if systems have appropriate guardrails against sophisticated jailbreak attempts."
+
+      ISO:
+        region: "Global"
+        country: "International"
+        framework: "ISO/IEC 42001"
+        controls: ["8.5", "9.1"]
+        explanation: "Tests AI-specific governance controls. Jailbreaking attempts confirm if appropriate boundaries exist in AI systems."
+
+      HIPAA:
+        framework: "HIPAA Security Rule"
+        controls: ["164.308(a)(1)", "164.312(a)(1)"]
+        explanation: "Tests if AI systems handling PHI can be manipulated to release protected health information through complex attack patterns."
+
+      Japan_APPI:
+        region: "Asia-Pacific"
+        country: "Japan"
+        framework: "Act on Protection of Personal Information (APPI)"
+        controls: ["Article 20", "Article 22"]
+        explanation: "Tests security control measures by evaluating if complex jailbreaking attempts can circumvent safeguards for special care-required personal information in Japanese systems."
+
+      Saudi_Arabia_Data:
+        region: "Middle East"
+        country: "Saudi Arabia"
+        framework: "Saudi Arabia Data Management and Protection Standards"
+        controls: ["Article 3.4", "Article 5.2"]
+        explanation: "Tests AI governance mechanisms required under Saudi Arabia's data regulations by evaluating if sophisticated attack trees can breach system boundaries."
+
+  text_to_image_converter:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["AC-4", "SI-10"]
+        explanation: "Tests information flow enforcement and input validation across modalities. Examines if policy enforcement works across different data types."
+
+      GDPR:
+        framework: "GDPR"
+        controls: ["Article 25", "Article 32"]
+        explanation: "Tests data protection by design, verifying if systems maintain privacy controls when converting between text and visual representations."
+
+      CCPA/CPRA:
+        region: "North America"
+        country: "USA (California)"
+        framework: "California Consumer Privacy Act/California Privacy Rights Act"
+        controls: ["1798.100", "1798.121"]
+        explanation: "Tests if user privacy rights are maintained when data is transformed between formats."
+
+      South_Korea_PIPA:
+        region: "Asia-Pacific"
+        country: "South Korea"
+        framework: "Personal Information Protection Act (PIPA)"
+        controls: ["Article 3", "Article 29"]
+        explanation: "Tests if personal information can be leaked through format conversion, examining compliance with South Korea's strict protection requirements for visual and textual data."
+
+      Argentina_PDPL:
+        region: "Latin America"
+        country: "Argentina"
+        framework: "Personal Data Protection Law (PDPL)"
+        controls: ["Article 9", "Article 10"]
+        explanation: "Tests security and confidentiality provisions by evaluating if transformation between formats can expose personal data in ways that violate Argentina's data protection laws."
+
+  image_to_text_converter:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["SC-28", "SI-7"]
+        explanation: "Tests protection of information at rest and software integrity. Evaluates if content controls apply to information extracted from images."
+
+      HIPAA:
+        region: "North America"
+        country: "USA"
+        framework: "HIPAA Security Rule"
+        controls: ["164.306(a)(2)", "164.312(e)(1)"]
+        explanation: "Tests if PHI contained in images can be extracted and misused, evaluating transmission security protections."
+
+      PCI-DSS:
+        region: "Global"
+        country: "International"
+        framework: "PCI DSS v4.0"
+        controls: ["3.3.2", "4.2.1"]
+        explanation: "Tests if payment information in images is properly protected against extraction and misuse."
+
+      India_DPDPB:
+        region: "Asia-Pacific"
+        country: "India"
+        framework: "Digital Personal Data Protection Bill (DPDPB)"
+        controls: ["Section 8", "Section 9"]
+        explanation: "Tests security safeguards requirements by evaluating if personal data embedded in images can be extracted in ways that violate India's emerging data protection framework."
+
+      Israel_PPL:
+        region: "Middle East"
+        country: "Israel"
+        framework: "Privacy Protection Law (PPL)"
+        controls: ["Chapter 2", "Amendment 13"]
+        explanation: "Tests if personal information can be extracted from visual media, which would fall under Israel's expanded definition of regulated data processing under recent amendments."
+
+  char_swap_generator_converter:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["SI-10", "SI-16"]
+        explanation: "Tests input validation and memory protection. Character swapping can test resilience against homograph attacks and similar deception techniques."
+
+      ISO:
+        region: "Global"
+        country: "International"
+        framework: "ISO/IEC 27001:2013"
+        controls: ["A.12.2.1", "A.14.2.9"]
+        explanation: "Tests controls against malware and protection of test data. Character swapping can disguise malicious inputs."
+
+      FISMA:
+        region: "North America"
+        country: "USA"
+        framework: "Federal Information Security Modernization Act"
+        controls: ["FIPS 200"]
+        explanation: "Tests minimum security requirements for federal information systems against character manipulation attacks."
+
+  diacritic_converter:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["SI-10", "AC-3"]
+        explanation: "Tests input validation and access enforcement. Diacritics can be used to bypass filters while maintaining human readability."
+
+      GDPR:
+        region: "Europe"
+        country: "EU"
+        framework: "GDPR"
+        controls: ["Article 32"]
+        explanation: "Tests processing security by evaluating if systems can be tricked using internationalization-based obfuscation techniques."
+
+      HIPAA:
+        region: "North America"
+        country: "USA"
+        framework: "HIPAA Security Rule"
+        controls: ["164.312(a)(1)"]
+        explanation: "Tests access control mechanisms against language-based obfuscation attempts."
+
+  emoji_converter:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["SI-10", "AC-4"]
+        explanation: "Tests input validation and information flow enforcement across unusual character sets."
+
+      COPPA:
+        region: "North America"
+        country: "USA"
+        framework: "Children's Online Privacy Protection Act"
+        controls: ["16 CFR 312.8"]
+        explanation: "Tests if systems designed for children appropriately handle emoji-based input that might circumvent content controls."
+
+      SOC2:
+        region: "North America"
+        country: "USA"
+        framework: "SOC2 Trust Services Criteria"
+        controls: ["CC5.3"]
+        explanation: "Tests logical access controls against novel input methods that might bypass traditional text filters."
+
+  human_in_the_loop_converter:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST AI RMF"
+        controls: ["Govern 1.4", "Map 2.10"]
+        explanation: "Tests AI-specific governance controls regarding human oversight and intervention capabilities."
+
+      GDPR:
+        region: "Europe"
+        country: "EU"
+        framework: "GDPR"
+        controls: ["Article 22", "Article 35"]
+        explanation: "Tests automated decision-making controls and data protection impact assessment requirements for AI systems."
+
+      FDA:
+        region: "North America"
+        country: "USA"
+        framework: "FDA AI/ML Medical Device Guidance"
+        controls: ["Good Machine Learning Practice"]
+        explanation: "Tests if medical AI systems maintain appropriate human oversight as required for high-risk applications."
+
+      China_AI_Regulations:
+        region: "Asia-Pacific"
+        country: "China"
+        framework: "Administrative Provisions on Generative AI Services"
+        controls: ["Article 12", "Article 15"]
+        explanation: "Tests compliance with China's requirement for human intervention in AI processes, examining if systems allow for appropriate human oversight over AI-generated content."
+
+      Mexico_Federal_Law:
+        region: "Latin America"
+        country: "Mexico"
+        framework: "Federal Law on Protection of Personal Data Held by Private Parties"
+        controls: ["Article 14", "Article 19"]
+        explanation: "Tests restrictions on fully automated decisions by evaluating how human-in-the-loop processes align with Mexico's requirements for human oversight in sensitive data processing."
+
+  suffix_append_converter:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["SI-10", "SI-7(8)"]
+        explanation: "Tests input validation and code signing. Appending content can test if systems properly validate entire inputs rather than partial matches."
+
+      PCI-DSS:
+        region: "Global"
+        country: "International"
+        framework: "PCI DSS v4.0"
+        controls: ["6.2.4", "11.4.7"]
+        explanation: "Tests security controls against code injection through trailing content that might bypass validation."
+
+      HIPAA:
+        region: "North America"
+        country: "USA"
+        framework: "HIPAA Security Rule"
+        controls: ["164.312(c)(1)"]
+        explanation: "Tests integrity controls by evaluating if appended content can alter the processing of protected information."
+
+  zero_width_converter:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["SI-10", "SI-7", "SC-8"]
+        explanation: "Tests input validation, software integrity, and transmission confidentiality. Zero-width characters can test for covert data exfiltration channels."
+
+      SOC2:
+        region: "North America"
+        country: "USA"
+        framework: "SOC2 Trust Services Criteria"
+        controls: ["CC6.7", "CC7.1"]
+        explanation: "Tests confidentiality of communications and logical access security against steganographic techniques."
+
+      GLBA:
+        framework: "GLBA Safeguards Rule"
+        controls: ["16 CFR Part 314"]
+        explanation: "Tests if financial information can be hidden within seemingly normal text, potentially bypassing data loss prevention systems."
+
+      Singapore_PDPA:
+        framework: "Personal Data Protection Act (PDPA)"
+        controls: ["Section 24", "Section 25"]
+        explanation: "Tests protection obligation and data retention limitation by evaluating if steganographic techniques can bypass Singapore's requirements for secure data handling."
+
+      Chile_Privacy_Law:
+        region: "Latin America"
+        country: "Chile"
+        framework: "Law on the Protection of Private Life"
+        controls: ["Article 11", "Article 19"]
+        explanation: "Tests security measures by evaluating if hidden data can be transmitted in ways that violate Chile's data processing consent and transparency requirements."
+
+  # Additional red-teaming methods
+  qr_code_converter:
+    regulations:
+      NIST:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-53"
+        controls: ["SC-28", "SI-10", "SI-7"]
+        explanation: "Tests protection of information at rest, input validation, and information integrity. QR codes can encapsulate malicious content across modalities, testing if systems can detect threats across format conversions."
+
+      GDPR:
+        region: "Europe"
+        country: "EU"
+        framework: "GDPR"
+        controls: ["Article 25", "Article 32"]
+        explanation: "Tests data protection by design and security of processing by evaluating if privacy controls remain effective when information is encapsulated in QR codes."
+
+      PCI-DSS:
+        region: "Global"
+        country: "International"
+        framework: "PCI DSS v4.0"
+        controls: ["6.2.4", "4.2.1"]
+        explanation: "Tests if payment card information can be compromised through QR code representations, examining if format conversion bypasses security controls."
+
+      Australia_Privacy:
+        region: "Asia-Pacific"
+        country: "Australia"
+        framework: "Privacy Act 1988"
+        controls: ["APP 11", "APP 8"]
+        explanation: "Tests security safeguards and cross-border disclosure limitations by evaluating if sensitive information can be exfiltrated through QR code generation."
+
+      UAE_Data_Protection:
+        region: "Middle East"
+        country: "UAE"
+        framework: "Data Protection Law (DIFC Law No. 5 of 2020)"
+        controls: ["Article 14", "Article 28"]
+        explanation: "Tests security and confidentiality requirements by evaluating if data protection controls can be circumvented through format shifts to QR codes."
+
+  context_manipulation:
+    regulations:
+      NIST_AI_RMF:
+        region: "North America"
+        country: "USA"
+        framework: "NIST AI Risk Management Framework"
+        controls: ["Govern 1.3", "Map 2.2", "Measure 3.1"]
+        explanation: "Tests AI-specific risk management controls by evaluating if context manipulation can alter AI behavior in ways that circumvent security boundaries."
+
+      UK_GDPR:
+        region: "Europe"
+        country: "UK"
+        framework: "UK GDPR & Data Protection Act 2018"
+        controls: ["Article 22", "Article 35"]
+        explanation: "Tests safeguards for automated decision-making by evaluating if context changes can manipulate AI into making unauthorized decisions affecting data subjects."
+
+      China_AI_Regulations:
+        region: "Asia-Pacific"
+        country: "China"
+        framework: "Administrative Provisions on Generative AI Services"
+        controls: ["Article 11", "Article 16"]
+        explanation: "Tests content security requirements by evaluating if context manipulation can cause AI to generate harmful, false, or illegal content prohibited under Chinese regulations."
+
+      Canada_PIPEDA:
+        region: "North America"
+        country: "Canada"
+        framework: "Personal Information Protection and Electronic Documents Act"
+        controls: ["Principle 7", "Principle 4.7"]
+        explanation: "Tests safeguards for personal information by evaluating if context manipulation can trick AI systems into revealing protected information."
+
+      Brazil_LGPD:
+        region: "Latin America"
+        country: "Brazil"
+        framework: "General Data Protection Law (LGPD)"
+        controls: ["Article 6", "Article 46", "Article 20"]
+        explanation: "Tests security measures and automated decision protections by evaluating if context changes can manipulate AI behavior to circumvent data subject rights."
+
+  role_playing:
+    regulations:
+      NIST_AI_RMF:
+        region: "North America"
+        country: "USA"
+        framework: "NIST AI Risk Management Framework"
+        controls: ["Govern 1.2", "Map 2.3", "Manage 4.4"]
+        explanation: "Tests AI-specific governance controls by evaluating if role-playing attacks can manipulate AI systems into bypassing ethical boundaries or providing unauthorized access."
+
+      EU_AI_Act:
+        region: "Europe"
+        country: "EU"
+        framework: "EU AI Act"
+        controls: ["Article 10", "Article 14"]
+        explanation: "Tests high-risk AI system requirements by evaluating if role-playing techniques can circumvent transparency obligations and user protection mechanisms."
+
+      Singapore_AI_Governance:
+        region: "Asia-Pacific"
+        country: "Singapore"
+        framework: "Model AI Governance Framework"
+        controls: ["Section 3.2", "Section 2.3"]
+        explanation: "Tests ethical AI practices by evaluating if role-playing methods can exploit AI decision-making processes to override human-centric intent."
+
+      Saudi_Arabia_Data:
+        region: "Middle East"
+        country: "Saudi Arabia"
+        framework: "Data Protection Law"
+        controls: ["Article 15", "Article 21"]
+        explanation: "Tests data subject rights and security requirements by evaluating if role-playing can manipulate AI systems to circumvent data processing limitations."
+
+      Mexico_Federal_Law:
+        region: "Latin America"
+        country: "Mexico"
+        framework: "Federal Law on Protection of Personal Data Held by Private Parties"
+        controls: ["Article 19", "Article 48"]
+        explanation: "Tests security measures by evaluating if role-playing can manipulate AI systems to bypass security protocols protecting personal data."
+
+  chain_of_thought:
+    regulations:
+      NIST_SP_800_172:
+        region: "North America"
+        country: "USA"
+        framework: "NIST SP 800-172"
+        controls: ["3.14.1", "3.14.6"]
+        explanation: "Tests system and information integrity by evaluating if chain-of-thought attacks can guide AI systems to circumvent security controls through logical reasoning steps."
+
+      EU_NIS2:
+        region: "Europe"
+        country: "EU"
+        framework: "Network and Information Security Directive 2 (NIS2)"
+        controls: ["Article 21", "Article 23"]
+        explanation: "Tests cybersecurity risk management by evaluating if chain-of-thought attacks can systematically exploit vulnerabilities in AI decision processes."
+
+      Japan_AI_Guidelines:
+        region: "Asia-Pacific"
+        country: "Japan"
+        framework: "AI Utilization Guidelines"
+        controls: ["Principle of Safety", "Principle of Security"]
+        explanation: "Tests AI safety measures by evaluating if chain-of-thought reasoning can manipulate AI systems to generate harmful outputs or bypass safeguards."
+
+      Israel_PPL:
+        region: "Middle East"
+        country: "Israel"
+        framework: "Privacy Protection Law (Amendment 13)"
+        controls: ["Section 8", "Section A1"]
+        explanation: "Tests information security requirements by evaluating if logical reasoning chains can systematically extract protected information through inference."
+
+      Colombia_Data_Protection:
+        region: "Latin America"
+        country: "Colombia"
+        framework: "Statutory Law 1581 of 2012"
+        controls: ["Article 4", "Article 17.2"]
+        explanation: "Tests security principle and security obligations by evaluating if chain-of-thought techniques can systematically compromise data protection measures."
+
+  # New attack vectors based on evolving AI threats
+  multilingual_jailbreaking:
+    regulations:
+      NIST_AI_RMF:
+        region: "North America"
+        country: "USA"
+        framework: "NIST AI Risk Management Framework"
+        controls: ["Map 2.5", "Measure 3.2"]
+        explanation: "Tests AI systems' ability to maintain protective boundaries across different languages, ensuring security controls are language-agnostic."
+
+      GDPR:
+        region: "Europe"
+        country: "EU"
+        framework: "GDPR"
+        controls: ["Article 25", "Article 32"]
+        explanation: "Tests if data protection by design principles are maintained across all languages, not just the system's primary language."
+
+      South_Korea_PIPA:
+        region: "Asia-Pacific"
+        country: "South Korea"
+        framework: "Personal Information Protection Act (PIPA)"
+        controls: ["Article 29", "Article 3"]
+        explanation: "Tests if technical security measures are effective regardless of language, ensuring consistent protection of personal information."
+
+      UAE_AI_Ethics:
+        region: "Middle East"
+        country: "UAE"
+        framework: "Principles of AI Ethics"
+        controls: ["Principle 4", "Principle 7"]
+        explanation: "Tests if AI ethical boundaries remain consistent across multiple languages, aligning with UAE's AI ethics principles."
+
+      Brazil_LGPD:
+        region: "Latin America"
+        country: "Brazil"
+        framework: "General Data Protection Law (LGPD)"
+        controls: ["Article 46", "Article 6.VII"]
+        explanation: "Tests if security measures and accountability principles work effectively across different languages and cultural contexts."

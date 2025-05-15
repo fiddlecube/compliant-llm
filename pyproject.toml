@@ -20,5 +20,6 @@ dependencies = [
     "litellm",
     "python-dotenv",
     "pytest",
+    "aiofiles",
 ]
     

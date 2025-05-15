@@ -1,0 +1,256 @@
+# Attack enhancer mappings
+# Format: enhancer_name: module_path
+# These map to functions in src.safety.attack_enhancers
+
+# Attack enhancer objects
+attack_enhancers:
+  # deep_eval based attack enhancers
+  base_64_encoding:
+    name: base_64_encoding
+    path: attack_enhancers.basic_attacks.base64
+    class_name: Base64
+    description: Converts text to base64 encoded string
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  rot13:
+    name: rot13
+    path: attack_enhancers.basic_attacks.rot13
+    class_name: Rot13
+    description: Converts text to rot13 encoded string
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  leetspeak:
+    name: leetspeak
+    path: attack_enhancers.basic_attacks.leetspeak
+    class_name: Leetspeak
+    description: Converts text to leetspeak
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  prompt_injection:
+    name: prompt_injection
+    path: attack_enhancers.basic_attacks.prompt_injection
+    class_name: PromptInjection
+    description: Injects malicious prompts
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  jailbreaking_tree_deep_eval:
+    name: jailbreaking_tree_deep_eval
+    path: attack_enhancers.basic_attacks.jailbreaking_tree
+    class_name: JailbreakingTree
+    description: Jailbreaks a tree with LLM
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  # image text converters
+  text_to_image_converter:
+    name: text_to_image
+    path: attack_enhancers.prompt_converters.image_text_converters.add_text_image_converter
+    class_name: AddTextImageConverter
+    description: Adds text to images
+    input_types: [text]
+    output_types: [image]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  image_to_text_converter:
+    name: image_to_text
+    path: attack_enhancers.prompt_converters.image_text_converters.add_image_text_converter
+    class_name: AddImageTextConverter
+    description: Extracts text from images
+    input_types: [image]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  # Character and word converters
+  char_swap_generator_converter:
+    name: char_swap_generator
+    path: attack_enhancers.prompt_converters.character_word_converters.char_swap_generator
+    class_name: CharSwapGenerator
+    description: Swaps characters in text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  character_space_converter:
+    name: character_space_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.character_space_converter
+    class_name: CharacterSpaceConverter
+    description: Adds spaces between characters in text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  colloquial_wordswap_converter:
+    name: colloquial_wordswap
+    path: attack_enhancers.prompt_converters.character_word_converters.colloquial_wordswap
+    class_name: ColloquialWordswap
+    description: Swaps words in text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  diacritic_converter:
+    name: diacritic_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.diacritic_converter
+    class_name: DiacriticConverter
+    description: Adds diacritics to text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  emoji_converter:
+    name: emoji_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.emoji_converter
+    class_name: EmojiConverter
+    description: Converts text to emoji
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  flip_converter:
+    name: flip_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.flip_converter
+    class_name: FlipConverter
+    description: Flips text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  human_in_the_loop_converter:
+    name: human_in_the_loop_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.human_in_the_loop_converter
+    class_name: HumanInTheLoopConverter
+    description: Adds a human in the loop to text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  random_capital_letters_converter:
+    name: random_capital_letters_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.random_capital_letters_converter
+    class_name: RandomCapitalLettersConverter
+    description: Converts text to random capital letters
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  repeat_token_converter:
+    name: repeat_token_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.repeat_token_converter
+    class_name: RepeatTokenConverter
+    description: Repeats tokens in text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  search_replace_converter:
+    name: search_replace_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.search_replace_converter
+    class_name: SearchReplaceConverter
+    description: Searches and replaces text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  string_join_converter:
+    name: string_join_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.string_join_converter
+    class_name: StringJoinConverter
+    description: Joins strings in text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  suffix_append_converter:
+    name: suffix_append_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.suffix_append_converter
+    class_name: SuffixAppendConverter
+    description: Appends text to the end of text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  zero_width_converter:
+    name: zero_width_converter
+    path: attack_enhancers.prompt_converters.character_word_converters.zero_width_converter
+    class_name: ZeroWidthConverter
+    description: Adds zero width characters to text
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  # Cipher based converters
+
+  # code base attack enhancers
+  qr_code_converter:
+    name: qr_code_converter
+    path: attack_enhancers.prompt_converters.qr_code_converter
+    class_name: QRCodeConverter
+    description: Converts text to QR code and back
+    input_types: [text]
+    output_types: [image, text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  # fuzzer based attack enhancers
+
+  # adversarial llm based attack enhancers
+
+  # these are To be implemented
+  context_manipulation:
+    name: context_manipulation
+    path: attack_enhancers.advanced_attack_enhancers.context_manipulation
+    class_name: ContextManipulationEnhancer
+    description: Manipulates context to change meaning
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  role_playing:
+    name: role_playing
+    path: attack_enhancers.advanced_attack_enhancers.role_playing
+    class_name: RolePlayingEnhancer
+    description: Uses role playing to bypass restrictions
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path
+
+  chain_of_thought:
+    name: chain_of_thought
+    path: attack_enhancers.advanced_attack_enhancers.chain_of_thought
+    class_name: ChainOfThoughtEnhancer
+    description: Uses chain of thought to bypass restrictions
+    input_types: [text]
+    output_types: [text]
+    evaluator: some_eval_type
+    eval_path: dot.based.evaluator.path

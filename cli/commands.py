@@ -223,7 +223,7 @@ def report(report_file, format, summary):
             html_path = report_file.replace('.json', '.html')
             with open(html_path, 'w') as f:
                 f.write("<html><head><title>Prompt Secure Test Report</title></head><body>")
-                f.write(f"<h1>Test Report</h1>")
+                f.write("<h1>Test Report</h1>")
                 # Add more HTML formatting here
                 f.write("</body></html>")
             click.echo(f"HTML report saved to {html_path}")
