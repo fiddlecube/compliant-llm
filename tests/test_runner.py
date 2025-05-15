@@ -1,7 +1,6 @@
 import pytest
 import asyncio
-from unittest.mock import patch, MagicMock, call
-import tempfile
+from unittest.mock import patch, MagicMock
 import sys
 from unittest import mock
 

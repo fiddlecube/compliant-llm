@@ -11,7 +11,7 @@ from rich.console import Console
 
 from .orchestrator import AttackOrchestrator
 from core.providers.litellm_provider import LiteLLMProvider
-from core.evaluators.evals.compliance_evaluator import ComplianceEvaluator
+from core.evaluators.evals.compliance import ComplianceEvaluator
 from core.strategies.base import BaseAttackStrategy
 from core.reporter import save_report
 
