@@ -1,14 +1,14 @@
 """
-CLI entry point for FC Prompt Tester.
+CLI entry point for Prompt Secure.
 
-This module serves as the entry point for the FC Prompt Tester CLI.
+This module serves as the entry point for the Prompt Secure CLI.
 It imports the commands from the commands module and registers them with Click.
 """
 from cli.commands import cli
 
 
 def run_cli():
-    """Run the FC Prompt Tester CLI."""
+    """Run the Prompt Secure CLI."""
     cli()
 
 

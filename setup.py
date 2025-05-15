@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='fc-prompt-tester',
+    name='prompt_secure',
     version='0.1.0',
     packages=find_packages(),
     install_requires=[
@@ -23,20 +23,20 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'fc-test=cli.main:run_cli',
-            'fc-ui=ui.dashboard:start_ui',
-            'fc-report=cli.commands:report',
-            'fc-generate=cli.commands:generate',
-            'fc-config=cli.commands:config',
+            'test=cli.main:run_cli',
+            'ui=ui.dashboard:start_ui',
+            'report=cli.commands:report',
+            'generate=cli.commands:generate',
+            'config=cli.commands:config',
         ],
     },
     python_requires='>=3.8',
-    author='FC Prompt Tester Contributors',
+    author='Prompt Secure Contributors',
     author_email='example@example.com',
     description='Tool for testing AI system prompts against various attack vectors',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/yourusername/fc-prompt-tester',
+    url='https://github.com/yourusername/prompt_secure',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

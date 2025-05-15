@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide provides instructions for installing FC Prompt Tester on your system.
+This guide provides instructions for installing Prompt Secure on your system.
 
 ## Prerequisites
 
@@ -12,10 +12,10 @@ This guide provides instructions for installing FC Prompt Tester on your system.
 
 ### Installing from PyPI (Recommended)
 
-The simplest way to install FC Prompt Tester is using pip:
+The simplest way to install Prompt Secure is using pip:
 
 ```bash
-pip install fc-prompt-tester
+pip install prompt_secure
 ```
 
 ### Installing from Source
@@ -24,8 +24,8 @@ For the latest development version or to contribute to the project, you can inst
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/fc-prompt-tester.git
-cd fc-prompt-tester
+git clone https://github.com/yourusername/prompt_secure.git
+cd prompt_secure
 
 # Install in development mode
 pip install -e .
@@ -37,24 +37,24 @@ pip install -e .
 `pip install -e .`
 
 #### After installation, you should be able to use these commands:
-`fc-test test --prompt "You are a helpful assistant."`
-`fc-test report`
-`fc-test generate config --output configs/my_config.yaml`
-`fc-test config --list`
+`prompt-secure test --prompt "You are a helpful assistant."`
+`prompt-secure report`
+`prompt-secure generate config --output configs/my_config.yaml`
+`prompt-secure config --list`
 
 ## Verifying Installation
 
-To verify that FC Prompt Tester is correctly installed, run:
+To verify that Prompt Secure is correctly installed, run:
 
 ```bash
 python -m cli.main --version
 ```
 
-This should display the version number of FC Prompt Tester.
+This should display the version number of Prompt Secure.
 
 ## API Key Setup
 
-FC Prompt Tester requires API keys for the LLM providers you want to use. Set these as environment variables:
+Prompt Secure requires API keys for the LLM providers you want to use. Set these as environment variables:
 
 ### OpenAI API Key
 
@@ -80,7 +80,7 @@ You can also create a `.env` file in your project root with these variables.
 
 ### For Development
 
-If you want to contribute to FC Prompt Tester or run tests, install the development dependencies:
+If you want to contribute to Prompt Secure or run tests, install the development dependencies:
 
 ```bash
 pip install -e ".[dev]"
@@ -111,7 +111,7 @@ pip install -e ".[all]"
 If you encounter permission errors, you may need to use `sudo` or install in user mode:
 
 ```bash
-pip install --user fc-prompt-tester
+pip install --user prompt_secure
 ```
 
 #### API Connection Issues
@@ -125,4 +125,4 @@ If the tests run but fail to connect to the API:
 
 ## Next Steps
 
-After installation, proceed to the [Quick Start Guide](quickstart.md) to begin using FC Prompt Tester.
+After installation, proceed to the [Quick Start Guide](quickstart.md) to begin using Prompt Secure.

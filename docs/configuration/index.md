@@ -1,6 +1,6 @@
 # Configuration Guide
 
-FC Prompt Tester uses YAML configuration files to provide a flexible and powerful way to define test scenarios. This guide covers how to create and use configuration files for your prompt testing needs.
+Prompt Secure uses YAML configuration files to provide a flexible and powerful way to define test scenarios. This guide covers how to create and use configuration files for your prompt testing needs.
 
 ## Configuration File Basics
 
@@ -89,7 +89,7 @@ provider: google/gemini-1.5-pro
 
 ## Environment Variables
 
-FC Prompt Tester uses environment variables for API keys. You should set these before running tests:
+Prompt Secure uses environment variables for API keys. You should set these before running tests:
 
 ```bash
 # For OpenAI models

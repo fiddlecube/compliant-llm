@@ -1,18 +1,18 @@
-# Getting Started with FC Prompt Tester
+# Getting Started with Prompt Secure
 
-FC Prompt Tester is a tool designed to evaluate the robustness of AI system prompts against various types of attacks and edge cases.
+Prompt Secure is a tool designed to evaluate the robustness of AI system prompts against various types of attacks and edge cases.
 
 ## Installation
 
 ### Using pip
 ```bash
-pip install fc-prompt-tester
+pip install prompt_secure
 ```
 
 ### From source
 ```bash
-git clone https://github.com/yourusername/fc-prompt-tester.git
-cd fc-prompt-tester
+git clone https://github.com/yourusername/prompt_secure.git
+cd prompt_secure
 pip install -e .
 ```
 
@@ -37,13 +37,13 @@ OPENAI_API_KEY=your_api_key_here
 3. Run the tool:
 
 ```bash
-fc-test --config configs/your_config.yaml
+prompt_secure test --config configs/your_config.yaml
 ```
 
 4. View the results:
 
 ```bash
-fc-ui
+prompt_secure ui
 ```
 
 ## Next Steps

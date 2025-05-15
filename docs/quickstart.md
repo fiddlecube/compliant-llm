@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-This guide will help you get up and running with FC Prompt Tester quickly.
+This guide will help you get up and running with Prompt Secure quickly.
 
 ## Prerequisites
 
@@ -9,7 +9,7 @@ This guide will help you get up and running with FC Prompt Tester quickly.
 
 ## Installation
 
-If you haven't installed FC Prompt Tester yet, follow the [installation instructions](installation.md).
+If you haven't installed Prompt Secure yet, follow the [installation instructions](installation.md).
 
 ## Basic Usage
 

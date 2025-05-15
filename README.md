@@ -1,10 +1,10 @@
-# FC Prompt Tester
+# Prompt Secure
 
 A comprehensive tool for testing AI system prompts against various attack vectors and edge cases.
 
 ## Overview
 
-FC Prompt Tester helps developers evaluate the robustness of their AI assistant system prompts by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more.
+Prompt Secure helps developers evaluate the robustness of their AI assistant system prompts by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more.
 
 ## Features
 
@@ -16,19 +16,25 @@ FC Prompt Tester helps developers evaluate the robustness of their AI assistant 
 - Parallel testing for faster execution
 - Detailed reporting and analysis
 
+## Dependencies
+
+- Python 3.8 or higher
+- pip (Python package installer)
+- Access to at least one LLM provider API (OpenAI, Anthropic, or Google)
+
 ## Installation
 
 ### Using pip
 
 ```bash
-pip install fc-prompt-tester
+pip install prompt_secure
 ```
 
 ### From source
 
 ```bash
-git clone https://github.com/yourusername/fc-prompt-tester.git
-cd fc-prompt-tester
+git clone https://github.com/yourusername/prompt_secure.git
+cd prompt_secure
 pip install -e .
 ```
 
@@ -62,7 +68,20 @@ All reports are automatically saved to the `reports/` directory, which is exclud
 
 ## CLI Documentation
 
-FC Prompt Tester provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
+Prompt Secure provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
+More details in documentation folder.
+
+## Development
+
+### Development Installation
+
+```bash
+git clone https://github.com/yourusername/prompt_secure.git
+cd prompt_secure
+
+pip install -r requirements.txt
+
+```
 
 ### Environment Setup
 
@@ -257,7 +276,7 @@ strategies_config:
 
 ## Configuration Format
 
-FC Prompt Tester uses YAML for configuration. Here's an example:
+Prompt Secure uses YAML for configuration. Here's an example:
 
 ```yaml
 name: "System Prompt Test"
@@ -287,8 +306,8 @@ output:
 ## Docker
 
 ```bash
-docker build -t fc-prompt-tester .
-docker run -p 8501:8501 fc-prompt-tester
+docker build -t prompt_secure .
+docker run -p 8501:8501 prompt_secure
 ```
 
 ## Contributing

@@ -1,6 +1,6 @@
 # Config Command
 
-The `config` command helps you manage and validate configuration files for FC Prompt Tester.
+The `config` command helps you manage and validate configuration files for Prompt Secure.
 
 ## Synopsis
 
@@ -54,7 +54,7 @@ This command checks the configuration file for syntax errors and required fields
 
 ## Configuration Structure
 
-FC Prompt Tester configuration files use YAML format and must include at least the following fields:
+Prompt Secure configuration files use YAML format and must include at least the following fields:
 
 - `prompt`: The system prompt to test
 - `strategy` or `strategies`: The testing strategies to use
