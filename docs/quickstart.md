@@ -4,7 +4,7 @@ This guide will help you get up and running with Prompt Secure quickly.
 
 ## Prerequisites
 
-- Python 3.8 or higher
+- Python 9 or higher
 - An API key for at least one of the supported LLM providers (OpenAI, Anthropic, Google)
 
 ## Installation

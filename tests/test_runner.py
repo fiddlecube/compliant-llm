@@ -1,6 +1,9 @@
 import pytest
 from unittest.mock import patch, MagicMock, call
 import tempfile
+import sys
+from unittest import mock
+sys.modules['litellm'] = mock.MagicMock()
 
 # Import the functions to test
 from core.runner import (
