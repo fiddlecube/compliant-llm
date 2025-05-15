@@ -1,5 +1,5 @@
-from core.strategies.attack_enhancers.base import AttackEnhancementResult
-from core.strategies.attack_enhancers.basic_attacks.base import AttackEnhancement  # noqa: E501
+from core.strategies._attack_enhancers.base import AttackEnhancementResult
+from core.strategies._attack_enhancers.basic_attacks.base import AttackEnhancement  # noqa: E501
 
 
 class Leetspeak(AttackEnhancement):

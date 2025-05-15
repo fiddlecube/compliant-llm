@@ -3,16 +3,16 @@ import tqdm
 from pydantic import BaseModel
 from tqdm.asyncio import tqdm as async_tqdm_bar
 
-from core.strategies.attack_enhancers.base import AttackEnhancementResult
-from core.strategies.attack_enhancers.basic_attacks.base import AttackEnhancement
-from core.services.llm.chat_openai import ChatOpenAILLM
+from core.strategies._attack_enhancers.base import AttackEnhancementResult
+from core.strategies._attack_enhancers.basic_attacks.base import AttackEnhancement
+from core.providers.litellm_provider import LiteLLMProvider
 
 from .schema import ComplianceData, EnhancedAttack, IsGrayBox
 from .template import GrayBoxTemplate
 
 
 class GrayBox(AttackEnhancement):
-    def __init__(self, synthesizer_model: ChatOpenAILLM):
+    def __init__(self, synthesizer_model: LiteLLMProvider):
         self.synthesizer_model = synthesizer_model
 
     ##################################################
