@@ -8,15 +8,15 @@ This example shows how to:
 4. Analyze and report the results
 """
 import asyncio
-import json
 from typing import Dict, List, Any
 from datetime import datetime
 
 # Core components
 from core.test_engine.engine import TestEngine
 from core.test_engine.orchestrator import AttackOrchestrator
-from core.providers.litellm_provider import LiteLLMProvider
-from core.evaluators.compliance import ComplianceEvaluator
+from core.strategies.base import BaseAttackStrategy
+from core.providers.base import LLMProvider
+from core.evaluators.base import BaseEvaluator
 
 
 class SimpleStrategy(BaseAttackStrategy):
