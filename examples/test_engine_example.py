@@ -233,5 +233,5 @@ async def run_test_example():
             print(f"Compliant: {'✅' if result.get('compliant') else '❌'}")
 
 
-if __name__ == "__main__":
-    asyncio.run(run_test_example())
+# if __name__ == "__main__":
+#     asyncio.run(run_test_example())

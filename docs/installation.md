@@ -4,7 +4,7 @@ This guide provides instructions for installing Prompt Secure on your system.
 
 ## Prerequisites
 
-- Python 3.8 or higher
+- Python 3.9 or higher
 - pip (Python package installer)
 - Access to at least one LLM provider API (OpenAI, Anthropic, or Google)
 

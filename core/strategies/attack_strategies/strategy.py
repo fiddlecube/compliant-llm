@@ -10,6 +10,7 @@ import random
 
 from ..base import BaseAttackStrategy
 
+# TODO: @vini - make one strategy per attack type; refer to other repos
 
 class JailbreakStrategy(BaseAttackStrategy):
     """
