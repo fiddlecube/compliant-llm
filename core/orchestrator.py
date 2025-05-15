@@ -44,11 +44,25 @@ class AttackOrchestrator:
         for strategy in self.strategies:
             # Get prompts from each strategy
             prompts = await strategy.get_attack_prompts(self.config)
+            
+            # Check if this is an enhanced strategy that has enhancement metadata
+            has_enhancement_info = hasattr(strategy, 'get_enhancement_info')
+            
             # Add strategy information to each prompt
-            all_prompts.extend([{
-                "prompt": prompt, 
-                "strategy": strategy.name
-            } for prompt in prompts])
+            for prompt in prompts:
+                prompt_data = {
+                    "prompt": prompt, 
+                    "strategy": strategy.name
+                }
+                
+                # Add enhancement info if available
+                if has_enhancement_info:
+                    enhancement_info = strategy.get_enhancement_info(prompt)
+                    if enhancement_info and enhancement_info.get("enhanced", False):
+                        prompt_data["enhancement"] = enhancement_info
+                        
+                all_prompts.append(prompt_data)
+                
         return all_prompts
     
     async def execute_single_attack(self, system_prompt: str, attack_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -80,10 +94,17 @@ class AttackOrchestrator:
         )
         
         # Compile result
-        return {
+        result = {
             "user_prompt": user_prompt,
             "strategy": strategy,
             "response": response,
             "evaluation": evaluation,
             "timestamp": datetime.now().isoformat()
         }
+        
+        # Add enhancement info if available
+        enhancement_info = attack_data.get("enhancement", None)
+        if enhancement_info:
+            result["enhancement"] = enhancement_info
+        
+        return result

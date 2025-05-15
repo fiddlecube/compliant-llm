@@ -4,11 +4,9 @@ Attack strategies package.
 This package contains implementations of various attack strategies for testing LLMs.
 """
 from .base import BaseAttackStrategy
-from .prompt_injection import PromptInjectionStrategy
-from .adversarial import AdversarialInputStrategy
+from .attack_enhancers.enhanced_strategy import EnhancedAttackStrategy
 
 __all__ = [
     'BaseAttackStrategy',
-    'PromptInjectionStrategy',
-    'AdversarialInputStrategy',
+    'EnhancedAttackStrategy',
 ]
