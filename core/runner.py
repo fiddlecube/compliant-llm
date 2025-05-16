@@ -18,7 +18,7 @@ from core.strategies.attack_strategies.strategy import (
     BoundaryTestingStrategy,
     SystemPromptExtractionStrategy,
 )
-from core.strategies.attack_strategies.strategies.owasp_strategy import OWASPPromptInjectionStrategy
+from core.strategies.attack_strategies.owasp_strategy import OWASPPromptInjectionStrategy
 from core.providers.litellm_provider import LiteLLMProvider
 
 ## Evaluators

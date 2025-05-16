@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 from core.strategies.attack_strategies.strategy import BaseAttackStrategy
 
 
-class OWASPPromptInjectionStrategy(BaseAttackStrategy):
+class OWASPPromptSecurityStrategy(BaseAttackStrategy):
     """Implements OWASP Top 10 specific attacks"""
     
     async def get_attack_prompts(self, config: Dict[str, Any]) -> List[str]:
