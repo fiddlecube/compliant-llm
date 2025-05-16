@@ -31,6 +31,7 @@ class LiteLLMProvider(LLMProvider):
             from litellm import acompletion
             
             # Extract provider-specific configuration
+            # TODO: @vini - simplify this
             model = config.get("model", "gpt-3.5-turbo")
             temperature = config.get("temperature", 0.7)
             timeout = config.get("timeout", 30)
