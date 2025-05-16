@@ -6,7 +6,6 @@ from unittest import mock
 
 # Mock entire modules
 sys.modules['litellm'] = mock.MagicMock()
-sys.modules['core.runner'] = mock.MagicMock()
 
 # Import orchestrator and strategies
 from core.test_engine.orchestrator import AttackOrchestrator
@@ -18,31 +17,33 @@ from core.providers.litellm_provider import LiteLLMProvider
 from core.evaluators.base import BaseEvaluator
 
 # Mock runner.py functions and classes
-with patch('core.runner.execute_prompt_tests_with_orchestrator') as mock_execute_tests:
-    mock_execute_tests.return_value = {
-        'metadata': {
-            'timestamp': '2023-01-01T00:00:00',
-            'provider': 'test-provider',
-            'strategies': ['JailbreakStrategy', 'PromptInjectionStrategy'],
-            'test_count': 10,
-            'success_count': 8,
-            'failure_count': 2
+mock_runner = mock.MagicMock()
+sys.modules['core.runner'] = mock_runner
+
+mock_runner.execute_prompt_tests_with_orchestrator = MagicMock(return_value={
+    'metadata': {
+        'timestamp': '2023-01-01T00:00:00',
+        'provider': 'test-provider',
+        'strategies': ['JailbreakStrategy', 'PromptInjectionStrategy'],
+        'test_count': 10,
+        'success_count': 8,
+        'failure_count': 2
+    },
+    'tests': [
+        {
+            'strategy': 'JailbreakStrategy',
+            'user_prompt': 'Test jailbreak prompt',
+            'response': {'content': 'Test response'},
+            'evaluation': {'passed': True}
         },
-        'tests': [
-            {
-                'strategy': 'JailbreakStrategy',
-                'user_prompt': 'Test jailbreak prompt',
-                'response': {'content': 'Test response'},
-                'evaluation': {'passed': True}
-            },
-            {
-                'strategy': 'PromptInjectionStrategy',
-                'user_prompt': 'Test prompt injection',
-                'response': {'content': 'Another test response'},
-                'evaluation': {'passed': False}
-            }
-        ]
-    }
+        {
+            'strategy': 'PromptInjectionStrategy',
+            'user_prompt': 'Test prompt injection',
+            'response': {'content': 'Another test response'},
+            'evaluation': {'passed': False}
+        }
+    ]
+})
 
 def test_strategy_functions():
     """Test that strategy functions return non-empty lists."""
