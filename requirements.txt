@@ -6,3 +6,4 @@ litellm
 python-dotenv
 pytest
 aiofiles
+plotly

@@ -4,7 +4,7 @@ Compliance evaluator implementation.
 This module implements an evaluator that checks if LLM responses comply with expected behavior.
 """
 from typing import Dict, Any, List
-from .base import BaseEvaluator
+from core.evaluators.base import BaseEvaluator
 
 
 class ComplianceEvaluator(BaseEvaluator):

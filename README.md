@@ -199,6 +199,15 @@ python -m cli.main report reports/custom_report.json --summary
 python -m cli.main report --format json > analysis.json
 ```
 
+### Streamlit Dashboard
+
+Visualize your prompt security reports with an interactive dashboard:
+
+```bash
+# Launch dashboard
+python -m cli.main dashboard
+
+
 ### Generate Command
 
 The generate command creates templates for configurations or prompts.
