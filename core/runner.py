@@ -202,6 +202,22 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     provider_name = config.get('provider_name') or config.get('provider', {}).get('name', 'openai/gpt-4o')
     api_key = config.get('provider', {}).get('api_key', '')
     
+    # Fallback to environment variable for API key
+    if not api_key:
+        env_var = provider_name.split('/')[0].upper() + "_API_KEY"
+        api_key = os.getenv(env_var, '')
+    
+    # Create provider configuration
+    provider_config = {
+        'model': provider_name,
+        'api_key': api_key,
+        'temperature': config.get('temperature', 0.7),
+        'timeout': config.get('timeout', 30)
+    }
+    
+    # Create provider
+    provider = LiteLLMProvider()
+    
     # Get system prompt from config
     system_prompt = None
     if 'prompt' in config:
@@ -239,21 +255,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     if not strategies:
         strategies = [JailbreakStrategy(), PromptInjectionStrategy(), ContextManipulationStrategy(), InformationExtractionStrategy()]
     
-    # Fallback to environment variable for API key
-    if not api_key:
-        env_var = provider_name.split('/')[0].upper() + "_API_KEY"
-        api_key = os.getenv(env_var, '')
     
-    # Create provider configuration
-    provider_config = {
-        'model': provider_name,
-        'api_key': api_key,
-        'temperature': config.get('temperature', 0.7),
-        'timeout': config.get('timeout', 30)
-    }
-    
-    # Create provider
-    provider = LiteLLMProvider()
     
     # Select evaluator based on strategies
     evaluator = select_evaluator(strategies)
