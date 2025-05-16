@@ -64,24 +64,28 @@ async def test_orchestrator_single_strategy():
     """Test running tests with a single strategy using the orchestrator."""
     # Mock provider
     provider = MagicMock(spec=LiteLLMProvider)
-    provider.execute_prompt = MagicMock(return_value={
-        'response': {
-            'id': 'test-id',
-            'created': 12345,
-            'model': 'test-model',
-            'object': 'chat.completion',
-            'choices': [{
-                'message': {
-                    'content': 'Test response',
-                    'role': 'assistant'
-                }
-            }]
+    async def mock_execute_prompt(*args, **kwargs):
+        return {
+            'response': {
+                'id': 'test-id',
+                'created': 12345,
+                'model': 'test-model',
+                'object': 'chat.completion',
+                'choices': [{
+                    'message': {
+                        'content': 'Test response',
+                        'role': 'assistant'
+                    }
+                }]
+            }
         }
-    })
+    provider.execute_prompt = mock_execute_prompt
     
     # Create evaluator
     evaluator = MagicMock(spec=BaseEvaluator)
-    evaluator.evaluate = MagicMock(return_value={'passed': True})
+    async def mock_evaluate(*args, **kwargs):
+        return {'passed': True}
+    evaluator.evaluate = mock_evaluate
     
     # Create strategy
     strategy = JailbreakStrategy()
@@ -122,24 +126,28 @@ async def test_orchestrator_multiple_strategies():
     """Test running tests with multiple strategies."""
     # Mock provider
     provider = MagicMock(spec=LiteLLMProvider)
-    provider.execute_prompt = MagicMock(return_value={
-        'response': {
-            'id': 'test-id',
-            'created': 12345,
-            'model': 'test-model',
-            'object': 'chat.completion',
-            'choices': [{
-                'message': {
-                    'content': 'Test response',
-                    'role': 'assistant'
-                }
-            }]
+    async def mock_execute_prompt(*args, **kwargs):
+        return {
+            'response': {
+                'id': 'test-id',
+                'created': 12345,
+                'model': 'test-model',
+                'object': 'chat.completion',
+                'choices': [{
+                    'message': {
+                        'content': 'Test response',
+                        'role': 'assistant'
+                    }
+                }]
+            }
         }
-    })
+    provider.execute_prompt = mock_execute_prompt
     
     # Create evaluator
     evaluator = MagicMock(spec=BaseEvaluator)
-    evaluator.evaluate = MagicMock(return_value={'passed': True})
+    async def mock_evaluate(*args, **kwargs):
+        return {'passed': True}
+    evaluator.evaluate = mock_evaluate
     
     # Create strategies
     strategies = [

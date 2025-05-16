@@ -1,3 +1,4 @@
+# flake8: noqa E501
 import os
 import asyncio
 from datetime import datetime
@@ -7,7 +8,7 @@ from typing import Dict, Any
 from core.strategies.base import BaseAttackStrategy
 from core.test_engine.orchestrator import AttackOrchestrator
 
-## Attack Strategies
+# Attack Strategies
 from core.strategies.attack_strategies.strategy import (
     JailbreakStrategy, 
     PromptInjectionStrategy,
@@ -29,9 +30,9 @@ from core.evaluators.evals.advanced_evaluators import (
     UserPromptContextEvaluator
 )
 
-from core.config import ConfigManager
+
+from core.config_manager.cli_adapter import CLIConfigAdapter
 from core.reporter import save_report
-from core.config import load_and_validate_config
 
 
 def _serialize_value(value):
@@ -98,6 +99,36 @@ def _serialize_value(value):
     except Exception:
         return repr(value)
 
+class CompositeEvaluator(BaseEvaluator):
+        def __init__(self, evaluators):
+            self.evaluators = evaluators
+        
+        async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any]) -> Dict[str, Any]:
+            # Run all evaluators concurrently
+            evaluation_results = await asyncio.gather(
+                *[evaluator.evaluate(system_prompt, user_prompt, llm_response) 
+                  for evaluator in self.evaluators]
+            )
+            
+            # Combine results
+            combined_results = {
+                'passed': all(result.get('passed', False) for result in evaluation_results),
+                'evaluations': evaluation_results,
+                'compliance_scores': [
+                    result.get('compliance_score', result.get('intent_alignment_score', 0.0)) 
+                    for result in evaluation_results
+                ]
+            }
+            
+            # Calculate overall compliance score
+            combined_results['overall_compliance_score'] = (
+                sum(combined_results['compliance_scores']) / 
+                len(combined_results['compliance_scores'])
+            ) if combined_results['compliance_scores'] else 0.0
+            
+            return combined_results
+    
+
 def select_evaluator(strategies: list[BaseAttackStrategy]) -> BaseEvaluator:
     """
     Select the most appropriate evaluator based on strategies
@@ -149,92 +180,44 @@ def select_evaluator(strategies: list[BaseAttackStrategy]) -> BaseEvaluator:
         return specific_evaluators[0]
     
     # If multiple evaluators, create a composite evaluator
-    class CompositeEvaluator(BaseEvaluator):
-        def __init__(self, evaluators):
-            self.evaluators = evaluators
-        
-        async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any]) -> Dict[str, Any]:
-            # Run all evaluators concurrently
-            evaluation_results = await asyncio.gather(
-                *[evaluator.evaluate(system_prompt, user_prompt, llm_response) 
-                  for evaluator in self.evaluators]
-            )
-            
-            # Combine results
-            combined_results = {
-                'passed': all(result.get('passed', False) for result in evaluation_results),
-                'evaluations': evaluation_results,
-                'compliance_scores': [
-                    result.get('compliance_score', result.get('intent_alignment_score', 0.0)) 
-                    for result in evaluation_results
-                ]
-            }
-            
-            # Calculate overall compliance score
-            combined_results['overall_compliance_score'] = (
-                sum(combined_results['compliance_scores']) / 
-                len(combined_results['compliance_scores'])
-            ) if combined_results['compliance_scores'] else 0.0
-            
-            return combined_results
     
     return CompositeEvaluator(specific_evaluators)
 
-def execute_prompt_tests_with_orchestrator(
-    strategies=None, 
-    provider_name=None, 
-    api_key=None, 
-    system_prompt=None, 
-    config_path=None, 
-    config_dict=None
-):
+def execute_prompt_tests_with_orchestrator(config_dict):
     """
     Execute prompt tests using the test engine and orchestrator.
     
     Args:
-        strategies: List of strategies to use (optional)
-        provider_name: LLM provider name (optional)
-        api_key: API key for the provider (optional)
-        system_prompt: System prompt to use (optional)
-        config_path: Path to configuration file (optional)
-        config_dict: Configuration dictionary (optional)
+        config_dict: Configuration dictionary containing all necessary parameters
+            for running tests. This should be a fully processed configuration that has
+            already gone through the ConfigManager.
     
     Returns:
         Dictionary containing test results
     """
-    # Load configuration if not provided
-    if config_path:
-        config = load_and_validate_config(config_path)
-    elif config_dict:
-        config = config_dict
-    else:
-        config = {}
+    # Use the provided configuration directly
+    config = config_dict
     
     # Extract or set default values
-    provider_name = provider_name or config.get('provider', {}).get('name', 'openai/gpt-4o')
-    api_key = api_key or config.get('provider', {}).get('api_key', '')
+    provider_name = config.get('provider_name') or config.get('provider', {}).get('name', 'openai/gpt-4o')
+    api_key = config.get('provider', {}).get('api_key', '')
     
-    # Fallback to environment variable for API key
-    if not api_key:
-        env_var = provider_name.split('/')[0].upper() + "_API_KEY"
-        api_key = os.getenv(env_var, '')
-    
-    # Determine system prompt
-    if system_prompt is None:
-        if config_path:
-            config_manager = ConfigManager(config_path)
-            system_prompt = config_manager.get_prompt()
-        elif 'prompt' in config and isinstance(config['prompt'], dict):
-            system_prompt = config['prompt'].get('content', 'You are a helpful AI assistant')
+    # Get system prompt from config
+    system_prompt = None
+    if 'prompt' in config:
+        if isinstance(config['prompt'], dict):
+            system_prompt = config['prompt'].get('content')
         else:
-            system_prompt = 'You are a helpful AI assistant'
+            system_prompt = config['prompt']
+    
+    if not system_prompt:
+        system_prompt = 'You are a helpful AI assistant'
     
     # Determine strategies
-    if strategies is None:
-        # Default to Jailbreak strategy if no strategies specified
-        strategies = [OWASPPromptInjectionStrategy(), JailbreakStrategy(), PromptInjectionStrategy(), ContextManipulationStrategy(), InformationExtractionStrategy(), StressTesterStrategy(), BoundaryTestingStrategy(), SystemPromptExtractionStrategy()]
-    elif isinstance(strategies, str):
-        # Convert string to strategy
+    strategies = []
+    
+    # Check for the new 'strategies' field (list of strategy names)
+    if 'strategies' in config and isinstance(config['strategies'], list):
         strategy_map = {
             'jailbreak': JailbreakStrategy,
             'prompt_injection': PromptInjectionStrategy,
@@ -245,7 +228,21 @@ def execute_prompt_tests_with_orchestrator(
             'system_prompt_extraction': SystemPromptExtractionStrategy,
             'owasp': OWASPPromptInjectionStrategy
         }
-        strategies = [strategy_map.get(strategies.lower(), JailbreakStrategy)()]
+        
+        for strategy_name in config['strategies']:
+            strategy_class = strategy_map.get(strategy_name.lower())
+            if strategy_class:
+                strategies.append(strategy_class())
+    
+
+    # Default to a set of strategies if none specified
+    if not strategies:
+        strategies = [JailbreakStrategy(), PromptInjectionStrategy(), ContextManipulationStrategy(), InformationExtractionStrategy()]
+    
+    # Fallback to environment variable for API key
+    if not api_key:
+        env_var = provider_name.split('/')[0].upper() + "_API_KEY"
+        api_key = os.getenv(env_var, '')
     
     # Create provider configuration
     provider_config = {
@@ -314,15 +311,36 @@ def execute_prompt_tests_with_orchestrator(
     
     return report_data
 
-# Modify existing execute_prompt_tests to use the new orchestrator method
+
 def execute_prompt_tests(config_path=None, config_dict=None):
     """
     Wrapper around execute_prompt_tests_with_orchestrator to maintain backward compatibility.
+    
+    Args:
+        config_path: Path to a configuration file
+        config_dict: Configuration dictionary (takes precedence over config_path)
+        
+    Returns:
+        Dictionary containing test results
     """
-    return execute_prompt_tests_with_orchestrator(
-        config_path=config_path,
-        config_dict=config_dict
-    )
+    # If config_dict is provided, use it directly (CLI has already processed it)
+    if config_dict:
+        return execute_prompt_tests_with_orchestrator(config_dict=config_dict)
+    
+    # If config_path is provided, load it through the CLI adapter
+    if config_path:
+        try:
+            # Use the CLIConfigAdapter to load and process the config
+            cli_adapter = CLIConfigAdapter()
+            cli_adapter.load_from_cli(config=config_path)
+            runner_config = cli_adapter.get_runner_config()
+            return execute_prompt_tests_with_orchestrator(config_dict=runner_config)
+        except Exception as e:
+            print(f"Error loading configuration: {e}")
+            raise
+    
+    # No configuration provided
+    raise ValueError("No configuration provided. Please provide either config_path or config_dict.")
 
 # CLI entry point (you can add this to a separate CLI script or keep it here)
 def main():
@@ -339,14 +357,35 @@ def main():
     
     args = parser.parse_args()
     
-    # Run tests
-    results = execute_prompt_tests_with_orchestrator(
-        strategies=args.strategy,
-        provider_name=args.provider,
-        api_key=args.api_key,
-        system_prompt=args.system_prompt,
-        config_path=args.config
-    )
+    # Create the CLI adapter for configuration handling
+    cli_adapter = CLIConfigAdapter()
+    
+    try:
+        if args.config:
+            # Load from a specified config file
+            cli_adapter.load_from_cli(
+                config=args.config,
+                strategy=args.strategy,
+                provider=args.provider,
+                system_prompt=args.system_prompt
+            )
+        else:
+            # Load from CLI arguments only
+            cli_adapter.load_from_cli(
+                prompt=args.system_prompt,
+                strategy=args.strategy,
+                provider=args.provider,
+                api_key=args.api_key
+            )
+        
+        # Get the runner config
+        runner_config = cli_adapter.get_runner_config()
+        
+        # Execute the tests
+        results = execute_prompt_tests_with_orchestrator(config_dict=runner_config)
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
     
     # Print summary
     print("\nTest Results Summary:")
