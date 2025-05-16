@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  prompt_secure:
+    build: .
+    ports:
+      - "8001:8001"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    command: python -m ui.dashboard

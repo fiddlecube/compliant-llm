@@ -10,8 +10,6 @@ import random
 
 from ..base import BaseAttackStrategy
 
-# TODO: @vini - make one strategy per attack type; refer to other repos, and OWASP top 10
-
 class JailbreakStrategy(BaseAttackStrategy):
     """
     Strategy that uses various jailbreak techniques to bypass LLM safeguards.
