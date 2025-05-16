@@ -7,7 +7,8 @@ import json
 import yaml
 import click
 from typing import Dict, Any, Optional
-from core.runner import execute_prompt_tests as run_tests
+from core.runner import execute_prompt_tests
+from core.config_manager.cli_adapter import CLIConfigAdapter
 
 # Constants
 CONFIG_DIRS = [
@@ -52,64 +53,6 @@ def load_config(config_path: str) -> Dict[str, Any]:
         sys.exit(1)
 
 
-def resolve_config(config_dict: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Process and normalize the config dictionary.
-    Handles any transformations needed to make the config compatible with the runner.
-    """
-    # Initialize with defaults
-    processed_config = {
-        'prompt': '',
-        'strategy': 'prompt_injection',
-        'provider_name': 'openai/gpt-4o'
-    }
-    
-    # Extract prompt from modern config format
-    if 'prompt' in config_dict:
-        if isinstance(config_dict['prompt'], dict):
-            if 'content' in config_dict['prompt']:
-                processed_config['prompt'] = config_dict['prompt']['content']
-            elif 'file' in config_dict['prompt']:
-                prompt_file = config_dict['prompt']['file']
-                try:
-                    with open(prompt_file, 'r') as f:
-                        processed_config['prompt'] = f.read()
-                except Exception as e:
-                    click.echo(f"Error reading prompt file {prompt_file}: {e}", err=True)
-                    sys.exit(1)
-        else:
-            # Direct prompt string
-            processed_config['prompt'] = config_dict['prompt']
-    
-    # Extract strategies
-    if 'strategies' in config_dict:
-        # Modern format with strategy objects
-        enabled_strategies = []
-        for strategy in config_dict['strategies']:
-            if isinstance(strategy, dict) and strategy.get('enabled', True):
-                enabled_strategies.append(strategy['name'])
-            elif isinstance(strategy, str):
-                enabled_strategies.append(strategy)
-        
-        if enabled_strategies:
-            processed_config['strategy'] = ','.join(enabled_strategies)
-    elif 'strategy' in config_dict:
-        # Legacy format with comma-separated string
-        processed_config['strategy'] = config_dict['strategy']
-    
-    # Extract provider name
-    if 'provider' in config_dict:
-        if isinstance(config_dict['provider'], dict):
-            if 'name' in config_dict['provider']:
-                processed_config['provider_name'] = config_dict['provider']['name']
-        else:
-            processed_config['provider_name'] = config_dict['provider']
-    elif 'provider_name' in config_dict:
-        processed_config['provider_name'] = config_dict['provider_name']
-    
-    return processed_config
-
-
 @click.group()
 def cli():
     """Prompt Secure - Test your AI system prompts for vulnerabilities."""
@@ -117,63 +60,64 @@ def cli():
 
 
 @cli.command()
-@click.option('--config', '-c', type=click.Path(exists=False), help='Path to YAML config file')
-@click.option('--prompt', '-p', help='Direct input of system prompt')
-@click.option('--strategy', '-s', help='Comma-separated list of test strategies')
-@click.option('--provider', '-m', help='LLM provider to use')
-@click.option('--output', '-o', help='Output format (json, csv, html)')
-@click.option('--report', '-r', is_flag=True, help='Generate detailed report')
-@click.option('--parallel', '-j', is_flag=True, help='Run tests in parallel')
-@click.option('--verbose', '-v', is_flag=True, help='Increase verbosity')
-@click.option('--timeout', type=int, default=30, help='Timeout for LLM API calls (seconds)')
-@click.option('--save', help='Save results to custom location')
+@click.option('--config', '-c', help='Configuration file to use')
+@click.option('--prompt', '-p', help='System prompt to test')
+@click.option('--strategy', '-s', default=None, help='Test strategy to use (comma-separated for multiple)')
+@click.option('--provider', help='LLM provider name (e.g., openai/gpt-4o)')
+@click.option('--output', '-o', help='Output file path for results')
+@click.option('--report', '-r', is_flag=True, help='Show detailed report after testing')
+@click.option('--parallel/--no-parallel', default=None, help='Run tests in parallel')
+@click.option('--verbose', '-v', is_flag=True, help='Show verbose output')
+@click.option('--timeout', type=int, default=None, help='Timeout in seconds for LLM requests')
+@click.option('--save', help='DEPRECATED: Use --output instead')
 def test(config, prompt, strategy, provider, output, report, parallel, verbose, timeout, save):
     """Run tests on your system prompts."""
-    # Initialize configuration
-    test_config = {
-        'prompt': '',
-        'strategy': 'prompt_injection',
-        'provider_name': 'openai/gpt-4o'
-    }
-    
-    # Load from config file if specified
-    if config:
-        config_path = find_config_file(config)
-        if not config_path:
-            click.echo(f"Config file not found: {config}", err=True)
-            sys.exit(1)
-        
-        click.echo(f"Loading config from: {config_path}")
-        config_dict = load_config(config_path)
-        test_config = resolve_config(config_dict)
-    
-    # Override with command line arguments if provided
-    if prompt:
-        test_config['prompt'] = prompt
-    if strategy:
-        test_config['strategy'] = strategy
-    if provider:
-        test_config['provider_name'] = provider
-    
-    # Ensure we have a prompt
-    if not test_config['prompt']:
-        if not config:  # Only prompt if not using a config file
-            test_config['prompt'] = click.prompt("Enter system prompt")
-    
-    # Additional options
-    if verbose:
-        click.echo("Verbose mode enabled")
-        click.echo(f"Configuration: {test_config}")
-    
-    # Handle output path
-    if output:
-        test_config['output_path'] = output
-    elif save:  # Backwards compatibility
-        test_config['output_path'] = save
-    
+    # Create the CLI adapter for configuration handling
+    cli_adapter = CLIConfigAdapter()
+
+    try:
+        # Load configuration from CLI arguments
+        cli_adapter.load_from_cli(
+            config=config,
+            prompt=prompt,
+            strategy=strategy,
+            provider=provider,
+            output=output,
+            save=save,
+            parallel=parallel,
+            timeout=timeout
+        )
+
+        # Ensure we have a prompt if not provided in config or CLI
+        config_dict = cli_adapter.get_runner_config()
+        if not prompt and not config_dict.get('prompt'):
+            user_prompt = click.prompt("Enter system prompt")
+            if 'prompt' not in config_dict:
+                config_dict['prompt'] = {}
+            if isinstance(config_dict.get('prompt'), dict):
+                config_dict['prompt']['content'] = user_prompt
+            else:
+                config_dict['prompt'] = {'content': user_prompt}
+            cli_adapter.config_manager.config = config_dict
+
+        # Display additional information if verbose mode is enabled
+        if verbose:
+            click.echo("Verbose mode enabled")
+            click.echo(f"Configuration: {config_dict}")
+
+        # Get the configuration for the runner
+        runner_config = cli_adapter.get_runner_config()
+
+    except FileNotFoundError as e:
+        click.echo(str(e), err=True)
+        sys.exit(1)
+    except Exception as e:
+        click.echo(f"Error processing configuration: {e}", err=True)
+        sys.exit(1)
+
     # Run the tests
-    run_tests(config_dict=test_config)
-    
+    execute_prompt_tests(config_dict=runner_config)
+
     click.echo("Tests completed successfully!")
 
 
@@ -186,7 +130,7 @@ def report(report_file, format, summary):
     try:
         with open(report_file, 'r') as f:
             data = json.load(f)
-        
+
         if summary:
             # Display summary statistics
             click.echo(f"Report Summary ({report_file}):")
@@ -227,7 +171,7 @@ def report(report_file, format, summary):
                 # Add more HTML formatting here
                 f.write("</body></html>")
             click.echo(f"HTML report saved to {html_path}")
-    
+
     except FileNotFoundError:
         click.echo(f"Report file not found: {report_file}", err=True)
         sys.exit(1)
@@ -269,16 +213,16 @@ def generate(type, template, output):
                 }
             }
         }
-        
+
         # Select template
         template_name = template or 'modern'
         if template_name not in templates:
             click.echo(f"Unknown template: {template_name}. Available templates: {', '.join(templates.keys())}", err=True)
             sys.exit(1)
-        
+
         # Generate config
         config_content = yaml.dump(templates[template_name], default_flow_style=False)
-        
+
         # Output
         if output:
             with open(output, 'w') as f:
@@ -306,13 +250,13 @@ Your responses should be:
   3. Concise yet informative.
   4. Supportive of responsible financial practices."""
         }
-        
+
         # Select template
         template_name = template or 'customer_service'
         if template_name not in prompts:
             click.echo(f"Unknown prompt template: {template_name}. Available templates: {', '.join(prompts.keys())}", err=True)
             sys.exit(1)
-        
+
         # Output
         if output:
             with open(output, 'w') as f:
@@ -328,37 +272,57 @@ Your responses should be:
 @click.option('--validate', '-v', help='Validate a configuration file')
 def config(list, show, validate):
     """Manage configuration files."""
+    
     if list:
         click.echo("Available configurations:")
-        for config_dir in CONFIG_DIRS:
+        # Get the list of config directories from core.config
+        config_dirs = [
+            # Package configs
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), "configs"),
+            # User configs
+            os.path.expanduser(os.path.join("~", ".config", "prompt_secure")),
+            # Project configs (current directory)
+            os.path.join(os.getcwd(), ".prompt_secure")
+        ]
+        
+        for config_dir in config_dirs:
             if os.path.exists(config_dir):
                 click.echo(f"\nIn {config_dir}:")
-                configs = [f for f in os.listdir(config_dir) if f.endswith(('.yaml', '.yml'))]
+                configs = [f for f in os.listdir(config_dir) if f.endswith(('.yaml', '.yml'))]  # noqa: E501
                 for config_file in configs:
                     click.echo(f"  - {config_file}")
     
     elif show:
-        config_path = find_config_file(show)
-        if not config_path:
-            click.echo(f"Config file not found: {show}", err=True)
-            sys.exit(1)
-        
-        config_dict = load_config(config_path)
-        click.echo(yaml.dump(config_dict, default_flow_style=False))
-    
-    elif validate:
-        config_path = find_config_file(validate)
-        if not config_path:
-            click.echo(f"Config file not found: {validate}", err=True)
-            sys.exit(1)
+        # Create the CLI adapter for configuration handling
+        cli_adapter = CLIConfigAdapter()
         
         try:
-            config_dict = load_config(config_path)
-            # Apply basic validation
-            processed = resolve_config(config_dict)
-            click.echo(f"Configuration is valid: {config_path}")
-            click.echo("Resolved configuration:")
-            click.echo(yaml.dump(processed, default_flow_style=False))
+            # Load from a specified config file
+            cli_adapter.load_from_cli(config=show)
+            
+            # Output the raw configuration
+            click.echo(yaml.dump(cli_adapter.config_manager.config, default_flow_style=False))  # noqa: E501
+        except FileNotFoundError as e:
+            click.echo(str(e), err=True)
+            sys.exit(1)
+    
+    elif validate:
+        # Create the CLI adapter for configuration handling
+        cli_adapter = CLIConfigAdapter()
+        
+        try:
+            # Load from a specified config file
+            cli_adapter.load_from_cli(config=validate)
+            
+            # Get the runner config (this performs validation)
+            runner_config = cli_adapter.get_runner_config()
+            
+            click.echo(f"Configuration is valid: {validate}")
+            click.echo("Processed configuration for runner:")
+            click.echo(yaml.dump(runner_config, default_flow_style=False))
+        except FileNotFoundError as e:
+            click.echo(str(e), err=True)
+            sys.exit(1)
         except Exception as e:
             click.echo(f"Configuration validation failed: {e}", err=True)
             sys.exit(1)

@@ -1,3 +1,4 @@
+# flake8: noqa E501
 """
 Unit tests for the config module.
 """
@@ -8,7 +9,7 @@ from unittest.mock import patch
 
 import yaml
 
-from core.config import ConfigManager, find_config_file, load_and_validate_config  # noqa: E501
+from core.config_manager.config import ConfigManager, find_config_file, load_and_validate_config  # noqa: E501
 
 
 class TestConfigManager(unittest.TestCase):
@@ -206,7 +207,7 @@ class TestConfigManager(unittest.TestCase):
             result = find_config_file(None)
             self.assertEqual(result, "/current/dir/configs/config.yaml")
 
-    @patch("core.config.ConfigManager")
+    @patch("core.config_manager.config.ConfigManager")
     def test_load_and_validate_config(self, mock_config_manager):
         """Test loading and validating config."""
         # Mock the manager and its methods
@@ -214,7 +215,7 @@ class TestConfigManager(unittest.TestCase):
         manager_instance.get_runner_config.return_value = {"valid": "config"}
 
         # Mock find_config_file to return our test path
-        with patch("core.config.find_config_file", return_value="/path/to/config.yaml"):
+        with patch("core.config_manager.config.find_config_file", return_value="/path/to/config.yaml"):
             result = load_and_validate_config("/path/to/config.yaml")
 
         # Verify result
