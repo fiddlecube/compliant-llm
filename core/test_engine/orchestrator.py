@@ -33,7 +33,7 @@ class AttackOrchestrator:
         self.evaluator = evaluator
         self.config = config
     
-    async def collect_attack_prompts(self) -> List[Dict[str, Any]]:
+    async def collect_attack_prompts(self, system_prompt: str) -> List[Dict[str, Any]]:
         """
         Collect all attack prompts from registered strategies
         
@@ -43,7 +43,7 @@ class AttackOrchestrator:
         all_prompts = []
         for strategy in self.strategies:
             # Get prompts from each strategy
-            prompts = await strategy.get_attack_prompts(self.config)
+            prompts = await strategy.get_attack_prompts(self.config, system_prompt)
             
             # Check if this is an enhanced strategy that has enhancement metadata
             has_enhancement_info = hasattr(strategy, 'get_enhancement_info')
@@ -55,11 +55,7 @@ class AttackOrchestrator:
                     "strategy": strategy.name
                 }
                 
-                # Add enhancement info if available
-                if has_enhancement_info:
-                    enhancement_info = strategy.get_enhancement_info(prompt)
-                    if enhancement_info and enhancement_info.get("enhanced", False):
-                        prompt_data["enhancement"] = enhancement_info
+                # TODO: Add enhancement info if available
                         
                 all_prompts.append(prompt_data)
                 
@@ -108,3 +104,14 @@ class AttackOrchestrator:
             result["enhancement"] = enhancement_info
         
         return result
+
+    async def orchestrate_attack(self, system_prompt: str, strategies: List[BaseAttackStrategy]) -> List[Dict[str, Any]]:
+        """Run the orchestrator"""
+        attack_prompts = await self.collect_attack_prompts(system_prompt)
+        results = []
+        for strategy in strategies:
+            strategy_results = await strategy.a_run(system_prompt, self.provider, self.config)
+            results.extend(strategy_results)
+        print("====strategy_results====", len(results))
+        return results
+        
