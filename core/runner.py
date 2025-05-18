@@ -11,14 +11,15 @@ from core.test_engine.orchestrator import AttackOrchestrator
 # Attack Strategies
 from core.strategies.attack_strategies.strategy import (
     JailbreakStrategy, 
-    PromptInjectionStrategy,
+    # PromptInjectionStrategy,
     ContextManipulationStrategy,
     InformationExtractionStrategy,
     StressTesterStrategy,
     BoundaryTestingStrategy,
     SystemPromptExtractionStrategy,
 )
-from core.strategies.attack_strategies.owasp_strategy import OWASPPromptInjectionStrategy
+from core.strategies.attack_strategies.prompt_injection.base import PromptInjectionStrategy
+from core.strategies.attack_strategies.owasp_strategy import OWASPPromptSecurityStrategy
 from core.providers.litellm_provider import LiteLLMProvider
 
 ## Evaluators
@@ -235,14 +236,14 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     # Check for the new 'strategies' field (list of strategy names)
     if 'strategies' in config and isinstance(config['strategies'], list):
         strategy_map = {
-            'jailbreak': JailbreakStrategy,
+            # 'jailbreak': JailbreakStrategy,
             'prompt_injection': PromptInjectionStrategy,
-            'context_manipulation': ContextManipulationStrategy,
-            'information_extraction': InformationExtractionStrategy,
-            'stress_tester': StressTesterStrategy,
-            'boundary_testing': BoundaryTestingStrategy,
-            'system_prompt_extraction': SystemPromptExtractionStrategy,
-            'owasp': OWASPPromptInjectionStrategy
+            # 'context_manipulation': ContextManipulationStrategy,
+            # 'information_extraction': InformationExtractionStrategy,
+            # 'stress_tester': StressTesterStrategy,
+            # 'boundary_testing': BoundaryTestingStrategy,
+            # 'system_prompt_extraction': SystemPromptExtractionStrategy,
+            # 'owasp': OWASPPromptSecurityStrategy
         }
         
         for strategy_name in config['strategies']:
@@ -253,7 +254,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
 
     # Default to a set of strategies if none specified
     if not strategies:
-        strategies = [JailbreakStrategy(), PromptInjectionStrategy(), ContextManipulationStrategy(), InformationExtractionStrategy()]
+        strategies = [PromptInjectionStrategy()]
     
     
     
@@ -273,8 +274,13 @@ def execute_prompt_tests_with_orchestrator(config_dict):
         }
     )
     
+    # try running an attack with orchestrator
+    orchestrator_attack_results = asyncio.run(orchestrator.orchestrate_attack(system_prompt, strategies))
+    # print("====orchestrator_attack_results====", orchestrator_attack_results)
+    
+    
     # Collect attack prompts
-    attack_prompts = asyncio.run(orchestrator.collect_attack_prompts())
+    attack_prompts = asyncio.run(orchestrator.collect_attack_prompts(system_prompt))
     
     # Execute attacks
     results = []

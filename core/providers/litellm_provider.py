@@ -3,9 +3,13 @@ LiteLLM provider implementation.
 
 This module implements a provider that uses LiteLLM to interact with various LLM APIs.
 """
-from typing import Dict, Any
+from typing import Dict, Any, List
+import logging
 import re
 from .base import LLMProvider
+
+
+logger = logging.getLogger(__name__)
 
 
 def clean_json_response(response: str) -> str:
@@ -52,69 +56,78 @@ def clean_json_response(response: str) -> str:
 
 class LiteLLMProvider(LLMProvider):
     """Provider that uses LiteLLM to interact with LLM APIs"""
-    
-    async def chat(self, messages: List[Dict[str, str]], config: Dict[str, Any]) -> Dict[str, Any]:
+    def __init__(self):
+        self.history = []
+
+    async def chat(self, messages: List[Dict[str, str]], config: Dict[str, Any]) -> Dict[str, Any]:  # noqa: E501
         try:
             # Import litellm here to avoid dependency issues
             from litellm import completion
-            
+            chat_history = self.history + messages
             # Extract provider-specific configuration
-            model = config.get("model", "gpt-3.5-turbo")
-            temperature = config.get("temperature", 0.7)
-            timeout = config.get("timeout", 30)
-            api_key = config.get("api_key")
-            
+            provider_config = config.get("provider_config", {})
+            model = provider_config.get("model", "gpt-4o")
+            temperature = provider_config.get("temperature", 0.7)
+            timeout = provider_config.get("timeout", 30)
+            api_key = provider_config.get("api_key")
+
             # Execute the prompt
-            response = await completion(
+            response = completion(
                 model=model,
-                messages=messages,
+                messages=chat_history,
                 temperature=temperature,
                 timeout=timeout,
                 api_key=api_key
             )
             
+            # Properly extract the message and add to history in the correct format
+            if response and hasattr(response, 'choices') and response.choices:
+                message_to_add = {
+                    "role": "assistant",
+                    "content": response.choices[0].message.content
+                }
+                self.history.append(message_to_add)
+
             return {
                 "success": True,
-                "response": response,
+                "response": response.choices[0].message.content,
                 "provider": "litellm",
                 "model": model
             }
-            
+
         except Exception as e:
             # Handle errors
+            print("====error====", e)
             return {
                 "success": False,
                 "error": str(e),
                 "provider": "litellm",
-                "model": config.get("model", "gpt-3.5-turbo")
+                "model": provider_config.get("model", "openai/gpt-4o")
             }
-    
-    async def execute_prompt(self, 
-                      system_prompt: str, 
-                      user_prompt: str, 
-                      config: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def execute_prompt(self, system_prompt: str, user_prompt: str, config: Dict[str, Any]) -> Dict[str, Any]:  # noqa: E501
         """
         Execute a prompt using LiteLLM
-        
+
         Args:
             system_prompt: The system prompt to use
             user_prompt: The user prompt to test
             config: Configuration with provider-specific settings
-            
+
         Returns:
             Dictionary containing the response and metadata
         """
         try:
             # Import litellm here to avoid dependency issues
             from litellm import completion
-            
+
             # Extract provider-specific configuration
             # TODO: @vini - simplify this
             model = config.get("model", "gpt-3.5-turbo")
             temperature = config.get("temperature", 0.7)
             timeout = config.get("timeout", 30)
             api_key = config.get("api_key")
-            
+
             # Execute the prompt
             response = await completion(
                 model=model,
@@ -126,14 +139,14 @@ class LiteLLMProvider(LLMProvider):
                 timeout=timeout,
                 api_key=api_key
             )
-            
+
             return {
                 "success": True,
                 "response": response,
                 "provider": "litellm",
                 "model": model
             }
-            
+
         except Exception as e:
             # Handle errors
             return {

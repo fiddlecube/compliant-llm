@@ -6,13 +6,13 @@ This module defines the base class for all attack strategies.
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 from core.evaluators.base import BaseEvaluator
-
+from core.providers.base import LLMProvider
 
 class BaseAttackStrategy(ABC):
     """Base class for all attack strategies"""
     
     @abstractmethod
-    async def get_attack_prompts(self, config: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
         """
         Generate attack prompts based on configuration
         
@@ -36,7 +36,7 @@ class BaseAttackStrategy(ABC):
         return asyncio.run(self.a_run(system_prompt, provider, config))
     
     @abstractmethod
-    async def a_run(self, system_prompt: str, provider, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+    async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """
         Run the strategy asynchronously against a system prompt.
         
@@ -100,7 +100,7 @@ class BaseAttackStrategy(ABC):
         """
         # Use the base evaluator as fallback when no specialized evaluator is implemented
         class DefaultEvaluator(BaseEvaluator):
-            async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any]) -> Dict[str, Any]:
+            async def evaluate(self, system_prompt: str, user_prompt: str, llm_response:any) -> Dict[str, Any]:
                 return {
                     'passed': False,  # Default to failed/secure
                     'score': 0.0,
