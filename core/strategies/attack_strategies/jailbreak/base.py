@@ -11,6 +11,7 @@ import os
 import yaml
 from ...base import BaseAttackStrategy
 from core.providers.base import LLMProvider
+from core.evaluators.evals.attack_evaluator import JailbreakEvaluator
 
 class JailbreakStrategy(BaseAttackStrategy):
     """
@@ -117,7 +118,7 @@ class JailbreakStrategy(BaseAttackStrategy):
                 {"role": "system", "content": attack_data['system_prompt']},
                 {"role": "user", "content": attack_prompt}
             ]
-            print("====messages====", messages)
+            # print("====messages====", messages)
             try:
                 # Execute against provider
                 response = await provider.chat(
@@ -157,4 +158,6 @@ class JailbreakStrategy(BaseAttackStrategy):
     
     async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate if the jailbreak was successful"""
-        return {}
+        evaluator = JailbreakEvaluator()
+        evaluation = await evaluator.evaluate(system_prompt, user_prompt, response)
+        return evaluation

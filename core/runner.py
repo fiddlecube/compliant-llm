@@ -200,21 +200,19 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     Returns:
         Dictionary containing test results
     """
+    
+    start_time = datetime.now()
     # Use the provided configuration directly
     config = config_dict
     
-    # Extract or set default values
-    provider_name = config.get('provider_name') or config.get('provider', {}).get('name', 'openai/gpt-4o')
-    api_key = config.get('provider', {}).get('api_key', '')
+    # Extract provider configuration with sensible defaults
+    model_name = config.get('provider_name') or config.get('provider', {}).get('name', 'openai/gpt-4o')
+    # Get API key with fallback to environment variable
+    api_key = config.get('provider', {}).get('api_key') or os.getenv(model_name.split('/')[0].upper() + "_API_KEY", '')
     
-    # Fallback to environment variable for API key
-    if not api_key:
-        env_var = provider_name.split('/')[0].upper() + "_API_KEY"
-        api_key = os.getenv(env_var, '')
-    
-    # Create provider configuration
+    # Create provider configuration in one step
     provider_config = {
-        'model': provider_name,
+        'provider_name': model_name,
         'api_key': api_key,
         'temperature': config.get('temperature', 0.7),
         'timeout': config.get('timeout', 30)
@@ -223,22 +221,20 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     # Create provider
     provider = LiteLLMProvider()
     
-    # Get system prompt from config
-    system_prompt = None
-    if 'prompt' in config:
-        if isinstance(config['prompt'], dict):
-            system_prompt = config['prompt'].get('content')
-        else:
-            system_prompt = config['prompt']
-    
-    if not system_prompt:
-        system_prompt = 'You are a helpful AI assistant'
+
+    # Extract system prompt, handling both dict and string formats with default
+    prompt_value = config.get('prompt', {})
+    system_prompt = prompt_value.get('content') if isinstance(prompt_value, dict) else prompt_value
+    system_prompt = system_prompt or 'You are a helpful AI assistant'
     
     # Determine strategies
     strategies = []
     
-    # Check for the new 'strategies' field (list of strategy names)
-    if 'strategies' in config and isinstance(config['strategies'], list):
+    # Check for the strategies field (supports both plural and singular forms)
+    strategies_list = config.get('strategies', config.get('strategy', []))
+
+
+    if strategies_list:
         strategy_map = {
             # 'jailbreak': JailbreakStrategy,
             'prompt_injection': PromptInjectionStrategy,
@@ -250,7 +246,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
             # 'owasp': OWASPPromptSecurityStrategy
         }
         
-        for strategy_name in config['strategies']:
+        for strategy_name in strategies_list:
             strategy_class = strategy_map.get(strategy_name.lower())
             if strategy_class:
                 strategies.append(strategy_class())
@@ -260,18 +256,11 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     if not strategies:
         strategies = [JailbreakStrategy(), PromptInjectionStrategy()]
     
-    
-    
-    # Select evaluator based on strategies
-    evaluator = select_evaluator(strategies)
 
-    print("Evaluator::", evaluator)
-    
     # Create orchestrator
     orchestrator = AttackOrchestrator(
         strategies=strategies,
         provider=provider,
-        evaluator=evaluator,
         config={
             **config,
             'provider_config': provider_config
@@ -282,39 +271,20 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     
     # try running an attack with orchestrator
     orchestrator_attack_results = asyncio.run(orchestrator.orchestrate_attack(system_prompt, strategies))
-    # print("====orchestrator_attack_results====", orchestrator_attack_results)
     
-    
-    # Collect attack prompts
-    attack_prompts = asyncio.run(orchestrator.collect_attack_prompts(system_prompt))
-    
-    # Execute attacks
-    results = []
-    for attack_data in attack_prompts:
-        result = asyncio.run(orchestrator.execute_single_attack(
-            system_prompt=system_prompt,
-            attack_data=attack_data
-        ))
-        results.append(result)
-    
-    serializable_results = []
-    for result in results:
-        serializable_result = {}
-        for key, value in result.items():
-            serializable_result[key] = _serialize_value(value)
-        serializable_results.append(serializable_result)
-
-    
+    # calculate elapsed time
+    elapsed_time = datetime.now() - start_time
     report_data = {
         "metadata": {
             "timestamp": datetime.now().isoformat(),
-            "provider": provider_name,
+            "provider": model_name,
             "strategies": [s.name for s in strategies],
-            "test_count": len(serializable_results),
-            "success_count": sum(1 for r in serializable_results if r.get('evaluation', {}).get('passed', False)),
-            "failure_count": sum(1 for r in serializable_results if not r.get('evaluation', {}).get('passed', False))
+            "test_count": len(orchestrator_attack_results),
+            "success_count": sum(1 for r in orchestrator_attack_results if r.get('evaluation', {}).get('passed', False)),
+            "failure_count": sum(1 for r in orchestrator_attack_results if not r.get('evaluation', {}).get('passed', False)),
+            "elapsed_seconds": elapsed_time.total_seconds()
         },
-        "tests": serializable_results
+        "tests": orchestrator_attack_results
     }
     
     # Save report (optional)
@@ -359,57 +329,3 @@ def execute_prompt_tests(config_path=None, config_dict=None):
     
     # No configuration provided
     raise ValueError("No configuration provided. Please provide either config_path or config_dict.")
-
-# CLI entry point (you can add this to a separate CLI script or keep it here)
-def main():
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="Prompt Security Test Runner")
-    parser.add_argument("--config", help="Path to configuration file")
-    parser.add_argument("--provider", help="LLM Provider name")
-    parser.add_argument("--api-key", help="API Key for the provider")
-    parser.add_argument("--system-prompt", help="Custom system prompt")
-    parser.add_argument("--strategy", default="jailbreak", 
-                        choices=['jailbreak', 'prompt_injection', 'context_manipulation', 'information_extraction'],
-                        help="Test strategy to use")
-    
-    args = parser.parse_args()
-    
-    # Create the CLI adapter for configuration handling
-    cli_adapter = CLIConfigAdapter()
-    
-    try:
-        if args.config:
-            # Load from a specified config file
-            cli_adapter.load_from_cli(
-                config=args.config,
-                strategy=args.strategy,
-                provider=args.provider,
-                system_prompt=args.system_prompt
-            )
-        else:
-            # Load from CLI arguments only
-            cli_adapter.load_from_cli(
-                prompt=args.system_prompt,
-                strategy=args.strategy,
-                provider=args.provider,
-                api_key=args.api_key
-            )
-        
-        # Get the runner config
-        runner_config = cli_adapter.get_runner_config()
-        
-        # Execute the tests
-        results = execute_prompt_tests_with_orchestrator(config_dict=runner_config)
-    except Exception as e:
-        print(f"Error: {e}")
-        sys.exit(1)
-    
-    # Print summary
-    print("\nTest Results Summary:")
-    print(f"Total Tests: {results['metadata']['test_count']}")
-    print(f"Successful Tests: {results['metadata']['success_count']}")
-    print(f"Failed Tests: {results['metadata']['failure_count']}")
-
-if __name__ == "__main__":
-    main()

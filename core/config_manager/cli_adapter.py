@@ -20,12 +20,12 @@ class CLIConfigAdapter:
     dictionary that can be used by the ConfigManager.
     """
     
-    def __init__(self):
+    def __init__(self, config_manager: Optional[ConfigManager] = None):
         """Initialize the adapter."""
-        self.config_manager = None
+        self.config_manager = config_manager
     
     def load_from_cli(self, 
-                    config: Optional[str] = None,
+                    config_path: Optional[str] = None,
                     prompt: Optional[str] = None,
                     strategy: Optional[str] = None,
                     provider: Optional[str] = None,
@@ -33,7 +33,7 @@ class CLIConfigAdapter:
                     save: Optional[str] = None,
                     parallel: Optional[bool] = None,
                     timeout: Optional[int] = None,
-                    **kwargs) -> Dict[str, Any]:
+                    **kwargs):
         """
         Load configuration from CLI arguments.
         
@@ -56,13 +56,13 @@ class CLIConfigAdapter:
         config_dict = {}
         
         # Load from config file if specified
-        if config:
-            config_path = find_config_file(config)
-            if not config_path:
-                raise FileNotFoundError(f"Config file not found: {config}")
+        if config_path:
+            config = find_config_file(config_path)
+            if not config:
+                raise FileNotFoundError(f"Config file not found: {config_path}")
             
             # Load the configuration
-            self.config_manager = ConfigManager(config_path)
+            self.config_manager = ConfigManager(config)
             
             # Store original config for CLI overrides
             config_dict = self.config_manager.config.copy() if self.config_manager.config else {}
@@ -70,6 +70,7 @@ class CLIConfigAdapter:
             # Create an empty config manager
             self.config_manager = ConfigManager()
             config_dict = {}
+        
         
         # Apply CLI overrides to the config dictionary
         if prompt:
@@ -80,9 +81,11 @@ class CLIConfigAdapter:
             else:
                 config_dict['prompt'] = prompt
         
+        strategy_list = []
         if strategy:
             # Parse comma-separated strategy string
             strategy_list = [s.strip() for s in strategy.split(',') if s.strip()]
+            
             if strategy_list:
                 config_dict['strategies'] = strategy_list
         
@@ -114,8 +117,6 @@ class CLIConfigAdapter:
         
         # Update the config manager with our modified config
         self.config_manager.config = config_dict
-        
-        return config_dict
     
     def get_runner_config(self) -> Dict[str, Any]:
         """

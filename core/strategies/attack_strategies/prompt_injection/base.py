@@ -14,6 +14,7 @@ import re
 import yaml
 from ...base import BaseAttackStrategy
 from core.providers.base import LLMProvider
+from core.evaluators.evals.attack_evaluator import PromptInjectionEvaluator
 
 class PromptInjectionStrategy(BaseAttackStrategy):
     """
@@ -95,7 +96,7 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                 {"role": "system", "content": attack_data['system_prompt']},
                 {"role": "user", "content": attack_prompt}
             ]
-            print("====messages====", messages)
+            # print("====messages====", messages)
             try:
                 # Execute against provider
                 response = await provider.chat(
@@ -107,8 +108,7 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                 # print("====litellm_response====", response)
                 
                 # Evaluate the response
-                # evaluation = await self.evaluate(system_prompt, attack_prompt, response)
-                evaluation = {}
+                evaluation = await self.evaluate(system_prompt, attack_prompt, response)
                 # Compile result
                 result = {
                     'strategy': self.name,
@@ -135,7 +135,9 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         
     async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate if the prompt injection was successful"""
-        return {}
+        evaluator = PromptInjectionEvaluator()
+        evaluation = await evaluator.evaluate(system_prompt, user_prompt, response)
+        return evaluation
        
     
    

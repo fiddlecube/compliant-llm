@@ -17,8 +17,8 @@ class AttackOrchestrator:
     def __init__(self, 
                  strategies: List[BaseAttackStrategy], 
                  provider: LLMProvider, 
-                 evaluator: BaseEvaluator, 
-                 config: Dict[str, Any]):
+                 config: Dict[str, Any],
+                 evaluator: BaseEvaluator | None = None):
         """
         Initialize the orchestrator
         
@@ -75,8 +75,8 @@ class AttackOrchestrator:
         user_prompt = attack_data["prompt"]["attack_instruction"]
         strategy = attack_data["prompt"]["category"]
 
-        print("====system_prompt====", system_prompt)
-        print("====user_prompt====", user_prompt)
+        # print("====system_prompt====", system_prompt)
+        # print("====user_prompt====", user_prompt)
         
         # Execute against provider
         response = await self.provider.execute_prompt(
@@ -85,7 +85,7 @@ class AttackOrchestrator:
             self.config
         )
 
-        print("====response====", response)
+        # print("====response====", response)
         
         # Evaluate the response
         evaluation = await self.evaluator.evaluate(
@@ -112,10 +112,8 @@ class AttackOrchestrator:
 
     async def orchestrate_attack(self, system_prompt: str, strategies: List[BaseAttackStrategy]) -> List[Dict[str, Any]]:
         """Run the orchestrator"""
-        attack_prompts = await self.collect_attack_prompts(system_prompt)
         results = []
         for strategy in strategies:
             strategy_results = await strategy.a_run(system_prompt, self.provider, self.config)
             results.extend(strategy_results)
         return results
-        
