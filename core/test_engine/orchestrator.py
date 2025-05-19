@@ -74,6 +74,9 @@ class AttackOrchestrator:
         """
         user_prompt = attack_data["prompt"]["attack_instruction"]
         strategy = attack_data["prompt"]["category"]
+
+        print("====system_prompt====", system_prompt)
+        print("====user_prompt====", user_prompt)
         
         # Execute against provider
         response = await self.provider.execute_prompt(
@@ -81,6 +84,8 @@ class AttackOrchestrator:
             user_prompt, 
             self.config
         )
+
+        print("====response====", response)
         
         # Evaluate the response
         evaluation = await self.evaluator.evaluate(
@@ -112,6 +117,5 @@ class AttackOrchestrator:
         for strategy in strategies:
             strategy_results = await strategy.a_run(system_prompt, self.provider, self.config)
             results.extend(strategy_results)
-        print("====strategy_results====", len(results))
         return results
         

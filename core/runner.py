@@ -258,7 +258,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
 
     # Default to a set of strategies if none specified
     if not strategies:
-        strategies = [PromptInjectionStrategy(), JailbreakStrategy()]
+        strategies = [JailbreakStrategy(), PromptInjectionStrategy()]
     
     
     
@@ -287,8 +287,6 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     
     # Collect attack prompts
     attack_prompts = asyncio.run(orchestrator.collect_attack_prompts(system_prompt))
-
-    print("Attack Prompts::", attack_prompts)
     
     # Execute attacks
     results = []
@@ -306,7 +304,6 @@ def execute_prompt_tests_with_orchestrator(config_dict):
             serializable_result[key] = _serialize_value(value)
         serializable_results.append(serializable_result)
 
-    print("Serializable Results::", serializable_results)
     
     report_data = {
         "metadata": {

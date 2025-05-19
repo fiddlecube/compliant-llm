@@ -205,7 +205,7 @@ Visualize your prompt security reports with an interactive dashboard:
 
 ```bash
 # Launch dashboard
-python -m cli.commands dashboard
+python -m cli.main dashboard
 
 
 ### Generate Command

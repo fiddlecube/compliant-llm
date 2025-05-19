@@ -26,89 +26,117 @@ class JailbreakStrategy(BaseAttackStrategy):
     def _load_data(self):
         """Load jailbreak data from YAML file"""
         data_file_path = os.path.join(os.path.dirname(__file__), 'data.yaml')
+        print(f"Loading data from: {data_file_path}")
         try:
             with open(data_file_path, 'r') as file:
-                data = yaml.safe_load(file)
-                self._base_queries = data.get('base_queries', [])
-                self._jailbreak_templates = data.get('jailbreak_templates', [])
-                self._compliance_indicators = data.get('evaluation_indicators', {}).get('compliance', [])
-                self._refusal_indicators = data.get('evaluation_indicators', {}).get('refusal', [])
+                content = file.read()
+                self._data = yaml.safe_load(content)
         except Exception as e:
             print(f"Error loading data.yaml: {e}")
-            self._base_queries = []
-            self._jailbreak_templates = []
-            self._compliance_indicators = []
-            self._refusal_indicators = []
+            self._data = []
     
     @property
     def name(self) -> str:
         """Return the name of the strategy"""
-        return "JailbreakStrategy"
+        return "jailbreak"
     
     async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
         """Generate jailbreak attack prompts"""
         # Get configuration options
         max_prompts = config.get("max_prompts_per_strategy", 10)
-        use_all_templates = config.get("use_all_jailbreak_templates", False)
+        use_all_techniques = config.get("use_all_jailbreak_techniques", False)
         
         attack_data = []
         
-        # Generate attack prompts by combining queries with templates
-        for query in self._base_queries[:max_prompts]:
-            if use_all_templates:
-                # Use all templates with this query
-                for template in self._jailbreak_templates:
-                    jailbreak_prompt = template.format(
-                        query=query,
-                        system_prompt=system_prompt
-                    )
-                    
+        # Get all entries from data.yaml
+        entries = self._load_entries()
+        
+        # Sample up to max_prompts entries
+        sampled_entries = random.sample(entries, min(max_prompts, len(entries)))
+        
+        for entry in sampled_entries:
+            original_prompt = entry['original_prompt']
+            mutations = entry['mutations']
+            
+            if use_all_techniques:
+                # Use all techniques for this prompt
+                for mutation in mutations:
+                    technique = mutation['technique']
+                    obfuscated_prompt = mutation['obfuscated_prompt'].replace('__PROMPT__', system_prompt)
                     attack_data.append({
-                        'prompt': jailbreak_prompt,
+                        'attack_instruction': obfuscated_prompt.format(query=original_prompt),
                         'category': 'jailbreak',
-                        'attack_instruction': query,
-                        'system_prompt': system_prompt
+                        'system_prompt': system_prompt,
+                        'technique': technique
                     })
             else:
-                # Use a random template for this query
-                template = random.choice(self._jailbreak_templates)
-                jailbreak_prompt = template.format(
-                    query=query,
-                    system_prompt=system_prompt
-                )
-                
+                # Use a random technique for this prompt
+                mutation = random.choice(mutations)
+                technique = mutation['technique']
+                obfuscated_prompt = mutation['obfuscated_prompt'].replace('__PROMPT__', system_prompt)
                 attack_data.append({
-                    'prompt': jailbreak_prompt,
+                    'attack_instruction': obfuscated_prompt.format(query=original_prompt),
                     'category': 'jailbreak',
-                    'attack_instruction': query, # the instruction that was used to generate the attack prompt
-                    'system_prompt': system_prompt
+                    'system_prompt': system_prompt,
+                    'technique': technique
                 })
-                
+        
         return attack_data
+    
+    def _load_entries(self) -> List[Dict[str, Any]]:
+        """Load all entries from data.yaml"""
+        entries = []
+        if not self._data:
+            print("No data loaded")
+            return []
+        
+        if isinstance(self._data, dict):
+            for entry in self._data.get('entries', []):
+                if isinstance(entry, dict) and 'original_prompt' in entry and 'mutations' in entry:
+                    entries.append(entry)
+        elif isinstance(self._data, list):
+            for entry in self._data:
+                if isinstance(entry, dict) and 'original_prompt' in entry and 'mutations' in entry:
+                    entries.append(entry)
+        else:
+            print(f"Unexpected data type: {type(self._data)}")
+        
+        return entries
     
     async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """Run the jailbreak strategy asynchronously"""
         results = []
-        attack_prompts = await self.get_attack_prompts(config or {}, system_prompt)
+        attack_prompts = await self.get_attack_prompts(config, system_prompt)
+        
+        # print("====collected attack prompts====", attack_prompts)
         
         for attack_data in attack_prompts:
-            user_prompt = attack_data['prompt']
+            attack_prompt = attack_data['attack_instruction']
+            # print("----attack_prompt----", attack_prompt)
+            messages = [
+                {"role": "system", "content": attack_data['system_prompt']},
+                {"role": "user", "content": attack_prompt}
+            ]
+            print("====messages====", messages)
             try:
                 # Execute against provider
-                response = await provider.execute_prompt(
-                    system_prompt, 
-                    user_prompt,
-                    config or {}
+                response = await provider.chat(
+                    messages,
+                    config
                 )
                 
-                # Evaluate the response
-                evaluation = await self.evaluate(system_prompt, user_prompt, response)
+                # clean up response here, remove unwanted elements
+                # print("====litellm_response====", response)
                 
+                # Evaluate the response
+                # evaluation = await self.evaluate(system_prompt, attack_prompt, response)
+                evaluation = {}
                 # Compile result
                 result = {
                     'strategy': self.name,
-                    'user_prompt': user_prompt,
-                    'attack_instruction': attack_data.get('attack_instruction', ''),
+                    'system_prompt': system_prompt,
+                    'attack_prompt': attack_prompt,
+                    'instruction': attack_data.get('instruction', ''),
                     'category': attack_data.get('category', ''),
                     'response': response,
                     'evaluation': evaluation,
@@ -119,8 +147,8 @@ class JailbreakStrategy(BaseAttackStrategy):
                 # Handle errors
                 results.append({
                     'strategy': self.name,
-                    'user_prompt': user_prompt,
-                    'attack_instruction': attack_data.get('attack_instruction', ''),
+                    'system_prompt': system_prompt,
+                    'attack_prompt': attack_prompt,
                     'error': str(e),
                     'success': False
                 })
