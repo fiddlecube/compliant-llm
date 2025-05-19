@@ -26,7 +26,7 @@ class PromptInjectionStrategy(BaseAttackStrategy):
     @property
     def name(self) -> str:
         """Return the name of the strategy"""
-        return "PromptInjectionStrategy"
+        return "prompt_injection"
     
     async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
         """Generate prompt injection attack prompts"""
@@ -75,7 +75,7 @@ class PromptInjectionStrategy(BaseAttackStrategy):
             
             attack_data.append({
                 'system_prompt': system_prompt,
-                'category': 'prompt_injection',
+                'category': self.name,
                 'attack_instruction': instruction
             })
                 
@@ -104,7 +104,7 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                 )
                 
                 # clean up response here, remove unwanted elements
-                print("====litellm_response====", response)
+                # print("====litellm_response====", response)
                 
                 # Evaluate the response
                 # evaluation = await self.evaluate(system_prompt, attack_prompt, response)

@@ -10,7 +10,7 @@ from core.test_engine.orchestrator import AttackOrchestrator
 
 # Attack Strategies
 from core.strategies.attack_strategies.strategy import (
-    JailbreakStrategy, 
+    # JailbreakStrategy, 
     # PromptInjectionStrategy,
     ContextManipulationStrategy,
     InformationExtractionStrategy,
@@ -18,7 +18,11 @@ from core.strategies.attack_strategies.strategy import (
     BoundaryTestingStrategy,
     SystemPromptExtractionStrategy,
 )
+# Porting out strategies
 from core.strategies.attack_strategies.prompt_injection.base import PromptInjectionStrategy
+from core.strategies.attack_strategies.jailbreak.base import JailbreakStrategy
+
+
 from core.strategies.attack_strategies.owasp_strategy import OWASPPromptSecurityStrategy
 from core.providers.litellm_provider import LiteLLMProvider
 
@@ -254,7 +258,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
 
     # Default to a set of strategies if none specified
     if not strategies:
-        strategies = [PromptInjectionStrategy()]
+        strategies = [JailbreakStrategy(), PromptInjectionStrategy()]
     
     
     
@@ -274,7 +278,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
         }
     )
 
-    print("System Prompt::", system_prompt)
+    
     
     # try running an attack with orchestrator
     orchestrator_attack_results = asyncio.run(orchestrator.orchestrate_attack(system_prompt, strategies))
@@ -294,14 +298,12 @@ def execute_prompt_tests_with_orchestrator(config_dict):
         results.append(result)
     
     serializable_results = []
-    print("Results::", results)
     for result in results:
         serializable_result = {}
         for key, value in result.items():
             serializable_result[key] = _serialize_value(value)
         serializable_results.append(serializable_result)
 
-    print("Serializable Results::", serializable_results)
     
     report_data = {
         "metadata": {

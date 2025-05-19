@@ -119,7 +119,7 @@ class LiteLLMProvider(LLMProvider):
         """
         try:
             # Import litellm here to avoid dependency issues
-            from litellm import completion
+            from litellm import acompletion
 
             # Extract provider-specific configuration
             # TODO: @vini - simplify this
@@ -129,7 +129,7 @@ class LiteLLMProvider(LLMProvider):
             api_key = config.get("api_key")
 
             # Execute the prompt
-            response = await completion(
+            response = await acompletion(
                 model=model,
                 messages=[
                     {"role": "system", "content": system_prompt},
