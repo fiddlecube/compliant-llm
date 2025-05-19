@@ -66,19 +66,19 @@ echo "ANTHROPIC_API_KEY=your-api-key-here" >> .env
 1. Run a basic red-teaming test:
 
 ```bash
-python -m cli.main test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
+python -m cli.commands test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
 ```
 
 2. Or use a configuration file:
 
 ```bash
-python -m cli.main test --config configs/config.yaml
+python -m cli.commands test --config configs/config.yaml
 ```
 
 3. View the test report:
 
 ```bash
-python -m cli.main report --summary
+python -m cli.commands report --summary
 ```
 
 All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
@@ -126,7 +126,7 @@ You can also create a `.env` file in your project root with these variables.
 The test command runs prompt tests against specified strategies.
 
 ```bash
-python -m cli.main test [OPTIONS]
+python -m cli.commands test [OPTIONS]
 ```
 
 #### Options
@@ -157,16 +157,16 @@ python -m cli.main test [OPTIONS]
 
 ```bash
 # Basic test with default settings
-python -m cli.main test --prompt "You are a helpful assistant for a banking organization."
+python -m cli.commands test --prompt "You are a helpful assistant for a banking organization."
 
 # Test with multiple strategies
-python -m cli.main test --prompt "You are a helpful assistant." --strategy prompt_injection,jailbreak,adversarial
+python -m cli.commands test --prompt "You are a helpful assistant." --strategy prompt_injection,jailbreak,adversarial
 
 # Test with a specific provider and custom output path
-python -m cli.main test --config configs/config.yaml --provider openai/gpt-3.5-turbo --output reports/custom_report.json
+python -m cli.commands test --config configs/config.yaml --provider openai/gpt-3.5-turbo --output reports/custom_report.json
 
 # Run tests in parallel with increased verbosity
-python -m cli.main test --config configs/config.yaml --parallel --verbose
+python -m cli.commands test --config configs/config.yaml --parallel --verbose
 ```
 
 ### Report Command
@@ -174,7 +174,7 @@ python -m cli.main test --config configs/config.yaml --parallel --verbose
 The report command displays and analyzes test results.
 
 ```bash
-python -m cli.main report [REPORT_FILE] [OPTIONS]
+python -m cli.commands report [REPORT_FILE] [OPTIONS]
 ```
 
 By default, report files are saved to and read from the `reports/` directory.
@@ -190,13 +190,13 @@ By default, report files are saved to and read from the `reports/` directory.
 
 ```bash
 # View default report in text format
-python -m cli.main report
+python -m cli.commands report
 
 # View a specific report with summary statistics
-python -m cli.main report reports/custom_report.json --summary
+python -m cli.commands report reports/custom_report.json --summary
 
 # Export report in JSON format
-python -m cli.main report --format json > analysis.json
+python -m cli.commands report --format json > analysis.json
 ```
 
 ### Streamlit Dashboard
@@ -205,7 +205,7 @@ Visualize your prompt security reports with an interactive dashboard:
 
 ```bash
 # Launch dashboard
-python -m cli.main dashboard
+python -m cli.commands dashboard
 
 
 ### Generate Command
@@ -213,7 +213,7 @@ python -m cli.main dashboard
 The generate command creates templates for configurations or prompts.
 
 ```bash
-python -m cli.main generate [TYPE] [OPTIONS]
+python -m cli.commands generate [TYPE] [OPTIONS]
 ```
 
 #### Types
@@ -232,10 +232,10 @@ python -m cli.main generate [TYPE] [OPTIONS]
 
 ```bash
 # Generate a basic configuration template
-python -m cli.main generate config --output configs/my_config.yaml
+python -m cli.commands generate config --output configs/my_config.yaml
 
 # Generate a banking-related prompt example
-python -m cli.main generate prompt --template banking --output prompts/bank_prompt.txt
+python -m cli.commands generate prompt --template banking --output prompts/bank_prompt.txt
 ```
 
 ### Config Command
@@ -243,7 +243,7 @@ python -m cli.main generate prompt --template banking --output prompts/bank_prom
 The config command manages and validates configuration files.
 
 ```bash
-python -m cli.main config [OPTIONS]
+python -m cli.commands config [OPTIONS]
 ```
 
 #### Options
@@ -258,13 +258,13 @@ python -m cli.main config [OPTIONS]
 
 ```bash
 # List all available configuration files
-python -m cli.main config --list
+python -m cli.commands config --list
 
 # Show details for a specific configuration
-python -m cli.main config --show configs/enhanced_config.yaml
+python -m cli.commands config --show configs/enhanced_config.yaml
 
 # Validate a configuration file
-python -m cli.main config --validate configs/my_config.yaml
+python -m cli.commands config --validate configs/my_config.yaml
 ```
 
 ### Advanced Usage
