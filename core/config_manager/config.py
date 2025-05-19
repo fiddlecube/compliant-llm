@@ -22,8 +22,8 @@ class ConfigManager:
             config_path: Optional path to a config file to load
         """
         self.config_path = config_path
-        self.config = {}
-        self.processed_config = {}
+        self.config: Dict[str, Any] = {}
+        self.processed_config: Dict[str, Any] = {}
 
         # If config path provided, load it
         if config_path:
@@ -334,7 +334,7 @@ class ConfigManager:
         # Format for the runner
         runner_config = {
             'prompt': prompt,
-            'strategy': ','.join(strategies),
+            'strategies': strategies,
             'provider_name': provider,
         }
         

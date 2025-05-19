@@ -32,8 +32,8 @@ class TestCLIConfigAdapter(unittest.TestCase):
         mock_config_manager.return_value = mock_cm_instance
         
         # Call load_from_cli with overrides
-        result = self.adapter.load_from_cli(
-            config='config.yaml',
+        self.adapter.load_from_cli(
+            config_path='config.yaml',
             prompt='overridden prompt',
             provider='overridden-provider',
             parallel=True
@@ -46,9 +46,9 @@ class TestCLIConfigAdapter(unittest.TestCase):
         mock_config_manager.assert_called_once_with('/path/to/config.yaml')
         
         # Check that the config was updated correctly
-        self.assertEqual(result['prompt']['content'], 'overridden prompt')
-        self.assertEqual(result['provider']['name'], 'overridden-provider')
-        self.assertEqual(result['features']['parallel_testing'], True)
+        self.assertEqual(mock_cm_instance.config['prompt']['content'], 'overridden prompt')
+        self.assertEqual(mock_cm_instance.config['provider']['name'], 'overridden-provider')
+        self.assertTrue(mock_cm_instance.config['features']['parallel_testing'])
     
     @patch('core.config_manager.cli_adapter.ConfigManager')
     def test_load_from_cli_without_config(self, mock_config_manager):
@@ -59,7 +59,7 @@ class TestCLIConfigAdapter(unittest.TestCase):
         mock_config_manager.return_value = mock_cm_instance
         
         # Call load_from_cli without a config file
-        result = self.adapter.load_from_cli(
+        self.adapter.load_from_cli(
             prompt='cli prompt',
             strategy='jailbreak,prompt_injection',
             provider='openai/gpt-4',
@@ -70,10 +70,11 @@ class TestCLIConfigAdapter(unittest.TestCase):
         mock_config_manager.assert_called_once()
         
         # Check that the config was created correctly
-        self.assertEqual(result['prompt']['content'], 'cli prompt')
-        self.assertEqual(result['strategies'], ['jailbreak', 'prompt_injection'])
-        self.assertEqual(result['provider']['name'], 'openai/gpt-4')
-        self.assertEqual(result['provider']['timeout'], 60)
+        config = mock_cm_instance.config
+        self.assertEqual(config['prompt']['content'], 'cli prompt')
+        self.assertEqual(config['strategies'], ['jailbreak', 'prompt_injection'])
+        self.assertEqual(config['provider']['name'], 'openai/gpt-4')
+        self.assertEqual(config['provider']['timeout'], 60)
     
     @patch('core.config_manager.cli_adapter.find_config_file')
     def test_load_from_cli_config_not_found(self, mock_find_config):
@@ -83,7 +84,7 @@ class TestCLIConfigAdapter(unittest.TestCase):
         
         # Check that FileNotFoundError is raised
         with self.assertRaises(FileNotFoundError):
-            self.adapter.load_from_cli(config='nonexistent.yaml')
+            self.adapter.load_from_cli(config_path='nonexistent.yaml')
     
     @patch('core.config_manager.cli_adapter.ConfigManager')
     def test_get_runner_config(self, mock_config_manager):

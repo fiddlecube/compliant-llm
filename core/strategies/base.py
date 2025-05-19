@@ -8,6 +8,10 @@ from typing import List, Dict, Any
 from core.evaluators.base import BaseEvaluator
 from core.providers.base import LLMProvider
 
+
+import logging
+logger = logging.getLogger(__name__)
+
 class BaseAttackStrategy(ABC):
     """Base class for all attack strategies"""
     
@@ -36,7 +40,7 @@ class BaseAttackStrategy(ABC):
         return asyncio.run(self.a_run(system_prompt, provider, config))
     
     @abstractmethod
-    async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+    async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Run the strategy asynchronously against a system prompt.
         
@@ -49,14 +53,14 @@ class BaseAttackStrategy(ABC):
             List of result dictionaries containing prompts, responses, and evaluations
         """
         results = []
-        attack_prompts = await self.get_attack_prompts(config or {})
+        attack_prompts = await self.get_attack_prompts(config, system_prompt)
         
         for attack_data in attack_prompts:
             user_prompt = attack_data['prompt']
             try:
                 # Execute against provider
                 response = await provider.execute_prompt(
-                    system_prompt, 
+                    system_prompt,
                     user_prompt,
                     config or {}
                 )
@@ -100,13 +104,14 @@ class BaseAttackStrategy(ABC):
         """
         # Use the base evaluator as fallback when no specialized evaluator is implemented
         class DefaultEvaluator(BaseEvaluator):
-            async def evaluate(self, system_prompt: str, user_prompt: str, llm_response:any) -> Dict[str, Any]:
+            async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Any) -> Dict[str, Any]:    # noqa: E501
+                logger.info("DefaultEvaluator.evaluate method called")
                 return {
                     'passed': False,  # Default to failed/secure
                     'score': 0.0,
-                    'reason': 'Default evaluator (no evaluation logic implemented)'
+                    'reason': 'No evaluation logic implemented'
                 }
-        
+
         # Use the default evaluator
         evaluator = DefaultEvaluator()
         return await evaluator.evaluate(system_prompt, user_prompt, response)

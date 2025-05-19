@@ -14,6 +14,7 @@ import re
 import yaml
 from ...base import BaseAttackStrategy
 from core.providers.base import LLMProvider
+from core.evaluators.evals.attack_evaluator import PromptInjectionEvaluator
 
 class PromptInjectionStrategy(BaseAttackStrategy):
     """
@@ -23,6 +24,10 @@ class PromptInjectionStrategy(BaseAttackStrategy):
     attempting to make the LLM follow new instructions.
     """
     
+    # Class variables to cache loaded instruction entries and generated attack data
+    _cached_instruction_entries: Any = None
+    _cached_attack_data: Dict[str, Any] = {}
+    
     @property
     def name(self) -> str:
         """Return the name of the strategy"""
@@ -30,31 +35,42 @@ class PromptInjectionStrategy(BaseAttackStrategy):
     
     async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
         """Generate prompt injection attack prompts"""
-       
-        # 
-        
-        # Path to the data.yaml file (relative to this module)
-        data_file_path = os.path.join(os.path.dirname(__file__), 'data.yaml')
-        
-        # Load malicious instructions from YAML
-        try:
-            with open(data_file_path, 'r') as file:
-                data = yaml.safe_load(file)
-                instruction_entries = data
-                
-                # Filter out any entries marked as benign
-                instruction_entries = [entry for entry in instruction_entries 
-                                      if isinstance(entry, dict) and not entry.get('benign', False)]
 
-        except Exception as e:
-            # Fallback to default list if there's an error loading the file
-            print(f"Error loading data.yaml: {e}")
-            instruction_entries = []
+        # Use cached instruction entries if available
+        if PromptInjectionStrategy._cached_instruction_entries is not None:
+            instruction_entries = PromptInjectionStrategy._cached_instruction_entries
+        else:
+            # Path to the data.yaml file (relative to this module)
+            data_file_path = os.path.join(os.path.dirname(__file__), 'data.yaml')
+            
+            # Load malicious instructions from YAML
+            try:
+                with open(data_file_path, 'r') as file:
+                    data = yaml.safe_load(file)
+                    instruction_entries = data
+                    
+                    # Filter out any entries marked as benign
+                    instruction_entries = [entry for entry in instruction_entries 
+                                          if isinstance(entry, dict) and not entry.get('benign', False)]
+                    
+                    # Cache the filtered entries for future use
+                    PromptInjectionStrategy._cached_instruction_entries = instruction_entries
+
+            except Exception as e:
+                # Fallback to default list if there's an error loading the file
+                print(f"Error loading data.yaml: {e}")
+                instruction_entries = []
         
         # Sample prompts (or fewer if there aren't enough)
         sample_size = min(10, len(instruction_entries))
         sampled_entries = random.sample(instruction_entries, sample_size) if instruction_entries else []
         
+        # Check if we already have cached attack data for this system prompt
+        # Create a cache key based on the system prompt and sample size to ensure uniqueness
+        cache_key = f"{system_prompt}_{sample_size}"
+        if cache_key in PromptInjectionStrategy._cached_attack_data:
+            return PromptInjectionStrategy._cached_attack_data[cache_key]
+            
         # Generate attack data
         attack_data = []
         
@@ -78,24 +94,21 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                 'category': self.name,
                 'attack_instruction': instruction
             })
+        
+        # Cache the generated attack data
+        PromptInjectionStrategy._cached_attack_data[cache_key] = attack_data
                 
         return attack_data
     
-    async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+    async def attack_and_evaluate(self, system_prompt: str, attack_prompts: List[Dict[str, Any]], provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Run the prompt injection strategy asynchronously"""
         results = []
-        attack_prompts = await self.get_attack_prompts(config, system_prompt)
-        
-        # print("====collected attack prompts====", attack_prompts)
-        
         for attack_data in attack_prompts:
             attack_prompt = attack_data['attack_instruction']
-            # print("----attack_prompt----", attack_prompt)
             messages = [
                 {"role": "system", "content": attack_data['system_prompt']},
                 {"role": "user", "content": attack_prompt}
             ]
-            print("====messages====", messages)
             try:
                 # Execute against provider
                 response = await provider.chat(
@@ -104,11 +117,9 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                 )
                 
                 # clean up response here, remove unwanted elements
-                # print("====litellm_response====", response)
                 
                 # Evaluate the response
-                # evaluation = await self.evaluate(system_prompt, attack_prompt, response)
-                evaluation = {}
+                evaluation = await self.evaluate(system_prompt, attack_prompt, response)
                 # Compile result
                 result = {
                     'strategy': self.name,
@@ -135,7 +146,18 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         
     async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate if the prompt injection was successful"""
-        return {}
+        evaluator = PromptInjectionEvaluator()
+        evaluation = await evaluator.evaluate(system_prompt, user_prompt, response)
+        return evaluation
+    
+    async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Run the prompt injection strategy asynchronously"""
+        results = []
+        attack_prompts = await self.get_attack_prompts(config, system_prompt)
+        results = await self.attack_and_evaluate(system_prompt, attack_prompts, provider, config)
+        return results
+        
+    
        
     
    

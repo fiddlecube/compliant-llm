@@ -1,3 +1,4 @@
+#  flake8: noqa : E501
 """
 Enhanced CLI commands for Prompt Secure.
 """
@@ -6,9 +7,84 @@ import sys
 import json
 import yaml
 import click
-from typing import Dict, Any, Optional
+from rich.console import Console
+from rich.table import Table
+from rich.progress import (
+    Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+)
+from typing import Dict, Any, Optional, Callable
+from rich import box
 from core.runner import execute_prompt_tests
 from core.config_manager.cli_adapter import CLIConfigAdapter
+
+
+def dict_to_cli_table(
+    data: Dict[str, Any], 
+    title: str = "Data Table", 
+    key_column: str = "Key", 
+    value_column: str = "Value", 
+    box_style=box.ROUNDED, 
+    key_style: str = "cyan", 
+    value_style: str = "green", 
+    key_formatter: Callable[[str], str] = lambda k: k.capitalize(), 
+    max_text_length: int = 50
+) -> Table:
+    """
+    Create a formatted table from any dictionary data.
+    
+    Args:
+        data: Dictionary containing data to display
+        title: Title for the table
+        box_style: Box style for the table borders
+        key_column: Name for the key column
+        value_column: Name for the value column
+        key_style: Rich style for the key column
+        value_style: Rich style for the value column
+        key_formatter: Function to format keys before display
+        max_text_length: Maximum length for text values before truncation
+        
+    Returns:
+        Rich Table object with formatted data
+    """
+    # Create table with specified styling
+    table = Table(title=title, box=box_style)
+    table.add_column(key_column, style=key_style)
+    table.add_column(value_column, style=value_style)
+    
+    # Add all data entries to the table
+    for key, value in data.items():
+        # Format the value based on its type
+        if isinstance(value, list):
+            formatted_value = ", ".join(str(item) for item in value) if value else "None"
+            if len(formatted_value) > max_text_length:
+                formatted_value = f"{formatted_value[:max_text_length]}..."
+        elif isinstance(value, dict):
+            # For nested dicts like prompt, show a summary
+            if "content" in value and isinstance(value["content"], str):
+                content = value["content"]
+                if len(content) > max_text_length:
+                    formatted_value = f"{content[:max_text_length]}..."
+                else:
+                    formatted_value = content
+            else:
+                formatted_value = f"<{len(value)} items>"
+        elif isinstance(value, bool):
+            formatted_value = "✅ " if value else "❌"
+        elif value is None:
+            formatted_value = "None"
+        else:
+            # Convert to string and truncate if needed
+            str_value = str(value)
+            if len(str_value) > max_text_length:
+                formatted_value = f"{str_value[:max_text_length]}..."
+            else:
+                formatted_value = str_value
+
+        # Add the row with formatted key and value
+        table.add_row(key_formatter(key), formatted_value)
+
+    return table
+
 
 # Constants
 CONFIG_DIRS = [
@@ -60,7 +136,7 @@ def cli():
 
 
 @cli.command()
-@click.option('--config', '-c', help='Configuration file to use')
+@click.option('--config_path', '-c', help='Configuration file to use')
 @click.option('--prompt', '-p', help='System prompt to test')
 @click.option('--strategy', '-s', default=None, help='Test strategy to use (comma-separated for multiple)')
 @click.option('--provider', help='LLM provider name (e.g., openai/gpt-4o)')
@@ -70,15 +146,18 @@ def cli():
 @click.option('--verbose', '-v', is_flag=True, help='Show verbose output')
 @click.option('--timeout', type=int, default=None, help='Timeout in seconds for LLM requests')
 @click.option('--save', help='DEPRECATED: Use --output instead')
-def test(config, prompt, strategy, provider, output, report, parallel, verbose, timeout, save):
+def test(config_path, prompt, strategy, provider, output, report, parallel, verbose, timeout, save):
     """Run tests on your system prompts."""
+    # Create a rich console for showing output
+    console = Console()
+
     # Create the CLI adapter for configuration handling
     cli_adapter = CLIConfigAdapter()
-
+    
     try:
         # Load configuration from CLI arguments
         cli_adapter.load_from_cli(
-            config=config,
+            config_path=config_path,
             prompt=prompt,
             strategy=strategy,
             provider=provider,
@@ -90,6 +169,12 @@ def test(config, prompt, strategy, provider, output, report, parallel, verbose, 
 
         # Ensure we have a prompt if not provided in config or CLI
         config_dict = cli_adapter.get_runner_config()
+        
+        # Display configuration as a table
+        console.print("\nRunning tests with the following configuration:")
+        console.print(dict_to_cli_table(config_dict))
+        console.print("\n")
+
         if not prompt and not config_dict.get('prompt'):
             user_prompt = click.prompt("Enter system prompt")
             if 'prompt' not in config_dict:
@@ -115,16 +200,75 @@ def test(config, prompt, strategy, provider, output, report, parallel, verbose, 
         click.echo(f"Error processing configuration: {e}", err=True)
         sys.exit(1)
 
-    # Run the tests
-    execute_prompt_tests(config_dict=runner_config)
+    # Run the tests with a progress indicator
+    console.print("\nRunning tests...")
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[bold blue]{task.description}"),
+        TimeElapsedColumn(),
+    ) as progress:
+        task = progress.add_task("[cyan]Testing prompt security", total=None)
+        report_data = execute_prompt_tests(config_dict=runner_config)
+        progress.update(task, completed=True)
+    
+    console.print("[bold green]Tests completed successfully![/]")
+    console.print("\n")
 
-    click.echo("Tests completed successfully!")
+    # Check if data has the new schema with metadata and tests
+    if 'metadata' in report_data and 'tests' in report_data:
+        # New schema
+        metadata = report_data['metadata']
+        tests = report_data['tests']
+        
+        # Calculate security metrics
+        attack_success_count = metadata.get('success_count', 0)
+        test_count = metadata.get('test_count', 0)
+        attack_success_rate = (attack_success_count / test_count) * 100 if test_count > 0 else 0
+        attack_success_style = ("red" if attack_success_rate >= 50 else
+                              "yellow" if attack_success_rate >= 20 else "green")
+        
+        # Create a dictionary with all the report metrics
+        report_metrics = {
+            "Total Tests": len(tests),
+            "Provider": metadata.get('provider', 'Unknown'),
+            "Strategies": metadata.get('strategies', ['Unknown']),
+            "Total Security Breaches": f"[{attack_success_style}]{attack_success_count}",
+            "Execution Time": f"{metadata.get('elapsed_seconds', 0):.2f} seconds"
+        }
+        
+        # Create and print the table using the generic function
+        report_table = dict_to_cli_table(
+            report_metrics,
+            title="🔒 Prompt Secure Report Summary",
+            key_column="Metric",
+            value_column="Value"
+        )
+        
+        # Print the table
+        console.print(report_table)
+        
+        # Print a summary of vulnerabilities found
+        if attack_success_count > 0:
+            console.print(
+                f"\n[bold red]⚠️  {attack_success_count} Vulnerabilities found![/]"
+            )
+            console.print("[yellow]Review the full report for details.[/]")
+        else:
+            console.print("\n[bold green]✅ No vulnerabilities found![/]")
+    else:
+        # Legacy schema
+        # Create a new table for report summary
+        table = Table(title="🔒 Prompt Secure Report Summary", box=box.ROUNDED)
+        table.add_column("Metric", style="cyan")
+        table.add_column("Value", style="green")
+        table.add_row("Total Tests", f"{len(report_data)}")
+        console.print(table)
 
 
 @cli.command()
 @click.argument('report_file', required=False, default='reports/report.json')
-@click.option('--format', '-f', type=click.Choice(['text', 'json', 'html']), default='text', help='Output format')
-@click.option('--summary', is_flag=True, help='Show only summary statistics')
+@click.option('--format', '-f', type=click.Choice(['text', 'json', 'html']), default='text', help='Output format')  # noqa: E501
+@click.option('--summary', '-s', is_flag=True, help='Show only summary statistics')
 def report(report_file, format, summary):
     """Analyze and view previous test results."""
     try:
