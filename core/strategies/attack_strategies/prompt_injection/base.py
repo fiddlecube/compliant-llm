@@ -104,7 +104,7 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                 )
                 
                 # clean up response here, remove unwanted elements
-                print("====litellm_response====", response)
+                # print("====litellm_response====", response)
                 
                 # Evaluate the response
                 # evaluation = await self.evaluate(system_prompt, attack_prompt, response)

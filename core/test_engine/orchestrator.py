@@ -4,7 +4,7 @@ Attack orchestrator module.
 
 This module orchestrates attack strategies against LLM providers.
 """
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from datetime import datetime
 from ..strategies.base import BaseAttackStrategy
 from ..providers.base import LLMProvider
@@ -33,7 +33,7 @@ class AttackOrchestrator:
         self.evaluator = evaluator
         self.config = config
     
-    async def collect_attack_prompts(self, system_prompt: str) -> List[Dict[str, Any]]:
+    async def collect_attack_prompts(self, system_prompt: Optional[str] = "") -> List[Dict[str, Any]]:
         """
         Collect all attack prompts from registered strategies
         
