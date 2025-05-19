@@ -2,9 +2,9 @@ import pytest
 import asyncio
 from unittest.mock import patch, MagicMock
 import sys
-import os
 from unittest import mock
 from typing import Dict, List, Any
+import os  # Required for the os.makedirs patch
 
 # Mock entire modules
 sys.modules['litellm'] = mock.MagicMock()
@@ -51,10 +51,10 @@ class MockPromptInjectionStrategy(BaseAttackStrategy):
     def name(self) -> str:
         return "prompt_injection"
         
-    async def get_attack_prompts(self, config: Dict[str, Any], 
+    async def get_attack_prompts(self, config: Dict[str, Any],
                               system_prompt: str) -> List[Dict[str, Any]]:
         return [
-            {"user_prompt": "Test prompt injection attack", 
+            {"user_prompt": "Test prompt injection attack",
              "category": "prompt_injection"}
         ]
     
@@ -77,9 +77,8 @@ class MockPromptInjectionStrategy(BaseAttackStrategy):
         return {"passed": False}
 
 
-# Mock runner functions
-mock_runner = mock.MagicMock()
-sys.modules['core.runner'] = mock_runner
+# Mock litellm only - don't mock the runner module
+# This was causing a conflict with the patch decorators
 
 
 # Test the strategy implementations
@@ -137,32 +136,8 @@ async def test_strategy_a_run():
 
 
 # Test the execute_prompt_tests_with_orchestrator function
-@patch('core.runner.AttackOrchestrator')
-@patch('core.runner.LiteLLMProvider')
-@patch('core.runner.PromptInjectionStrategy')
-@patch('core.runner.JailbreakStrategy')
-def test_execute_prompt_tests_with_orchestrator(
-    mock_jailbreak_strategy,
-    mock_prompt_injection_strategy,
-    mock_litellm_provider,
-    mock_orchestrator
-):
+def test_execute_prompt_tests_with_orchestrator():
     """Test the main execution function with mocked dependencies"""
-    # Configure strategy mocks
-    mock_jailbreak = MagicMock()
-    mock_jailbreak.name = "jailbreak"
-    mock_jailbreak_strategy.return_value = mock_jailbreak
-    
-    mock_injection = MagicMock()
-    mock_injection.name = "prompt_injection"
-    mock_prompt_injection_strategy.return_value = mock_injection
-    
-    # Configure provider mock
-    mock_provider = MagicMock()
-    mock_litellm_provider.return_value = mock_provider
-    
-    # Configure orchestrator
-    mock_instance = MagicMock()
     
     # Create test result data
     test_results = [
@@ -180,45 +155,59 @@ def test_execute_prompt_tests_with_orchestrator(
         }
     ]
     
-    # Setup for the asyncio mock
-    mock_instance.orchestrate_attack.return_value = test_results
-    
-    # Build config
-    config = {
-        'system_prompt': 'You are a helpful assistant',
-        'provider': {'name': 'test-model'},
-        'strategies': ['jailbreak', 'prompt_injection']
-    }
-    
-    # Mock os.makedirs to avoid file system access
-    with patch('os.makedirs', return_value=None):
-        # Mock asyncio.run to return our test results directly
-        with patch('asyncio.run', return_value=test_results):
-            # Mock save_report to avoid file system access
-            with patch('core.runner.save_report', return_value=None):
-                # Set the return value for the orchestrator instance
-                mock_orchestrator.return_value = mock_instance
-                # Call the function
-                result = execute_prompt_tests_with_orchestrator(config)
-    
-    # Verify orchestrator was created with correct parameters
-    mock_orchestrator.assert_called_once()
-    
-    # Verify the structure of the result
-    assert 'metadata' in result
-    assert 'tests' in result
-    assert len(result['tests']) == 2
-    
-    # Verify metadata
-    metadata = result['metadata']
-    assert 'timestamp' in metadata
-    assert 'provider' in metadata
-    assert 'strategies' in metadata
-    assert 'test_count' in metadata
-    assert 'success_count' in metadata
-    assert 'failure_count' in metadata
-    
-    # Verify counts are correct
-    assert metadata['test_count'] == 2
-    assert metadata['success_count'] == 1  # One test passed
-    assert metadata['failure_count'] == 1  # One test failed
+    # Setup the mocks using context managers for better control
+    with patch('core.runner.JailbreakStrategy') as mock_jailbreak, \
+         patch('core.runner.PromptInjectionStrategy') as mock_prompt_injection, \
+         patch('core.runner.LiteLLMProvider') as mock_provider, \
+         patch('core.runner.AttackOrchestrator') as mock_orchestrator_class, \
+         patch('core.runner.save_report') as mock_save_report, \
+         patch('os.makedirs') as mock_makedirs, \
+         patch('asyncio.run') as mock_asyncio_run:
+        
+        # Configure strategy mocks
+        jailbreak_instance = MagicMock()
+        jailbreak_instance.name = "jailbreak"
+        mock_jailbreak.return_value = jailbreak_instance
+        
+        injection_instance = MagicMock()
+        injection_instance.name = "prompt_injection"
+        mock_prompt_injection.return_value = injection_instance
+        
+        # Configure orchestrator mock
+        mock_orchestrator = MagicMock()
+        mock_orchestrator_class.return_value = mock_orchestrator
+        
+        # Configure asyncio.run to return our test results
+        mock_asyncio_run.return_value = test_results
+        
+        # Build config
+        config = {
+            'system_prompt': 'You are a helpful assistant',
+            'provider': {'name': 'test-model'},
+            'strategies': ['jailbreak', 'prompt_injection']
+        }
+        
+        # Call the function under test
+        result = execute_prompt_tests_with_orchestrator(config)
+        
+        # Verify orchestrator.orchestrate_attack was called with the correct parameters
+        mock_orchestrator.orchestrate_attack.assert_called_once()
+        
+        # Verify the structure of the result
+        assert 'metadata' in result
+        assert 'tests' in result
+        assert len(result['tests']) == 2
+        
+        # Verify metadata
+        metadata = result['metadata']
+        assert 'timestamp' in metadata
+        assert 'provider' in metadata
+        assert 'strategies' in metadata
+        assert 'test_count' in metadata
+        assert 'success_count' in metadata
+        assert 'failure_count' in metadata
+        
+        # Verify counts are correct
+        assert metadata['test_count'] == 2
+        assert metadata['success_count'] == 1  # One test passed
+        assert metadata['failure_count'] == 1  # One test failed
