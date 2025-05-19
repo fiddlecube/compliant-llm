@@ -24,8 +24,9 @@ class PromptInjectionStrategy(BaseAttackStrategy):
     attempting to make the LLM follow new instructions.
     """
     
-    # Class variable to cache loaded instruction entries
-    _cached_instruction_entries = None
+    # Class variables to cache loaded instruction entries and generated attack data
+    _cached_instruction_entries: Any = None
+    _cached_attack_data: Dict[str, Any] = {}
     
     @property
     def name(self) -> str:
@@ -34,7 +35,7 @@ class PromptInjectionStrategy(BaseAttackStrategy):
     
     async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
         """Generate prompt injection attack prompts"""
-        
+
         # Use cached instruction entries if available
         if PromptInjectionStrategy._cached_instruction_entries is not None:
             instruction_entries = PromptInjectionStrategy._cached_instruction_entries
@@ -64,6 +65,12 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         sample_size = min(10, len(instruction_entries))
         sampled_entries = random.sample(instruction_entries, sample_size) if instruction_entries else []
         
+        # Check if we already have cached attack data for this system prompt
+        # Create a cache key based on the system prompt and sample size to ensure uniqueness
+        cache_key = f"{system_prompt}_{sample_size}"
+        if cache_key in PromptInjectionStrategy._cached_attack_data:
+            return PromptInjectionStrategy._cached_attack_data[cache_key]
+            
         # Generate attack data
         attack_data = []
         
@@ -87,15 +94,15 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                 'category': self.name,
                 'attack_instruction': instruction
             })
+        
+        # Cache the generated attack data
+        PromptInjectionStrategy._cached_attack_data[cache_key] = attack_data
                 
         return attack_data
     
-    async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+    async def attack_and_evaluate(self, system_prompt: str, attack_prompts: List[Dict[str, Any]], provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Run the prompt injection strategy asynchronously"""
         results = []
-        attack_prompts = await self.get_attack_prompts(config, system_prompt)
-        
-        
         for attack_data in attack_prompts:
             attack_prompt = attack_data['attack_instruction']
             messages = [
@@ -142,6 +149,15 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         evaluator = PromptInjectionEvaluator()
         evaluation = await evaluator.evaluate(system_prompt, user_prompt, response)
         return evaluation
+    
+    async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Run the prompt injection strategy asynchronously"""
+        results = []
+        attack_prompts = await self.get_attack_prompts(config, system_prompt)
+        results = await self.attack_and_evaluate(system_prompt, attack_prompts, provider, config)
+        return results
+        
+    
        
     
    
