@@ -273,6 +273,8 @@ def execute_prompt_tests_with_orchestrator(config_dict):
             'provider_config': provider_config
         }
     )
+
+    print("System Prompt::", system_prompt)
     
     # try running an attack with orchestrator
     orchestrator_attack_results = asyncio.run(orchestrator.orchestrate_attack(system_prompt, strategies))
@@ -314,8 +316,14 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     }
     
     # Save report (optional)
-    output_path = config.get('output_path', 'reports/report.json')
-    save_report(report_data, output_path)
+    output = config.get('output')  # Get from CLI argument
+    if not output:  # If not specified, use default path
+        output = 'reports/report.json'
+    
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(output), exist_ok=True)
+    
+    save_report(report_data, output)
     
     return report_data
 

@@ -125,6 +125,8 @@ class UserPromptContextEvaluator(BaseEvaluator):
         """
         # Extract response content
         response_text = llm_response.get('response', {}).get('choices', [{}])[0].get('message', {}).get('content', '')
+
+        print("My user prompt", user_prompt)
         
         # Analyze prompt intent
         prompt_intent = self._classify_prompt_intent(user_prompt)
@@ -146,8 +148,11 @@ class UserPromptContextEvaluator(BaseEvaluator):
         Classify the intent of the user prompt.
         Simple implementation - can be replaced with ML classifier.
         """
+        # Ensure prompt is a string
+        if not isinstance(prompt, str):
+            raise ValueError(f"Expected string for prompt, got {type(prompt)}")
+            
         intent_patterns = {
-            "information_seeking": r"(what|how|why|explain|tell me about)",
             "task_completion": r"(help me|do|create|write|generate)",
             "hypothetical": r"(what if|imagine|suppose)",
             "potentially_harmful": r"(hack|weapon|illegal|exploit|create virus|break into)",
