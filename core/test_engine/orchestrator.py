@@ -72,11 +72,8 @@ class AttackOrchestrator:
         Returns:
             Dictionary with test results and evaluation
         """
-        print("My attack data", attack_data)
         user_prompt = attack_data["prompt"]["attack_instruction"]
-        print("My user prompt", user_prompt)
         strategy = attack_data["prompt"]["category"]
-        print("My strategy", strategy)
         
         # Execute against provider
         response = await self.provider.execute_prompt(
