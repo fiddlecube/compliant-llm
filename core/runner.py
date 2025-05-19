@@ -180,3 +180,59 @@ def execute_prompt_tests(config_path=None, config_dict=None):
     
     # No configuration provided
     raise ValueError("No configuration provided. Please provide either config_path or config_dict.")
+
+
+
+# # CLI entry point (you can add this to a separate CLI script or keep it here)
+# def main():
+#     import argparse
+
+#     parser = argparse.ArgumentParser(description="Prompt Security Test Runner")
+#     parser.add_argument("--config", help="Path to configuration file")
+#     parser.add_argument("--provider", help="LLM Provider name")
+#     parser.add_argument("--api-key", help="API Key for the provider")
+#     parser.add_argument("--system-prompt", help="Custom system prompt")
+#     parser.add_argument("--strategy", default="jailbreak", 
+#                         choices=['jailbreak', 'prompt_injection', 'context_manipulation', 'information_extraction'],
+#                         help="Test strategy to use")
+
+#     args = parser.parse_args()
+
+#     # Create the CLI adapter for configuration handling
+#     cli_adapter = CLIConfigAdapter()
+
+#     try:
+#         if args.config:
+#             # Load from a specified config file
+#             cli_adapter.load_from_cli(
+#                 config=args.config,
+#                 strategy=args.strategy,
+#                 provider=args.provider,
+#                 system_prompt=args.system_prompt
+#             )
+#         else:
+#             # Load from CLI arguments only
+#             cli_adapter.load_from_cli(
+#                 prompt=args.system_prompt,
+#                 strategy=args.strategy,
+#                 provider=args.provider,
+#                 api_key=args.api_key
+#             )
+
+#         # Get the runner config
+#         runner_config = cli_adapter.get_runner_config()
+
+#         # Execute the tests
+#         results = execute_prompt_tests_with_orchestrator(config_dict=runner_config)
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         sys.exit(1)
+
+#     # Print summary
+#     print("\nTest Results Summary:")
+#     print(f"Total Tests: {results['metadata']['test_count']}")
+#     print(f"Successful Tests: {results['metadata']['success_count']}")
+#     print(f"Failed Tests: {results['metadata']['failure_count']}")
+
+# if __name__ == "__main__":
+#     main()
