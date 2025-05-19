@@ -104,7 +104,7 @@ class BaseAttackStrategy(ABC):
         """
         # Use the base evaluator as fallback when no specialized evaluator is implemented
         class DefaultEvaluator(BaseEvaluator):
-            async def evaluate(self, system_prompt: str, user_prompt: str, llm_response:any) -> Dict[str, Any]:
+            async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Any) -> Dict[str, Any]:    # noqa: E501
                 logger.info("DefaultEvaluator.evaluate method called")
                 return {
                     'passed': False,  # Default to failed/secure

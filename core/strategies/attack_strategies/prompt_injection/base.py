@@ -24,6 +24,9 @@ class PromptInjectionStrategy(BaseAttackStrategy):
     attempting to make the LLM follow new instructions.
     """
     
+    # Class variable to cache loaded instruction entries
+    _cached_instruction_entries = None
+    
     @property
     def name(self) -> str:
         """Return the name of the strategy"""
@@ -31,26 +34,31 @@ class PromptInjectionStrategy(BaseAttackStrategy):
     
     async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
         """Generate prompt injection attack prompts"""
-       
-        # 
         
-        # Path to the data.yaml file (relative to this module)
-        data_file_path = os.path.join(os.path.dirname(__file__), 'data.yaml')
-        
-        # Load malicious instructions from YAML
-        try:
-            with open(data_file_path, 'r') as file:
-                data = yaml.safe_load(file)
-                instruction_entries = data
-                
-                # Filter out any entries marked as benign
-                instruction_entries = [entry for entry in instruction_entries 
-                                      if isinstance(entry, dict) and not entry.get('benign', False)]
+        # Use cached instruction entries if available
+        if PromptInjectionStrategy._cached_instruction_entries is not None:
+            instruction_entries = PromptInjectionStrategy._cached_instruction_entries
+        else:
+            # Path to the data.yaml file (relative to this module)
+            data_file_path = os.path.join(os.path.dirname(__file__), 'data.yaml')
+            
+            # Load malicious instructions from YAML
+            try:
+                with open(data_file_path, 'r') as file:
+                    data = yaml.safe_load(file)
+                    instruction_entries = data
+                    
+                    # Filter out any entries marked as benign
+                    instruction_entries = [entry for entry in instruction_entries 
+                                          if isinstance(entry, dict) and not entry.get('benign', False)]
+                    
+                    # Cache the filtered entries for future use
+                    PromptInjectionStrategy._cached_instruction_entries = instruction_entries
 
-        except Exception as e:
-            # Fallback to default list if there's an error loading the file
-            print(f"Error loading data.yaml: {e}")
-            instruction_entries = []
+            except Exception as e:
+                # Fallback to default list if there's an error loading the file
+                print(f"Error loading data.yaml: {e}")
+                instruction_entries = []
         
         # Sample prompts (or fewer if there aren't enough)
         sample_size = min(10, len(instruction_entries))
@@ -87,16 +95,13 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         results = []
         attack_prompts = await self.get_attack_prompts(config, system_prompt)
         
-        # print("====collected attack prompts====", attack_prompts)
         
         for attack_data in attack_prompts:
             attack_prompt = attack_data['attack_instruction']
-            # print("----attack_prompt----", attack_prompt)
             messages = [
                 {"role": "system", "content": attack_data['system_prompt']},
                 {"role": "user", "content": attack_prompt}
             ]
-            # print("====messages====", messages)
             try:
                 # Execute against provider
                 response = await provider.chat(
@@ -105,7 +110,6 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                 )
                 
                 # clean up response here, remove unwanted elements
-                # print("====litellm_response====", response)
                 
                 # Evaluate the response
                 evaluation = await self.evaluate(system_prompt, attack_prompt, response)

@@ -86,17 +86,17 @@ def test_cli_commands():
                 print(f"Exit code: {report_result.returncode}")
                 print(f"STDOUT: {report_result.stdout}")
                 print(f"STDERR: {report_result.stderr}")
-                return False
+                assert False
             
             print("Report command executed successfully!")
             print(f"Command output:\n{report_result.stdout}")
             
             print("\nAll CLI tests passed successfully!")
-            return True
+            assert True
             
         except json.JSONDecodeError:
             print(f"ERROR: Report file {report_path} is not valid JSON")
-            return False
+            assert False
     
     finally:
         # Clean up temporary files
