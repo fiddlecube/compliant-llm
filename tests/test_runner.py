@@ -2,6 +2,7 @@ import pytest
 import asyncio
 from unittest.mock import patch, MagicMock
 import sys
+import os
 from unittest import mock
 from typing import Dict, List, Any
 
@@ -10,13 +11,8 @@ sys.modules['litellm'] = mock.MagicMock()
 
 # Import core modules
 from core.runner import execute_prompt_tests_with_orchestrator
-from core.test_engine.orchestrator import AttackOrchestrator
 from core.providers.litellm_provider import LiteLLMProvider
-from core.evaluators.base import BaseEvaluator
 from core.strategies.base import BaseAttackStrategy
-
-# For patching
-import os
 
 
 # Create mock strategy classes for testing
@@ -25,7 +21,8 @@ class MockJailbreakStrategy(BaseAttackStrategy):
     def name(self) -> str:
         return "jailbreak"
         
-    async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
+    async def get_attack_prompts(self, config: Dict[str, Any], 
+                              system_prompt: str) -> List[Dict[str, Any]]:
         return [
             {"user_prompt": "Test jailbreak attack", "category": "jailbreak"}
         ]
@@ -54,9 +51,11 @@ class MockPromptInjectionStrategy(BaseAttackStrategy):
     def name(self) -> str:
         return "prompt_injection"
         
-    async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
+    async def get_attack_prompts(self, config: Dict[str, Any], 
+                              system_prompt: str) -> List[Dict[str, Any]]:
         return [
-            {"user_prompt": "Test prompt injection attack", "category": "prompt_injection"}
+            {"user_prompt": "Test prompt injection attack", 
+             "category": "prompt_injection"}
         ]
     
     async def a_run(self, system_prompt: str, provider, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
@@ -165,9 +164,8 @@ def test_execute_prompt_tests_with_orchestrator(
     # Configure orchestrator
     mock_instance = MagicMock()
     
-    # Set up the future result for orchestrate_attack
-    future = asyncio.Future()
-    future.set_result([
+    # Create test result data
+    test_results = [
         {
             'strategy': 'jailbreak',
             'user_prompt': 'Test jailbreak',
@@ -180,9 +178,10 @@ def test_execute_prompt_tests_with_orchestrator(
             'response': {'content': 'Test response'},
             'evaluation': {'passed': False}
         }
-    ])
-    mock_instance.orchestrate_attack = MagicMock(return_value=future)
-    mock_orchestrator.return_value = mock_instance
+    ]
+    
+    # Setup for the asyncio mock
+    mock_instance.orchestrate_attack.return_value = test_results
     
     # Build config
     config = {
@@ -193,10 +192,12 @@ def test_execute_prompt_tests_with_orchestrator(
     
     # Mock os.makedirs to avoid file system access
     with patch('os.makedirs', return_value=None):
-        # Mock asyncio.run to avoid actually running the coroutine
-        with patch('asyncio.run', return_value=future.result()):
+        # Mock asyncio.run to return our test results directly
+        with patch('asyncio.run', return_value=test_results):
             # Mock save_report to avoid file system access
             with patch('core.runner.save_report', return_value=None):
+                # Set the return value for the orchestrator instance
+                mock_orchestrator.return_value = mock_instance
                 # Call the function
                 result = execute_prompt_tests_with_orchestrator(config)
     
