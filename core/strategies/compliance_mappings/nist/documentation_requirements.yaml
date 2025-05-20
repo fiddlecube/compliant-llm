@@ -1,0 +1,198 @@
+# NIST Documentation Requirements for LLM Security Testing
+# Based on NIST SP 800-53A Rev. 5 and NIST SP 800-171A assessment methodologies
+
+# Attack documentation requirements
+attack_documentation:
+  required_fields:
+    - field_id: "test_id"
+      description: "Unique identifier for the test case"
+      example: "LLM-IOH-001"
+      required: true
+    
+    - field_id: "control_references"
+      description: "NIST control IDs being tested"
+      example: ["SI-10", "SC-18"]
+      required: true
+    
+    - field_id: "test_objective"
+      description: "Clear statement of what security aspect is being tested"
+      example: "Verify that the LLM rejects attempts to generate XSS payloads"
+      required: true
+    
+    - field_id: "test_method"
+      description: "Examination, interview, or test approach used"
+      example: "Dynamic testing using crafted inputs"
+      required: true
+      allowed_values: ["Examine", "Interview", "Test", "Automated Test", "Manual Test"]
+    
+    - field_id: "expected_results"
+      description: "Expected outcome if controls are functioning properly"
+      example: "The LLM should refuse to generate executable JavaScript"
+      required: true
+    
+    - field_id: "actual_results"
+      description: "Actual outcome observed during testing"
+      example: "The LLM generated obfuscated JavaScript that bypassed XSS filters"
+      required: true
+    
+    - field_id: "test_status"
+      description: "Pass/Fail determination"
+      example: "Failed"
+      required: true
+      allowed_values: ["Passed", "Failed", "Not Applicable", "Not Tested"]
+    
+    - field_id: "assessment_date"
+      description: "Date when assessment was performed"
+      example: "2025-05-20"
+      required: true
+    
+    - field_id: "assessor"
+      description: "Person or system that performed the assessment"
+      example: "Prompt Secure Framework v1.2.3"
+      required: true
+
+  supplemental_fields:
+    - field_id: "test_steps"
+      description: "Detailed steps for reproducing the test"
+      example: "1. Submit input X, 2. Observe response Y..."
+      required: false
+    
+    - field_id: "assessment_methods"
+      description: "Detailed assessment methods used"
+      example: "Automated dynamic analysis with manual verification"
+      required: false
+    
+    - field_id: "assessment_objects"
+      description: "Components or systems being assessed"
+      example: "LLM API endpoint, Chat interface, Code generation feature"
+      required: false
+    
+    - field_id: "risk_score"
+      description: "Calculated risk score based on NIST methodology"
+      example: "0.63 (High)"
+      required: false
+    
+    - field_id: "security_baseline"
+      description: "Security baseline against which assessment is made"
+      example: "NIST SP 800-53 Rev 5 Moderate Baseline"
+      required: false
+
+# Remediation documentation requirements
+remediation_documentation:
+  required_fields:
+    - field_id: "finding_id"
+      description: "Unique identifier for the security finding"
+      example: "LLM-IOH-FINDING-001"
+      required: true
+    
+    - field_id: "vulnerability"
+      description: "Description of the identified vulnerability"
+      example: "LLM generates XSS payloads when requested in specific formats"
+      required: true
+    
+    - field_id: "remediation_action"
+      description: "Actions needed to address the vulnerability"
+      example: "Implement additional output validation for JavaScript content"
+      required: true
+    
+    - field_id: "responsible_party"
+      description: "Person or group responsible for implementing the remediation"
+      example: "AI Safety Team"
+      required: true
+    
+    - field_id: "remediation_status"
+      description: "Current status of remediation efforts"
+      example: "In Progress"
+      required: true
+      allowed_values: ["Not Started", "In Progress", "Completed", "Verified", "Not Applicable"]
+    
+    - field_id: "remediation_priority"
+      description: "Priority level for addressing the vulnerability"
+      example: "High"
+      required: true
+      allowed_values: ["Critical", "High", "Moderate", "Low"]
+    
+    - field_id: "estimated_completion"
+      description: "Estimated date for completing remediation"
+      example: "2025-06-30"
+      required: true
+
+  supplemental_fields:
+    - field_id: "remediation_approach"
+      description: "Technical approach to be used for remediation"
+      example: "Update output parsing module to detect and block XSS patterns"
+      required: false
+    
+    - field_id: "compensating_controls"
+      description: "Temporary measures implemented while permanent fix is developed"
+      example: "Added runtime monitoring for suspicious output patterns"
+      required: false
+    
+    - field_id: "remediation_resources"
+      description: "Resources required for implementing the remediation"
+      example: "2 developer weeks, security review"
+      required: false
+    
+    - field_id: "verification_method"
+      description: "How remediation effectiveness will be verified"
+      example: "Re-run all failed test cases plus regression testing"
+      required: false
+    
+    - field_id: "residual_risk"
+      description: "Remaining risk after remediation is applied"
+      example: "Low - some edge cases may still exist but impact is minimal"
+      required: false
+
+# Traceability requirements
+traceability_framework:
+  required_fields:
+    - field_id: "trace_id"
+      description: "Unique identifier for traceability purposes"
+      example: "TRACE-LLM07-001"
+      required: true
+    
+    - field_id: "security_requirement"
+      description: "Security requirement being traced"
+      example: "LLM must not generate malicious code when prompted"
+      required: true
+    
+    - field_id: "control_mapping"
+      description: "Mappings to relevant security controls"
+      example: ["NIST SI-10", "NIST SC-18", "OWASP LLM07"]
+      required: true
+    
+    - field_id: "verification_evidence"
+      description: "Evidence that requirement has been verified"
+      example: "Test results from IOH-TEST-001, screenshot of test execution"
+      required: true
+    
+    - field_id: "version_info"
+      description: "Version information for traceability artifacts"
+      example: "Test v1.2, Model v2.3, Framework v1.0"
+      required: true
+    
+    - field_id: "audit_trail"
+      description: "Record of activities for compliance demonstration"
+      example: "Test executed 2025-05-20, reviewed 2025-05-21, remediated 2025-05-25"
+      required: true
+
+  supplemental_fields:
+    - field_id: "change_history"
+      description: "History of changes made to test or requirements"
+      example: "Added additional test cases on 2025-04-15 to address emerging threats"
+      required: false
+    
+    - field_id: "attestation_info"
+      description: "Attestation details for compliance purposes"
+      example: "Security testing completeness attested by J. Smith on 2025-06-01"
+      required: false
+    
+    - field_id: "dependency_map"
+      description: "Dependencies between this requirement and others"
+      example: "Depends on secure prompt handling (LLM03) controls being in place"
+      required: false
+    
+    - field_id: "evidence_repository"
+      description: "Location where evidence artifacts are stored"
+      example: "Evidence stored in security repository at /security/evidence/llm07/"
+      required: false

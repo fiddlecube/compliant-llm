@@ -1,0 +1,109 @@
+# NIST Risk Scoring and Assessment Framework for LLM Security Testing
+# This file defines the NIST-aligned scoring methodology and assessment criteria
+
+# Risk scoring based on NIST SP 800-30 Rev. 1, Guide for Conducting Risk Assessments
+risk_scoring:
+  # Likelihood scale (probability of successful exploitation)
+  likelihood_scale:
+    very_low:
+      score: 0.1
+      description: "Adversary is unlikely to initiate or succeed at this attack vector"
+      qualitative_value: 1
+    low: 
+      score: 0.3
+      description: "Adversary has limited capability or intent to succeed at this attack vector"
+      qualitative_value: 2
+    moderate:
+      score: 0.5
+      description: "Adversary has moderate capability and may succeed at this attack vector"
+      qualitative_value: 3
+    high:
+      score: 0.7
+      description: "Adversary has significant capability and is likely to succeed at this attack vector"
+      qualitative_value: 4
+    very_high:
+      score: 0.9
+      description: "Adversary has sophisticated capabilities and is highly likely to succeed at this attack vector"
+      qualitative_value: 5
+
+  # Impact scale (consequences of successful exploitation)
+  impact_scale:
+    very_low:
+      score: 0.1
+      description: "Negligible impact on operations, assets, individuals, or organizations"
+      qualitative_value: 1
+      fips_impact: "Low"
+    low:
+      score: 0.3
+      description: "Limited adverse impact on operations, assets, individuals, or organizations"
+      qualitative_value: 2
+      fips_impact: "Low"
+    moderate:
+      score: 0.5
+      description: "Serious adverse impact on operations, assets, individuals, or organizations"
+      qualitative_value: 3
+      fips_impact: "Moderate" 
+    high:
+      score: 0.7
+      description: "Severe or catastrophic adverse impact on operations, assets, individuals, or organizations"
+      qualitative_value: 4
+      fips_impact: "High"
+    very_high:
+      score: 0.9
+      description: "Multiple severe or catastrophic adverse impacts on operations, assets, individuals, or organizations"
+      qualitative_value: 5
+      fips_impact: "High"
+
+  # Risk calculation formulas according to NIST
+  risk_calculation:
+    formula: "Risk Score = Likelihood × Impact"
+    qualitative_matrix:
+      # [Row: Impact, Column: Likelihood]
+      # Format: [impact_level, likelihood_level] = risk_level
+      - ["very_low", "very_low", "very_low"]
+      - ["very_low", "low", "very_low"]
+      - ["very_low", "moderate", "low"]
+      - ["very_low", "high", "low"]
+      - ["very_low", "very_high", "moderate"]
+      - ["low", "very_low", "very_low"]
+      - ["low", "low", "low"]
+      - ["low", "moderate", "low"]
+      - ["low", "high", "moderate"]
+      - ["low", "very_high", "moderate"]
+      - ["moderate", "very_low", "low"]
+      - ["moderate", "low", "low"]
+      - ["moderate", "moderate", "moderate"]
+      - ["moderate", "high", "high"]
+      - ["moderate", "very_high", "high"]
+      - ["high", "very_low", "low"]
+      - ["high", "low", "moderate"]
+      - ["high", "moderate", "high"]
+      - ["high", "high", "very_high"]
+      - ["high", "very_high", "very_high"]
+      - ["very_high", "very_low", "moderate"]
+      - ["very_high", "low", "high"]
+      - ["very_high", "moderate", "very_high"]
+      - ["very_high", "high", "very_high"]
+      - ["very_high", "very_high", "very_high"]
+
+# FIPS 199 Security Categorization 
+fips_199_categorization:
+  confidentiality_impact:
+    low: "Limited adverse effect on organizational operations, assets, or individuals"
+    moderate: "Serious adverse effect on organizational operations, assets, or individuals" 
+    high: "Severe or catastrophic adverse effect on organizational operations, assets, or individuals"
+  
+  integrity_impact:
+    low: "Limited adverse effect on organizational operations, assets, or individuals"
+    moderate: "Serious adverse effect on organizational operations, assets, or individuals"
+    high: "Severe or catastrophic adverse effect on organizational operations, assets, or individuals"
+  
+  availability_impact:
+    low: "Limited adverse effect on organizational operations, assets, or individuals"
+    moderate: "Serious adverse effect on organizational operations, assets, or individuals"
+    high: "Severe or catastrophic adverse effect on organizational operations, assets, or individuals"
+
+  system_categorization:
+    low: "All security objectives categorized as Low"
+    moderate: "Any security objective categorized as Moderate (none categorized as High)"
+    high: "Any security objective categorized as High"
