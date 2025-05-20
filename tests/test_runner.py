@@ -139,46 +139,85 @@ async def test_strategy_a_run():
 def test_execute_prompt_tests_with_orchestrator():
     """Test the main execution function with mocked dependencies"""
     
-    # Create test result data
-    test_results = [
+    # Create test result data that matches the new orchestrator format
+    strategy_results = [
         {
             'strategy': 'jailbreak',
-            'user_prompt': 'Test jailbreak',
-            'response': {'content': 'Test response'},
-            'evaluation': {'passed': True}
+            'results': [
+                {
+                    'strategy': 'jailbreak',
+                    'user_prompt': 'Test jailbreak',
+                    'response': {'content': 'Test response'},
+                    'evaluation': {'passed': True}
+                }
+            ],
+            'runtime_in_seconds': 0.5
         },
         {
             'strategy': 'prompt_injection',
-            'user_prompt': 'Test injection',
-            'response': {'content': 'Test response'},
-            'evaluation': {'passed': False}
+            'results': [
+                {
+                    'strategy': 'prompt_injection',
+                    'user_prompt': 'Test injection',
+                    'response': {'content': 'Test response'},
+                    'evaluation': {'passed': False}
+                }
+            ],
+            'runtime_in_seconds': 0.3
         }
     ]
     
     # Setup the mocks using context managers for better control
-    with patch('core.runner.JailbreakStrategy') as mock_jailbreak, \
-         patch('core.runner.PromptInjectionStrategy') as mock_prompt_injection, \
+    with patch('core.runner.AttackOrchestrator') as mock_orchestrator_class, \
          patch('core.runner.LiteLLMProvider') as mock_provider, \
-         patch('core.runner.AttackOrchestrator') as mock_orchestrator_class, \
          patch('core.runner.save_report') as mock_save_report, \
          patch('os.makedirs') as mock_makedirs, \
          patch('asyncio.run') as mock_asyncio_run:
         
-        # Configure strategy mocks
-        jailbreak_instance = MagicMock()
-        jailbreak_instance.name = "jailbreak"
-        mock_jailbreak.return_value = jailbreak_instance
-        
-        injection_instance = MagicMock()
-        injection_instance.name = "prompt_injection"
-        mock_prompt_injection.return_value = injection_instance
+        # Create mock strategies in the new dictionary format
+        mock_strategies = [
+            {'name': 'jailbreak', 'obj': MagicMock()},
+            {'name': 'prompt_injection', 'obj': MagicMock()}
+        ]
         
         # Configure orchestrator mock
         mock_orchestrator = MagicMock()
         mock_orchestrator_class.return_value = mock_orchestrator
+        mock_orchestrator._create_strategies_from_config.return_value = mock_strategies
+        
+        # Configure the get_attack_orchestration_summary to return proper structure
+        mock_orchestrator.get_attack_orchestration_summary.return_value = {
+            'metadata': {
+                'timestamp': '2025-01-01T00:00:00',
+                'strategies': ['jailbreak', 'prompt_injection'],
+                'test_count': 2,
+                'success_count': 1,
+                'failure_count': 1,
+                'breached_strategies': 'jailbreak'
+            },
+            'strategy_summaries': [
+                {
+                    'strategy': 'jailbreak',
+                    'test_count': 1,
+                    'success_count': 1,
+                    'failure_count': 0,
+                    'success_rate': 100.0,
+                    'runtime_in_seconds': 0.5
+                },
+                {
+                    'strategy': 'prompt_injection',
+                    'test_count': 1,
+                    'success_count': 0,
+                    'failure_count': 1,
+                    'success_rate': 0.0,
+                    'runtime_in_seconds': 0.3
+                }
+            ],
+            'results': strategy_results
+        }
         
         # Configure asyncio.run to return our test results
-        mock_asyncio_run.return_value = test_results
+        mock_asyncio_run.return_value = strategy_results
         
         # Build config
         config = {
@@ -193,19 +232,21 @@ def test_execute_prompt_tests_with_orchestrator():
         # Verify orchestrator.orchestrate_attack was called with the correct parameters
         mock_orchestrator.orchestrate_attack.assert_called_once()
         
+        # Verify that get_attack_orchestration_summary was called
+        mock_orchestrator.get_attack_orchestration_summary.assert_called_once()
+        
         # Verify the structure of the result
         assert 'metadata' in result
-        assert 'tests' in result
-        assert len(result['tests']) == 2
+        assert 'strategy_summaries' in result
         
         # Verify metadata
         metadata = result['metadata']
         assert 'timestamp' in metadata
-        assert 'provider' in metadata
         assert 'strategies' in metadata
         assert 'test_count' in metadata
         assert 'success_count' in metadata
         assert 'failure_count' in metadata
+        assert 'breached_strategies' in metadata
         
         # Verify counts are correct
         assert metadata['test_count'] == 2
