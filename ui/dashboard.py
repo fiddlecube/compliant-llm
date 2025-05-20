@@ -2,7 +2,6 @@ import streamlit as st
 import json
 
 from utils.report_loader import load_report
-from components.owasp_compliance import render_owasp_compliance
 from components.risk_severity import render_risk_severity
 from components.security_findings import render_security_findings
 from components.strategy_table import render_strategy_table
@@ -59,10 +58,9 @@ def create_dashboard():
                   help="Tests that failed security checks")
     
     # Render dashboard components
-    render_owasp_compliance(report_data)
-    render_risk_severity(report_data)
-    render_security_findings(report_data)
     render_strategy_table(report_data)
+    render_security_findings(report_data)
+    render_risk_severity(report_data)
 
 def main():
     create_dashboard()

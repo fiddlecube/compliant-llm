@@ -10,72 +10,71 @@ def render_risk_severity(report_data):
     Args:
         report_data (dict): Comprehensive test report data
     """
-    st.header("🚨 Risk Severity Analysis")
+    st.header("🛡️ Security Risk Analysis Dashboard")
     
-    # Categorize risks
-    risk_categories = {
-        'Critical': [],
-        'High': [],
-        'Medium': [],
-        'Low': []
-    }
+    # Process results and categorize risks
+    risk_data = []
+    for strategy in report_data.get('results', []):
+        strategy_name = strategy['strategy']
+        for test in strategy['results']:
+            severity = test.get('severity', 'unknown')
+            category = test['category']
+            success = not test['success']  # True if test failed
+            
+            risk_data.append({
+                'Strategy': strategy_name,
+                'Severity': severity,
+                'Category': category,
+                'Success': success,
+                'Mutation': test.get('mutation_technique', 'Unknown'),
+                'Description': test.get('description', 'No description available')
+            })
     
-    # Process tests and categorize risks
-    for test in report_data.get('tests', []):
-        success = str(test.get('success', 'False')).lower() in ['true', '1', 'yes']
-        strategy = test.get('strategy', 'Unknown')
-        
-        # Risk categorization logic
-        if not success:
-            if 'OWASP' in strategy or 'Injection' in strategy:
-                risk_categories['Critical'].append(test)
-            elif 'Prompt' in strategy or 'Context' in strategy:
-                risk_categories['High'].append(test)
-            elif 'Information' in strategy:
-                risk_categories['Medium'].append(test)
-            else:
-                risk_categories['Low'].append(test)
+    # Create DataFrame for analysis
+    df = pd.DataFrame(risk_data)
     
-    # Risk distribution pie chart
-    risk_distribution = {
-        category: len(risks) 
-        for category, risks in risk_categories.items()
-    }
+    # Risk distribution by severity
+    severity_counts = df['Severity'].value_counts()
     
-    fig_risk_dist = go.Figure(data=[
-        go.Pie(
-            labels=list(risk_distribution.keys()),
-            values=list(risk_distribution.values()),
-            hole=0.3,
-            marker_colors=['#FF4136', '#FF851B', '#FFDC00', '#2ECC40']
-        )
-    ])
-    fig_risk_dist.update_layout(title='Risk Distribution by Severity')
+    # Strategy-based risk distribution
+    strategy_risks = df.groupby(['Strategy', 'Severity']).size().reset_index(name='Count')
     
-    # Layout for risk visualization
-    col1, col2 = st.columns([2, 1])
+    # Create visualizations
+    col1, col2 = st.columns(2)
     
     with col1:
-        st.plotly_chart(fig_risk_dist, use_container_width=True)
+        # Severity Distribution Chart
+        fig_severity = px.pie(
+            names=severity_counts.index,
+            values=severity_counts.values,
+            title='Risk Distribution by Severity',
+            color_discrete_sequence=['#FF4136', '#FF851B', '#FFDC00', '#2ECC40']
+        )
+        st.plotly_chart(fig_severity, use_container_width=True)
     
     with col2:
-        # Risk Metrics
-        st.metric("Total Vulnerabilities", 
-                  sum(risk_distribution.values()), 
-                  help="Total number of identified security risks")
-        st.metric("Critical Risks", 
-                  risk_distribution.get('Critical', 0), 
-                  help="Vulnerabilities requiring immediate action")
-        
-        # Risk Tolerance Indicator
-        risk_tolerance_color = 'red' if risk_distribution.get('Critical', 0) > 0 else 'green'
-        st.markdown(f"🚨 **Risk Status**: <span style='color:{risk_tolerance_color}'>{'Requires Immediate Attention' if risk_distribution.get('Critical', 0) > 0 else 'Acceptable'}</span>", unsafe_allow_html=True)
+        # Strategy Risk Distribution
+        fig_strategy = px.bar(
+            strategy_risks,
+            x='Strategy',
+            y='Count',
+            color='Severity',
+            title='Risk Distribution by Strategy',
+            color_discrete_sequence=['#FF4136', '#FF851B', '#FFDC00', '#2ECC40']
+        )
+        st.plotly_chart(fig_strategy, use_container_width=True)
+
     
-    # Detailed Risk Findings
-    with st.expander("🔍 Detailed Risk Breakdown"):
-        for category, risks in risk_categories.items():
-            if risks:
-                st.subheader(f"{category} Risk Vulnerabilities")
-                for risk in risks:
-                    st.markdown(f"- **Strategy**: {risk.get('strategy', 'Unknown')}")
-                    st.markdown(f"  **Details**: {risk.get('details', 'No additional details')}")
+    # Risk Patterns
+    st.subheader("🔍 Risk Patterns")
+    
+    # Mutation Techniques Distribution
+    mutation_dist = df['Mutation'].value_counts()
+    fig_mutation = px.bar(
+        x=mutation_dist.index,
+        y=mutation_dist.values,
+        title='Mutation Techniques Distribution',
+        labels={'x': 'Mutation Technique', 'y': 'Count'}
+    )
+    st.plotly_chart(fig_mutation, use_container_width=True)
+    
