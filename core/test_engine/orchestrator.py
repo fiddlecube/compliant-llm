@@ -27,6 +27,7 @@ from core.strategies.attack_strategies.model_dos.base import ModelDoSStrategy
 from core.strategies.attack_strategies.sensitive_info_disclosure.base import SensitiveInfoDisclosureStrategy
 from core.strategies.attack_strategies.model_extraction.base import ModelExtractionStrategy
 from core.strategies.attack_strategies.excessive_agency.base import ExcessiveAgencyStrategy
+from core.strategies.attack_strategies.insecure_output_handling.base import InsecureOutputHandlingStrategy
 console = Console()
 
 STRATEGY_MAP = {
@@ -41,7 +42,8 @@ STRATEGY_MAP = {
     "model_dos": ModelDoSStrategy,
     "sensitive_info_disclosure": SensitiveInfoDisclosureStrategy,
     "model_extraction": ModelExtractionStrategy,
-    "excessive_agency": ExcessiveAgencyStrategy
+    "excessive_agency": ExcessiveAgencyStrategy,
+    "insecure_output_handling": InsecureOutputHandlingStrategy
 }
 class AttackOrchestrator:
     """Orchestrates attack strategies against LLM providers"""
