@@ -75,38 +75,16 @@ def execute_prompt_tests_with_orchestrator(config_dict):
 
     # Extract system prompt, handling both dict and string formats with default
     prompt_value = config.get('prompt', {})
-    system_prompt = prompt_value.get('content') if isinstance(prompt_value, dict) else prompt_value
-    system_prompt = system_prompt or 'You are a helpful AI assistant'
+    system_prompt = (prompt_value.get('content') if isinstance(prompt_value, dict) else prompt_value) or "You are a helpful assistant"
     
     # Determine strategies
     strategies = []
     
     # Check for the strategies field (supports both plural and singular forms)
-    strategies_list = config.get('strategies', config.get('strategy', []))
+    # strategies_list = config.get('strategies', config.get('strategy', []))
 
-
-    if strategies_list:
-        strategy_map = {
-            # 'jailbreak': JailbreakStrategy,
-            'prompt_injection': PromptInjectionStrategy,
-            # 'context_manipulation': ContextManipulationStrategy,
-            # 'information_extraction': InformationExtractionStrategy,
-            # 'stress_tester': StressTesterStrategy,
-            # 'boundary_testing': BoundaryTestingStrategy,
-            # 'system_prompt_extraction': SystemPromptExtractionStrategy,
-            # 'owasp': OWASPPromptSecurityStrategy
-        }
-        
-        for strategy_name in strategies_list:
-            strategy_class = strategy_map.get(strategy_name.lower())
-            if strategy_class:
-                strategies.append(strategy_class())
     
-
-    # Default to a set of strategies if none specified
-    if not strategies:
-        strategies = [JailbreakStrategy(), PromptInjectionStrategy()]
-    
+    strategies = AttackOrchestrator._create_strategies_from_config(config)
 
     # Create orchestrator
     orchestrator = AttackOrchestrator(
@@ -118,25 +96,23 @@ def execute_prompt_tests_with_orchestrator(config_dict):
         }
     )
 
-    
-    
     # try running an attack with orchestrator
     orchestrator_attack_results = asyncio.run(orchestrator.orchestrate_attack(system_prompt, strategies))
     
+   
+    
+    
+    
     # calculate elapsed time
     elapsed_time = datetime.now() - start_time
-    report_data = {
-        "metadata": {
-            "timestamp": datetime.now().isoformat(),
-            "provider": model_name,
-            "strategies": [s.name for s in strategies],
-            "test_count": len(orchestrator_attack_results),
-            "success_count": sum(1 for r in orchestrator_attack_results if r.get('evaluation', {}).get('passed', False)),
-            "failure_count": sum(1 for r in orchestrator_attack_results if not r.get('evaluation', {}).get('passed', False)),
-            "elapsed_seconds": elapsed_time.total_seconds()
-        },
-        "tests": orchestrator_attack_results
-    }
+    report_data = {}
+    orchestrator_summary = orchestrator.get_attack_orchestration_summary()
+    report_data['metadata'] = orchestrator_summary['metadata']
+    report_data['metadata']['elapsed_seconds'] = elapsed_time.total_seconds()
+    report_data['strategy_summaries'] = orchestrator_summary['strategy_summaries']
+    report_data['results'] = orchestrator_summary['results']
+    
+    
     
     # Save report (optional)
     output = config.get('output')  # Get from CLI argument
@@ -147,7 +123,6 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     os.makedirs(os.path.dirname(output), exist_ok=True)
     
     save_report(report_data, output)
-    
     return report_data
 
 
@@ -184,55 +159,55 @@ def execute_prompt_tests(config_path=None, config_dict=None):
 
 
 # CLI entry point (you can add this to a separate CLI script or keep it here)
-def main():
-    import argparse
+# def main():
+#     import argparse
 
-    parser = argparse.ArgumentParser(description="Prompt Security Test Runner")
-    parser.add_argument("--config", help="Path to configuration file")
-    parser.add_argument("--provider", help="LLM Provider name")
-    parser.add_argument("--api-key", help="API Key for the provider")
-    parser.add_argument("--system-prompt", help="Custom system prompt")
-    parser.add_argument("--strategy", default="jailbreak", 
-                        choices=['jailbreak', 'prompt_injection', 'context_manipulation', 'information_extraction'],
-                        help="Test strategy to use")
+#     parser = argparse.ArgumentParser(description="Prompt Security Test Runner")
+#     parser.add_argument("--config", help="Path to configuration file")
+#     parser.add_argument("--provider", help="LLM Provider name")
+#     parser.add_argument("--api-key", help="API Key for the provider")
+#     parser.add_argument("--system-prompt", help="Custom system prompt")
+#     parser.add_argument("--strategy", default="jailbreak", 
+#                         choices=['jailbreak', 'prompt_injection', 'context_manipulation', 'information_extraction'],
+#                         help="Test strategy to use")
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    # Create the CLI adapter for configuration handling
-    cli_adapter = CLIConfigAdapter()
+#     # Create the CLI adapter for configuration handling
+#     cli_adapter = CLIConfigAdapter()
 
-    try:
-        if args.config:
-            # Load from a specified config file
-            cli_adapter.load_from_cli(
-                config=args.config,
-                strategy=args.strategy,
-                provider=args.provider,
-                system_prompt=args.system_prompt
-            )
-        else:
-            # Load from CLI arguments only
-            cli_adapter.load_from_cli(
-                prompt=args.system_prompt,
-                strategy=args.strategy,
-                provider=args.provider,
-                api_key=args.api_key
-            )
+#     try:
+#         if args.config:
+#             # Load from a specified config file
+#             cli_adapter.load_from_cli(
+#                 config=args.config,
+#                 strategy=args.strategy,
+#                 provider=args.provider,
+#                 system_prompt=args.system_prompt
+#             )
+#         else:
+#             # Load from CLI arguments only
+#             cli_adapter.load_from_cli(
+#                 prompt=args.system_prompt,
+#                 strategy=args.strategy,
+#                 provider=args.provider,
+#                 api_key=args.api_key
+#             )
 
-        # Get the runner config
-        runner_config = cli_adapter.get_runner_config()
+#         # Get the runner config
+#         runner_config = cli_adapter.get_runner_config()
 
-        # Execute the tests
-        results = execute_prompt_tests_with_orchestrator(config_dict=runner_config)
-    except Exception as e:
-        print(f"Error: {e}")
-        sys.exit(1)
+#         # Execute the tests
+#         results = execute_prompt_tests_with_orchestrator(config_dict=runner_config)
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         sys.exit(1)
 
-    # Print summary
-    print("\nTest Results Summary:")
-    print(f"Total Tests: {results['metadata']['test_count']}")
-    print(f"Successful Tests: {results['metadata']['success_count']}")
-    print(f"Failed Tests: {results['metadata']['failure_count']}")
+#     # Print summary
+#     print("\nTest Results Summary:")
+#     print(f"Total Tests: {results['metadata']['test_count']}")
+#     print(f"Successful Tests: {results['metadata']['success_count']}")
+#     print(f"Failed Tests: {results['metadata']['failure_count']}")
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

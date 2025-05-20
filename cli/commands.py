@@ -215,10 +215,9 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
     console.print("\n")
 
     # Check if data has the new schema with metadata and tests
-    if 'metadata' in report_data and 'tests' in report_data:
+    if 'metadata' in report_data:
         # New schema
         metadata = report_data['metadata']
-        tests = report_data['tests']
         
         # Calculate security metrics
         attack_success_count = metadata.get('success_count', 0)
@@ -229,10 +228,10 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         
         # Create a dictionary with all the report metrics
         report_metrics = {
-            "Total Tests": len(tests),
-            "Provider": metadata.get('provider', 'Unknown'),
-            "Strategies": metadata.get('strategies', ['Unknown']),
+            "Total Tests": test_count,
             "Total Security Breaches": f"[{attack_success_style}]{attack_success_count}",
+            "Tested Strategies": ','.join(metadata.get('strategies', ['Unknown'])),
+            "Breached Strategies": ','.join(metadata.get('breached_strategies', ['Unknown'])),
             "Execution Time": f"{metadata.get('elapsed_seconds', 0):.2f} seconds"
         }
         
