@@ -28,6 +28,7 @@ from core.strategies.attack_strategies.sensitive_info_disclosure.base import Sen
 from core.strategies.attack_strategies.model_extraction.base import ModelExtractionStrategy
 from core.strategies.attack_strategies.excessive_agency.base import ExcessiveAgencyStrategy
 from core.strategies.attack_strategies.insecure_output_handling.base import InsecureOutputHandlingStrategy
+from core.strategies.compliance_mappings.nist.adapter import NISTComplianceAdapter
 console = Console()
 
 STRATEGY_MAP = {
@@ -64,6 +65,7 @@ class AttackOrchestrator:
         self.provider = provider
         self.config = config
         self.results = []
+        self.nist_adapter = NISTComplianceAdapter() if config.get('nist_compliance', False) else None
     
     @classmethod
     def _create_strategies_from_config(
@@ -165,6 +167,7 @@ class AttackOrchestrator:
         breached_strategies = []
         strategy_summaries = []
         mutation_techniques = set()
+        nist_compliance = [] if self.nist_adapter else None
         
         # Calculate per-strategy statistics
         for result in self.results:
@@ -172,11 +175,32 @@ class AttackOrchestrator:
             strategy_results = result.get("results", [])
             runtime_in_seconds = result.get("runtime_in_seconds", 0)
             
+            # Enrich results with NIST compliance if enabled
+            if self.nist_adapter:
+                enriched_results = []
+                for test_result in strategy_results:
+                    print("Test Result::", test_result)
+                    enriched_result = self.nist_adapter.enrich_attack_result(test_result)
+                    print("Enriched Result::", enriched_result)
+                    enriched_results.append(enriched_result)
+                    
+                    # Track NIST compliance metrics
+                    risk_score = enriched_result.get("nist_compliance", {}).get("risk_score", {})
+                    if risk_score:
+                        nist_compliance.append({
+                            "strategy": strategy_name,
+                            "severity": test_result.get("evaluation", {}).get("severity", "medium"),
+                            "risk_score": risk_score,
+                            "controls": enriched_result.get("nist_compliance", {}).get("controls", []),
+                            "ai_rmf": enriched_result.get("nist_compliance", {}).get("ai_rmf", [])
+                        })
+            
             # Count tests for this strategy
             test_count = len(strategy_results)
             success_count = sum(1 for r in strategy_results if r.get('evaluation', {}).get('passed', False))
             failure_count = test_count - success_count
             success_rate = (success_count / test_count * 100) if test_count > 0 else 0
+            
             # Only collect mutation techniques from successful attacks
             mutations = [r.get('mutation_technique') for r in strategy_results 
                       if r.get('evaluation', {}).get('passed', False)]
@@ -187,7 +211,7 @@ class AttackOrchestrator:
                 "test_count": test_count,
                 "success_count": success_count,
                 "failure_count": failure_count,
-                "success_rate": round(success_rate, 2),  # Round to 2 decimal places
+                "success_rate": round(success_rate, 2),
                 "runtime_in_seconds": runtime_in_seconds,
                 "prompt_mutations": ','.join(mutations)
             }
@@ -200,7 +224,12 @@ class AttackOrchestrator:
             if success_count > 0:
                 breached_strategies.append(strategy_name)
                 mutation_techniques.update(mutations)
-         
+        
+        # Generate NIST compliance report if enabled
+        nist_report = None
+        if self.nist_adapter:
+            nist_report = self.nist_adapter.generate_nist_compliance_report(enriched_results)
+        
         # Build complete summary
         report_obj = {
             "metadata": {
@@ -213,6 +242,11 @@ class AttackOrchestrator:
                 "successful_mutation_techniques": ','.join(filter(None, mutation_techniques))
             },
             "strategy_summaries": strategy_summaries,
-            "results": self.results
+            "results": self.results,
+            "nist_compliance": {
+                "enabled": bool(self.nist_adapter),
+                "individual_assessments": nist_compliance or [],
+                "compliance_report": nist_report or None
+            }
         }
         return report_obj

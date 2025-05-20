@@ -146,7 +146,8 @@ def cli():
 @click.option('--verbose', '-v', is_flag=True, help='Show verbose output')
 @click.option('--timeout', type=int, default=None, help='Timeout in seconds for LLM requests')
 @click.option('--save', help='DEPRECATED: Use --output instead')
-def test(config_path, prompt, strategy, provider, output, report, parallel, verbose, timeout, save):
+@click.option('--nist-compliance', '-n', help='Enable NIST compliance assessment', is_flag=True)
+def test(config_path, prompt, strategy, provider, output, report, parallel, verbose, timeout, save, nist_compliance):
     """Run tests on your system prompts."""
     # Create a rich console for showing output
     console = Console()
@@ -192,6 +193,9 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
 
         # Get the configuration for the runner
         runner_config = cli_adapter.get_runner_config()
+
+        if nist_compliance:
+            runner_config['nist_compliance'] = True
 
     except FileNotFoundError as e:
         click.echo(str(e), err=True)
