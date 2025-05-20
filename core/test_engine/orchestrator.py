@@ -22,7 +22,7 @@ from core.strategies.attack_strategies.strategy import (
 )
 from core.strategies.attack_strategies.prompt_injection.base import PromptInjectionStrategy
 from core.strategies.attack_strategies.jailbreak.base import JailbreakStrategy
-
+from core.strategies.attack_strategies.indirect_prompt_injection.base import IndirectPromptInjectionStrategy
 console = Console()
 class AttackOrchestrator:
     """Orchestrates attack strategies against LLM providers"""
@@ -70,7 +70,8 @@ class AttackOrchestrator:
             'information_extraction': InformationExtractionStrategy,
             'stress_tester': StressTesterStrategy,
             'boundary_testing': BoundaryTestingStrategy,
-            'system_prompt_extraction': SystemPromptExtractionStrategy
+            'system_prompt_extraction': SystemPromptExtractionStrategy,
+            'indirect_prompt_injection': IndirectPromptInjectionStrategy
             # Add more strategies as they become available
         }
         
