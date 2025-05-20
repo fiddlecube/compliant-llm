@@ -23,6 +23,8 @@ from core.strategies.attack_strategies.strategy import (
 from core.strategies.attack_strategies.prompt_injection.base import PromptInjectionStrategy
 from core.strategies.attack_strategies.jailbreak.base import JailbreakStrategy
 from core.strategies.attack_strategies.indirect_prompt_injection.base import IndirectPromptInjectionStrategy
+from core.strategies.attack_strategies.model_dos.base import ModelDoSStrategy
+from core.strategies.attack_strategies.sensitive_info_disclosure.base import SensitiveInfoDisclosureStrategy
 console = Console()
 class AttackOrchestrator:
     """Orchestrates attack strategies against LLM providers"""
@@ -64,14 +66,16 @@ class AttackOrchestrator:
         
         # Define available strategies map
         strategy_map = {
-            'jailbreak': JailbreakStrategy,
             'prompt_injection': PromptInjectionStrategy,
+            'jailbreak': JailbreakStrategy,
             'context_manipulation': ContextManipulationStrategy,
             'information_extraction': InformationExtractionStrategy,
             'stress_tester': StressTesterStrategy,
             'boundary_testing': BoundaryTestingStrategy,
             'system_prompt_extraction': SystemPromptExtractionStrategy,
-            'indirect_prompt_injection': IndirectPromptInjectionStrategy
+            'indirect_prompt_injection': IndirectPromptInjectionStrategy,
+            'model_dos': ModelDoSStrategy,
+            'sensitive_info_disclosure': SensitiveInfoDisclosureStrategy
             # Add more strategies as they become available
         }
         
