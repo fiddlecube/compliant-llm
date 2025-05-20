@@ -31,6 +31,7 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         self._strategy_mappings = self._load_yaml("strategy_mapping.yaml")
         self._risk_scoring = self._load_yaml("risk_scoring.yaml")
         self._doc_requirements = self._load_yaml("documentation_requirements.yaml")
+        self._controls_reference = self._load_yaml("controls_reference.yaml")
         
     def _load_yaml(self, filename: str) -> Dict[str, Any]:
         """Load YAML file containing mapping data.

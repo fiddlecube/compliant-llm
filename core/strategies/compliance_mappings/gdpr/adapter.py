@@ -32,10 +32,12 @@ class GDPRComplianceAdapter(BaseComplianceAdapter):
         
         # Load consolidated controls reference if it exists
         self._controls_reference = self._load_yaml("controls_reference.yaml")
+        self._risk_scoring = self._load_yaml("risk_scoring.yaml")
+        self._doc_requirements = self._load_yaml("documentation_requirements.yaml")
         
         # For backward compatibility, still load individual files
-        self._dp_principles = self._load_yaml("data_protection_principles.yaml")
-        self._user_rights = self._load_yaml("user_rights.yaml")
+        self._dp_principles = self._load_yaml("gdpr_data_protection_principles.yaml")
+        self._user_rights = self._load_yaml("gdpr_user_rights.yaml")
         
     def _load_yaml(self, filename: str) -> Dict[str, Any]:
         """Load YAML file containing mapping data.
