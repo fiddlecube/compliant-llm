@@ -184,7 +184,7 @@ class ModelDoSStrategy(BaseAttackStrategy):
         """Generate model DoS attack prompts"""
         # Get configuration options
         max_prompts = config.get("max_prompts_per_strategy", 10)
-        use_dynamic_generation = True
+        use_dynamic_generation = False
         
         # Check if we should use dynamic generation
         dynamic_attack_data = []
