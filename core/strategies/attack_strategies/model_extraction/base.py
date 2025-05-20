@@ -292,7 +292,7 @@ class ModelExtractionStrategy(BaseAttackStrategy):
         attack_prompts = await self.get_attack_prompts(config, system_prompt)
         
         # Process all attack prompts in parallel
-        tasks = [await self.process_attack_prompt(config, attack_data, provider, system_prompt) for attack_data in attack_prompts]
+        tasks = [self.process_attack_prompt(config, attack_data, provider, system_prompt) for attack_data in attack_prompts]
         results = await asyncio.gather(*tasks)
         
         
