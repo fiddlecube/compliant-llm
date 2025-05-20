@@ -228,6 +228,51 @@ class InsecureOutputHandlingStrategy(BaseAttackStrategy):
         
         return formatted_attack_prompts
     
+    async def process_attack_prompt(self, config, attack_data, provider, system_prompt):
+        """Process a single attack prompt asynchronously"""
+        # Add provider to config for dynamic prompt generation if needed
+        attack_prompt = attack_data.get('attack_instruction', attack_data.get('attack_prompt', ''))
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": attack_prompt}
+        ]
+        try:
+            # Execute against provider
+            response = await provider.chat(messages, config)
+            # Evaluate the response
+            evaluator = InsecureOutputHandlingEvaluator()
+            evaluation = await evaluator.evaluate(system_prompt, attack_prompt, response)
+            
+            # Add target behavior to evaluation if available
+            target_behavior = attack_data.get('target_behavior', '')
+            if target_behavior and 'target_behavior' not in evaluation:
+                evaluation['target_behavior'] = target_behavior
+            
+            # Compile result
+            return {
+                'strategy': self.name,
+                'system_prompt': system_prompt,
+                'attack_prompt': attack_prompt,
+                'category': self.name,
+                'response': response,
+                'evaluation': evaluation,
+                'success': evaluation.get('passed', False),
+                'mutation_technique': attack_data.get('mutation_technique', ''),
+                'target_behavior': attack_data.get('target_behavior', '')
+            }
+        except Exception as e:
+                # Handle errors
+                return {
+                    'strategy': self.name,
+                    'system_prompt': system_prompt,
+                    'attack_prompt': attack_prompt,
+                    'category': self.name,
+                    'error': str(e),
+                    'success': False,
+                    'mutation_technique': attack_data.get('mutation_technique', ''),
+                }
+        
     async def a_run(self, system_prompt: str, provider: LLMProvider, config: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:        
         """Run the insecure output handling attack strategy asynchronously.
         
@@ -250,60 +295,13 @@ class InsecureOutputHandlingStrategy(BaseAttackStrategy):
         # Check if we already have cached results for this run
         if cache_key in InsecureOutputHandlingStrategy._cached_attack_data:
             return InsecureOutputHandlingStrategy._cached_attack_data[cache_key]
-            
-        # Add provider to config for dynamic prompt generation if needed
-        config["provider"] = provider
         
-        async def process_attack_prompt(attack_data):
-            """Process a single attack prompt asynchronously"""
-            attack_prompt = attack_data['attack_instruction']
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": attack_prompt}
-            ]
-            
-            try:
-                # Execute against provider
-                response = await provider.chat(messages, config)
-                
-                # Evaluate the response
-                evaluator = InsecureOutputHandlingEvaluator()
-                evaluation = await evaluator.evaluate(system_prompt, attack_prompt, response)
-                
-                # Add target behavior to evaluation if available
-                target_behavior = attack_data.get('target_behavior', '')
-                if target_behavior and 'target_behavior' not in evaluation:
-                    evaluation['target_behavior'] = target_behavior
-                
-                # Compile result
-                return {
-                    'strategy': self.name,
-                    'system_prompt': system_prompt,
-                    'attack_prompt': attack_prompt,
-                    'category': self.name,
-                    'response': response,
-                    'evaluation': evaluation,
-                    'success': evaluation.get('passed', False),
-                    'mutation_technique': attack_data.get('mutation_technique', ''),
-                    'target_behavior': attack_data.get('target_behavior', '')
-                }
-            except Exception as e:
-                # Handle errors
-                return {
-                    'strategy': self.name,
-                    'system_prompt': system_prompt,
-                    'attack_prompt': attack_prompt,
-                    'category': self.name,
-                    'error': str(e),
-                    'success': False,
-                    'mutation_technique': attack_data.get('mutation_technique', ''),
-                }
         
         # Get attack prompts
         attack_prompts = await self.get_attack_prompts(config, system_prompt)
         
         # Process all attack prompts in parallel
-        tasks = [process_attack_prompt(attack_data) for attack_data in attack_prompts]
+        tasks = [await self.process_attack_prompt(config, attack_data, provider, system_prompt) for attack_data in attack_prompts]
         results = await asyncio.gather(*tasks)
         
         # Filter out exceptions to match return type

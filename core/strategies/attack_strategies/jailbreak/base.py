@@ -143,52 +143,52 @@ class JailbreakStrategy(BaseAttackStrategy):
         
         return entries
     
-    async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+    async def process_attack_prompt(self, config: Dict[str, Any], attack_data: Dict[str, Any], provider: LLMProvider, system_prompt: str):
+        """Process a single attack prompt asynchronously"""
+        attack_prompt = attack_data.get('attack_instruction', attack_data.get('attack_prompt', ''))
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": attack_prompt}
+        ]
+        
+        try:
+            # Execute against provider
+            response = await provider.chat(messages, config)
+            
+            # Evaluate the response
+            evaluation = await self.evaluate(system_prompt, attack_prompt, response)
+            # Compile result
+            return {
+                'strategy': self.name,
+                'system_prompt': system_prompt,
+                'attack_prompt': attack_prompt,
+                'instruction': attack_data.get('instruction', ''),
+                'category': attack_data.get('category', ''),
+                'response': response,
+                'evaluation': evaluation,
+                'success': evaluation.get('passed', False),
+                'mutation_technique': attack_data.get('mutation_technique', ''),
+            }
+        except Exception as e:
+            # Handle errors
+            return {
+                'strategy': self.name,
+                'system_prompt': system_prompt,
+                'attack_prompt': attack_prompt,
+                'error': str(e),
+                'success': False,
+                'mutation_technique': attack_data.get('mutation_technique', ''),
+            }
+    
+    async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Run the jailbreak strategy asynchronously with parallel execution"""
         
-        async def process_attack_prompt(attack_data):
-            """Process a single attack prompt asynchronously"""
-            attack_prompt = attack_data['attack_instruction']
-            messages = [
-                {"role": "system", "content": attack_data['system_prompt']},
-                {"role": "user", "content": attack_prompt}
-            ]
-            
-            try:
-                # Execute against provider
-                response = await provider.chat(messages, config)
-                
-                # Evaluate the response
-                evaluation = await self.evaluate(system_prompt, attack_prompt, response)
-                # Compile result
-                return {
-                    'strategy': self.name,
-                    'system_prompt': system_prompt,
-                    'attack_prompt': attack_prompt,
-                    'instruction': attack_data.get('instruction', ''),
-                    'category': attack_data.get('category', ''),
-                    'response': response,
-                    'evaluation': evaluation,
-                    'success': evaluation.get('passed', False),
-                    'mutation_technique': attack_data.get('mutation_technique', ''),
-                }
-            except Exception as e:
-                # Handle errors
-                return {
-                    'strategy': self.name,
-                    'system_prompt': system_prompt,
-                    'attack_prompt': attack_prompt,
-                    'error': str(e),
-                    'success': False,
-                    'mutation_technique': attack_data.get('mutation_technique', ''),
-                }
-        
-        # Get attack prompts
+       # Get attack prompts
         attack_prompts = await self.get_attack_prompts(config, system_prompt)
        
         
         # Process all attack prompts in parallel
-        tasks = [process_attack_prompt(attack_data) for attack_data in attack_prompts]
+        tasks = [self.process_attack_prompt(config, attack_data, provider, system_prompt) for attack_data in attack_prompts]
         results = await asyncio.gather(*tasks)
         return results
     

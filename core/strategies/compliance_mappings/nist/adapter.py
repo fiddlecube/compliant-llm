@@ -58,6 +58,7 @@ class NISTComplianceAdapter:
             Dict containing NIST controls mapped to the strategy
         """
         mappings = self._strategy_mappings.get("strategy_mappings", {})
+        print("====Mappings::", mappings)
         return mappings.get(strategy_name, {})
     
     def calculate_risk_score(self, likelihood: str, impact: str) -> Dict[str, Any]:
@@ -107,6 +108,7 @@ class NISTComplianceAdapter:
         Returns:
             Dict containing the documentation requirements
         """
+        print("====Documentation Requirements::", self._doc_requirements)
         return self._doc_requirements.get(field_type, {})
     
     def enrich_attack_result(self, attack_result: Dict[str, Any]) -> Dict[str, Any]:

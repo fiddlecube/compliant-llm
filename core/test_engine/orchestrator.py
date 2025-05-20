@@ -5,6 +5,8 @@ Attack orchestrator module.
 This module orchestrates attack strategies against LLM providers.
 """
 import asyncio
+import json
+import os
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 from ..strategies.base import BaseAttackStrategy
@@ -64,7 +66,7 @@ class AttackOrchestrator:
         self.strategies = strategies
         self.provider = provider
         self.config = config
-        self.results = []
+        self.results: List[Dict[str, Any]] = []
         self.nist_adapter = NISTComplianceAdapter() if config.get('nist_compliance', False) else None
     
     @classmethod
@@ -125,7 +127,7 @@ class AttackOrchestrator:
     async def orchestrate_attack(self, system_prompt: str, strategies: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Run the orchestrator with parallel execution using asyncio.gather"""
         
-        async def run_strategy(strategy):
+        async def run_strategy_attack(strategy):
             """Helper function to run a single strategy and track its timing"""
             console.print(f"[yellow bold]Running strategy: {strategy['name']}[/yellow bold]")
             strategy_start_time = datetime.now()
@@ -150,7 +152,7 @@ class AttackOrchestrator:
                 }
         
         # Create tasks for all strategies
-        strategy_tasks = [run_strategy(strategy) for strategy in strategies]
+        strategy_tasks = [run_strategy_attack(strategy) for strategy in strategies]
         
         # Execute all tasks in parallel
         results = await asyncio.gather(*strategy_tasks)
@@ -158,6 +160,124 @@ class AttackOrchestrator:
         self.results = results
         return results
 
+    async def rerun_attack(self, config_dict: Dict[str, Any], file_path: str) -> Dict[str, Any]:
+        """Rerun attacks from a previous report with a new system prompt.
+        
+        Args:
+            system_prompt: The new system prompt to test with
+            file_path: Path to a previous report file (JSON). If None, uses the latest report.
+            
+        Returns:
+            Dict containing the results of rerunning the attacks
+        """
+        # Find the report file to use
+        report_dir = "reports"
+        
+        # Case 1: No file path provided - use the most recent report
+        if not file_path:
+            console.print("No report file specified, looking for the most recent one...")
+            # Check if reports directory exists
+            if not os.path.exists(report_dir):
+                raise FileNotFoundError(f"No reports directory found at {report_dir}")
+                
+            # Find all report files
+            report_files = [f for f in os.listdir(report_dir) if f.startswith("report_") and f.endswith(".json")]
+            if not report_files:
+                raise FileNotFoundError(f"No report files found in {report_dir}")
+                
+            # Sort by timestamp and get the latest one
+            latest_file = sorted(report_files)[-1]
+            file_path = os.path.join(report_dir, latest_file)
+            console.print(f"Using most recent report: {latest_file}")
+            
+        # Case 2: File path is a filename without directory - check in reports folder
+        elif not os.path.isabs(file_path) and not os.path.exists(file_path) and \
+             not os.path.dirname(file_path):
+            possible_path = os.path.join(report_dir, file_path)
+            if os.path.exists(possible_path):
+                file_path = possible_path
+                console.print(f"Found report file in reports directory: {file_path}")
+        
+        # Load the previous report
+        try:
+            console.print(f"Loading report from: {file_path}")
+            with open(file_path, 'r') as f:
+                previous_report = json.load(f)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Report file not found: {file_path}")
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in report file {file_path}: {str(e)}")
+        except Exception as e:
+            raise ValueError(f"Error loading report file {file_path}: {str(e)}")
+            
+        # Extract strategy results from the report
+        strategy_results = previous_report.get("results", [])
+        if not strategy_results:
+            raise ValueError(f"No strategy results found in report file {file_path}")
+        
+        # Track all rerun results
+        rerun_results = []
+        
+        # Rerun each strategy with the new system prompt
+        console.print(f"[yellow bold]Rerunning attacks from {file_path} with new system prompt[/yellow bold]")
+        for strategy_data in strategy_results:
+            strategy_name = strategy_data.get("strategy")
+            if not strategy_name or strategy_name not in STRATEGY_MAP:
+                console.print(f"[red]Unknown strategy: {strategy_name}. Skipping.[/red]")
+                continue
+                
+            # Create the strategy instance
+            strategy_class = STRATEGY_MAP[strategy_name]
+            strategy_instance = strategy_class()
+            
+            # Track time for this strategy
+            strategy_start_time = datetime.now()
+            
+            # Run the strategy against the new system prompt
+            console.print(f"[yellow]Running {strategy_name} strategy...[/yellow]")
+            try:
+                self.config['provider'] = self.provider
+                # Run using asyncio.gather with strategy_data.results
+                system_prompt = config_dict.get('prompt', '')
+                results = await asyncio.gather(*[strategy_instance.process_attack_prompt(config_dict, item, self.provider, system_prompt) for item in strategy_data.get("results", [])])
+                
+                # Calculate runtime
+                strategy_end_time = datetime.now()
+                runtime_in_seconds = (strategy_end_time - strategy_start_time).total_seconds()
+                
+                # Format results
+                rerun_results.append({
+                    "strategy": strategy_name,
+                    "results": results,
+                    "runtime_in_seconds": runtime_in_seconds
+                })
+                
+                # Calculate success metrics
+                test_count = len(results)
+                success_count = sum(1 for r in results if r.get('evaluation', {}).get('passed', False))
+                console.print(f"[green]{strategy_name}: {success_count}/{test_count} successful attacks[/green]")
+                
+            except Exception as e:
+                console.print(f"[red]Error running {strategy_name}: {str(e)}[/red]")
+                rerun_results.append({
+                    "strategy": strategy_name,
+                    "error": str(e),
+                    "runtime_in_seconds": 0
+                })
+        
+        # Update results and generate summary
+        self.results = rerun_results
+        report = self.get_attack_orchestration_summary()
+        
+        # Add rerun metadata
+        report["metadata"]["rerun_info"] = {
+            "original_report": file_path,
+            "rerun_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "new_system_prompt": system_prompt
+        }
+        return report
+        
+    
     def get_attack_orchestration_summary(self) -> Dict[str, Any]:
         """Get a summary of the attack orchestration with both high-level and per-strategy summaries"""
         # Initialize counters and tracking variables
@@ -167,33 +287,14 @@ class AttackOrchestrator:
         breached_strategies = []
         strategy_summaries = []
         mutation_techniques = set()
-        nist_compliance = [] if self.nist_adapter else None
-        
+        strategies_arr = set([s.name for s in self.strategies])
+
         # Calculate per-strategy statistics
         for result in self.results:
             strategy_name = result.get("strategy", "unknown")
+
             strategy_results = result.get("results", [])
             runtime_in_seconds = result.get("runtime_in_seconds", 0)
-            
-            # Enrich results with NIST compliance if enabled
-            if self.nist_adapter:
-                enriched_results = []
-                for test_result in strategy_results:
-                    print("Test Result::", test_result)
-                    enriched_result = self.nist_adapter.enrich_attack_result(test_result)
-                    print("Enriched Result::", enriched_result)
-                    enriched_results.append(enriched_result)
-                    
-                    # Track NIST compliance metrics
-                    risk_score = enriched_result.get("nist_compliance", {}).get("risk_score", {})
-                    if risk_score:
-                        nist_compliance.append({
-                            "strategy": strategy_name,
-                            "severity": test_result.get("evaluation", {}).get("severity", ""),
-                            "risk_score": risk_score,
-                            "controls": enriched_result.get("nist_compliance", {}).get("controls", []),
-                            "ai_rmf": enriched_result.get("nist_compliance", {}).get("ai_rmf", [])
-                        })
             
             # Count tests for this strategy
             test_count = len(strategy_results)
@@ -216,37 +317,39 @@ class AttackOrchestrator:
                 "prompt_mutations": ','.join(mutations)
             }
             strategy_summaries.append(strategy_summary)
-            
+            strategies_arr.add(strategy_name)
+       
             # Add to totals
             total_tests += test_count
             total_success += success_count
             total_failure += failure_count
             if success_count > 0:
                 breached_strategies.append(strategy_name)
-                mutation_techniques.update(mutations)
-        
-        # Generate NIST compliance report if enabled
-        nist_report = None
-        if self.nist_adapter:
-            nist_report = self.nist_adapter.generate_nist_compliance_report(enriched_results)
+                # Add each mutation individually to avoid unhashable type error
+                if mutations:
+                    mutation_techniques.update(mutations)
         
         # Build complete summary
+        stringified_strategies = ','.join(str(item) for item in strategies_arr)
+        stringified_mutations = ','.join(str(item) for item in mutation_techniques)
+
         report_obj = {
             "metadata": {
                 "timestamp": datetime.now().isoformat(),
-                "strategies": [s['name'] for s in self.strategies],
+                "strategies": stringified_strategies,
                 "test_count": total_tests,
                 "success_count": total_success,
                 "failure_count": total_failure,
-                "breached_strategies": breached_strategies,
-                "successful_mutation_techniques": ','.join(filter(None, mutation_techniques))
+                "breached_strategies": ','.join(filter(None, breached_strategies)),
+                "successful_mutation_techniques":  stringified_mutations
             },
             "strategy_summaries": strategy_summaries,
             "results": self.results,
-            "nist_compliance": {
-                "enabled": bool(self.nist_adapter),
-                "individual_assessments": nist_compliance or [],
-                "compliance_report": nist_report or None
-            }
         }
         return report_obj
+        
+    def get_nist_compliance_report(self):
+        if self.nist_adapter:
+            nist_report = self.nist_adapter.generate_nist_compliance_report(self.results)
+            return nist_report
+        return None
