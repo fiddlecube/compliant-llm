@@ -30,7 +30,6 @@ class CLIConfigAdapter:
                     strategy: Optional[str] = None,
                     provider: Optional[str] = None,
                     output: Optional[str] = None,
-                    save: Optional[str] = None,
                     parallel: Optional[bool] = None,
                     timeout: Optional[int] = None,
                     **kwargs):
@@ -43,7 +42,6 @@ class CLIConfigAdapter:
             strategy: Test strategy to use (comma-separated for multiple)
             provider: LLM provider name
             output: Output file path for results
-            save: DEPRECATED: Use output instead
             parallel: Whether to run tests in parallel
             timeout: Timeout in seconds for LLM requests
             **kwargs: Additional keyword arguments
@@ -98,7 +96,7 @@ class CLIConfigAdapter:
                 config_dict['provider'] = provider
         
         # Set output path
-        output_path = output or save
+        output_path = output
         if output_path:
             config_dict['output'] = {'path': os.path.dirname(output_path), 'file': os.path.basename(output_path)}
             
@@ -114,7 +112,6 @@ class CLIConfigAdapter:
             if 'features' not in config_dict:
                 config_dict['features'] = {}
             config_dict['features']['parallel_testing'] = parallel
-        
         # Update the config manager with our modified config
         self.config_manager.config = config_dict
     

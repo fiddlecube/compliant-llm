@@ -11,7 +11,6 @@ import random
 import asyncio
 import os
 import re
-import uuid
 import yaml
 from ...base import BaseAttackStrategy
 from core.providers.base import LLMProvider
@@ -256,37 +255,34 @@ class IndirectPromptInjectionStrategy(BaseAttackStrategy):
         
         return attack_data
     
-    async def attack_and_evaluate(self, system_prompt: str, attack_prompts: List[Dict[str, Any]], provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Run the indirect prompt injection strategy asynchronously with parallel execution"""
-        
-        async def process_attack_prompt(attack_data):
-            """Process a single attack prompt asynchronously"""
-            attack_prompt = attack_data['attack_instruction']
-            messages = [
-                {"role": "system", "content": attack_data['system_prompt']},
-                {"role": "user", "content": attack_prompt}
-            ]
-            try:
-                # Execute against provider
-                response = await provider.chat(messages, config)
-                
-                # Evaluate the response
-                evaluation = await self.evaluate(system_prompt, attack_prompt, response)
-                
-                # Compile result
-                return {
-                    'strategy': self.name,
-                    'system_prompt': system_prompt,
-                    'attack_prompt': attack_prompt,
-                    'description': attack_data.get('description', ''),
-                    'severity': attack_data.get('severity', 'medium'),
-                    'category': attack_data.get('category', ''),
-                    'mutation_technique': attack_data.get('mutation_technique', ''),
-                    'response': response,
-                    'evaluation': evaluation,
-                    'success': evaluation.get('passed', False)
-                }
-            except Exception as e:
+    async def process_attack_prompt(self, config, attack_data, provider, system_prompt):
+        """Process a single attack prompt asynchronously"""
+        attack_prompt = attack_data.get('attack_instruction', attack_data.get('attack_prompt', ''))
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": attack_prompt}
+        ]
+        try:
+            # Execute against provider
+            response = await provider.chat(messages, config)
+            
+            # Evaluate the response
+            evaluation = await self.evaluate(system_prompt, attack_prompt, response)
+            
+            # Compile result
+            return {
+                'strategy': self.name,
+                'system_prompt': system_prompt,
+                'attack_prompt': attack_prompt,
+                'description': attack_data.get('description', ''),
+                'severity': attack_data.get('severity', 'medium'),
+                'category': attack_data.get('category', ''),
+                'mutation_technique': attack_data.get('mutation_technique', ''),
+                'response': response,
+                'evaluation': evaluation,
+                'success': evaluation.get('passed', False)
+            }
+        except Exception as e:
                 # Handle errors
                 return {
                     'strategy': self.name,
@@ -299,8 +295,11 @@ class IndirectPromptInjectionStrategy(BaseAttackStrategy):
                     'success': False
                 }
         
+        
+    async def attack_and_evaluate(self, system_prompt: str, attack_prompts: List[Dict[str, Any]], provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Run the indirect prompt injection strategy asynchronously with parallel execution"""
         # Process all attack prompts in parallel
-        tasks = [process_attack_prompt(attack_data) for attack_data in attack_prompts]
+        tasks = [await self.process_attack_prompt(config, attack_data, provider, system_prompt) for attack_data in attack_prompts]
         results = await asyncio.gather(*tasks)
         return results
         

@@ -233,14 +233,11 @@ class ModelDoSStrategy(BaseAttackStrategy):
         
         return attack_data
     
-    async def attack_and_evaluate(self, system_prompt: str, attack_prompts: List[Dict[str, Any]], provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Run the model DoS strategy asynchronously with parallel execution"""
-        
-        async def process_attack_prompt(attack_data):
+    async def process_attack_prompt(self, config: Dict[str, Any], attack_data: Dict[str, Any], provider: LLMProvider, system_prompt: str):
             """Process a single attack prompt asynchronously"""
-            attack_prompt = attack_data['attack_instruction']
+            attack_prompt = attack_data.get('attack_instruction', attack_data.get('attack_prompt', ''))
             messages = [
-                {"role": "system", "content": attack_data['system_prompt']},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": attack_prompt}
             ]
             
@@ -348,8 +345,12 @@ class ModelDoSStrategy(BaseAttackStrategy):
                     'timed_out': False
                 }
         
+    async def attack_and_evaluate(self, system_prompt: str, attack_prompts: List[Dict[str, Any]], provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Run the model DoS strategy asynchronously with parallel execution"""
+        
+        
         # Process all attack prompts in parallel
-        tasks = [process_attack_prompt(attack_data) for attack_data in attack_prompts]
+        tasks = [self.process_attack_prompt(config, attack_data, provider, system_prompt) for attack_data in attack_prompts]
         results = await asyncio.gather(*tasks)
         return results
         

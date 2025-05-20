@@ -152,57 +152,54 @@ def execute_prompt_tests(config_path=None, config_dict=None):
     raise ValueError("No configuration provided. Please provide either config_path or config_dict.")
 
 
+def execute_rerun_test(config_dict, report_file):
+    start_time = datetime.now()
+    # Use the provided configuration directly
+    config = config_dict
+    
+    # Extract provider configuration with sensible defaults
+    model_name = config.get('provider_name') or config.get('provider', {}).get('name', 'openai/gpt-4o')
+    # Get API key with fallback to environment variable
+    api_key = config.get('provider', {}).get('api_key') or os.getenv(model_name.split('/')[0].upper() + "_API_KEY", '')
+    
+    # Create provider configuration in one step
+    provider_config = {
+        'provider_name': model_name,
+        'api_key': api_key,
+        'temperature': config.get('temperature', 0.7),
+        'timeout': config.get('timeout', 30)
+    }
+    
+    # Create provider
+    provider = LiteLLMProvider()
 
-# CLI entry point (you can add this to a separate CLI script or keep it here)
-# def main():
-#     import argparse
+    # Create orchestrator
+    orchestrator = AttackOrchestrator(
+        strategies=[],
+        provider=provider,
+        config={
+            **config,
+            'provider_config': provider_config
+        }
+    )
 
-#     parser = argparse.ArgumentParser(description="Prompt Security Test Runner")
-#     parser.add_argument("--config", help="Path to configuration file")
-#     parser.add_argument("--provider", help="LLM Provider name")
-#     parser.add_argument("--api-key", help="API Key for the provider")
-#     parser.add_argument("--system-prompt", help="Custom system prompt")
-#     parser.add_argument("--strategy", default="jailbreak", 
-#                         choices=['jailbreak', 'prompt_injection', 'context_manipulation', 'information_extraction'],
-#                         help="Test strategy to use")
+    # try running an attack with orchestrator
+    report_data = asyncio.run(orchestrator.rerun_attack(config_dict, report_file))
+    
+    # calculate elapsed time
+    elapsed_time = datetime.now() - start_time
+    report_data['metadata']['elapsed_seconds'] = elapsed_time.total_seconds()
 
-#     args = parser.parse_args()
+    # Save report (optional)
+    output = config.get('output')  # Get from CLI argument
+    if not output:  # If not specified, use default path
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output = f'reports/rerun_report_{timestamp}.json'
+    
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(output), exist_ok=True)
+    
+    if len(report_data["results"]) > 0:    
+        save_report(report_data, output)
+    return report_data
 
-#     # Create the CLI adapter for configuration handling
-#     cli_adapter = CLIConfigAdapter()
-
-#     try:
-#         if args.config:
-#             # Load from a specified config file
-#             cli_adapter.load_from_cli(
-#                 config=args.config,
-#                 strategy=args.strategy,
-#                 provider=args.provider,
-#                 system_prompt=args.system_prompt
-#             )
-#         else:
-#             # Load from CLI arguments only
-#             cli_adapter.load_from_cli(
-#                 prompt=args.system_prompt,
-#                 strategy=args.strategy,
-#                 provider=args.provider,
-#                 api_key=args.api_key
-#             )
-
-#         # Get the runner config
-#         runner_config = cli_adapter.get_runner_config()
-
-#         # Execute the tests
-#         results = execute_prompt_tests_with_orchestrator(config_dict=runner_config)
-#     except Exception as e:
-#         print(f"Error: {e}")
-#         sys.exit(1)
-
-#     # Print summary
-#     print("\nTest Results Summary:")
-#     print(f"Total Tests: {results['metadata']['test_count']}")
-#     print(f"Successful Tests: {results['metadata']['success_count']}")
-#     print(f"Failed Tests: {results['metadata']['failure_count']}")
-
-# if __name__ == "__main__":
-#     main()

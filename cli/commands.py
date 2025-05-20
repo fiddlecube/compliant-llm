@@ -15,7 +15,7 @@ from rich.progress import (
 )
 from typing import Dict, Any, Optional, Callable
 from rich import box
-from core.runner import execute_prompt_tests
+from core.runner import execute_prompt_tests, execute_rerun_test
 from core.config_manager.cli_adapter import CLIConfigAdapter
 
 
@@ -251,9 +251,9 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         report_metrics = {
             "Total Tests": test_count,
             "Total Security Breaches": f"[{attack_success_style}]{attack_success_count}",
-            "Tested Strategies": ','.join(metadata.get('strategies', ['Unknown'])),
-            "Breached Strategies": ','.join(metadata.get('breached_strategies', ['Unknown'])),
-            "Successful Mutations": metadata.get('successful_mutation_techniques', ['Unknown']),
+            "Tested Strategies": metadata.get('strategies') or "-",
+            "Breached Strategies": metadata.get('breached_strategies') or "-",
+            "Successful Mutations": metadata.get('successful_mutation_techniques') or "-",
             "Execution Time": f"{metadata.get('elapsed_seconds', 0):.2f} seconds"
         }
         
@@ -511,6 +511,131 @@ def config(list, show, validate):
         # Display help if no options provided
         ctx = click.get_current_context()
         click.echo(ctx.get_help())
+
+
+@cli.command()
+@click.argument('prompt')
+@click.option('--report-file', '-r', default=None, help='Previous report file to rerun')
+def rerun(prompt, report_file):
+    """Rerun attacks from a previous report with a new system prompt.
+    
+    This command allows you to reuse the attack strategies from a previous test
+    but with a different system prompt. If no report file is specified, the
+    most recent report will be used.
+    """
+    # Create a rich console for showing output
+    console = Console()
+    # Validate inputs
+    if not prompt:
+        console.print("[red]Error: System prompt is required.[/red]")
+        sys.exit(1)
+        
+    # Read configuration from config.yaml
+    cli_adapter = CLIConfigAdapter()
+    
+    try:
+        # Load the default configuration
+        cli_adapter.load_from_cli(
+            prompt=prompt,
+        )
+        
+        # Get the configuration for the runner
+        config_dict = cli_adapter.get_runner_config()
+
+    except Exception as e:
+        console.print(f"[red]Error loading configuration: {e}[/red]")
+        sys.exit(1)
+    
+    # Generate timestamp for report file
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    # Create output directory if it doesn't exist
+    output_dir = "reports"
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Set output file path if not specified
+    output_filename = f"rerun_report_{timestamp}.json"
+    output = os.path.join(output_dir, output_filename)
+    
+    # Create and configure orchestrator
+    # Run the rerun with a progress indicator
+    console.print(f"\n[bold green]Rerunning attacks with new system prompt:[/] '{prompt}'")
+    
+    try:
+        # Execute rerun with progress indicator
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[bold blue]{task.description}"),
+            TimeElapsedColumn(),
+        ) as progress:
+            task = progress.add_task("[cyan]Rerunning security tests", total=None)
+            
+            # Run the attacks against new system prompt using same strategies
+            # This uses the default asyncio implementation from runner.py
+            report_data = execute_rerun_test(config_dict, report_file)
+            
+            progress.update(task, completed=True)
+
+        console.print("[bold green]Rerun completed successfully![/]")
+        console.print(f"[bold cyan]Report saved to: {output}[/]")
+        console.print("\n")
+        
+        # Display summary
+        # Check if data has the new schema with metadata and tests
+        if 'metadata' in report_data:
+            # New schema
+            metadata = report_data['metadata']
+            
+            # Calculate security metrics
+            attack_success_count = metadata.get('success_count', 0)
+            test_count = metadata.get('test_count', 0)
+            attack_success_rate = (attack_success_count / test_count) * 100 if test_count > 0 else 0
+            attack_success_style = ("red" if attack_success_rate >= 50 else
+                                "yellow" if attack_success_rate >= 20 else "green")
+            
+            # Create a dictionary with all the report metrics
+            report_metrics = {
+                "Total Tests": test_count,
+                "Total Security Breaches": f"[{attack_success_style}]{attack_success_count}",
+                "Tested Strategies": (metadata.get('strategies')) or "-",
+                "Breached Strategies": metadata.get('breached_strategies') or "-",
+                "Successful Mutations": metadata.get('successful_mutation_techniques') or "-",
+                "Execution Time": f"{metadata.get('elapsed_seconds', 0):.2f} seconds"
+            }
+            
+            # Create and print the table using the generic function
+            report_table = dict_to_cli_table(
+                report_metrics,
+                title="🔒 Prompt Secure Report Summary",
+                key_column="Metric",
+                value_column="Value"
+            )
+            
+            # Print the table
+            console.print(report_table)
+            
+            # Print a summary of vulnerabilities found
+            if attack_success_count > 0:
+                console.print(
+                    f"\n[bold red]⚠️  {attack_success_count} Vulnerabilities found![/]"
+                )
+                console.print("[yellow]Review the full report for details.[/]")
+            else:
+                console.print("\n[bold green]✅ No vulnerabilities found![/]")
+        else:
+            # Legacy schema
+            # Create a new table for report summary
+            table = Table(title="🔒 Prompt Secure Report Summary", box=box.ROUNDED)
+            table.add_column("Metric", style="cyan")
+            table.add_column("Value", style="green")
+            table.add_row("Total Tests", f"{len(report_data)}")
+            console.print(table)
+        
+    except Exception as e:
+        console.print(f"[red]Error during rerun: {e}[/red]")
+        import traceback
+        console.print(traceback.format_exc())
+        sys.exit(1)
 
 
 if __name__ == '__main__':
