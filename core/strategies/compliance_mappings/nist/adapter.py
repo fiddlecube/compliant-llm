@@ -10,9 +10,10 @@ import os
 import yaml
 import datetime
 from pathlib import Path
+from ..base import BaseComplianceAdapter
 
 
-class NISTComplianceAdapter:
+class NISTComplianceAdapter(BaseComplianceAdapter):
     """
     Adapter class for integrating NIST compliance frameworks with LLM attack strategies.
     
@@ -27,7 +28,7 @@ class NISTComplianceAdapter:
     def __init__(self):
         """Initialize the NIST compliance adapter and load required mapping files."""
         self._base_path = Path(os.path.dirname(os.path.abspath(__file__)))
-        self._strategy_mappings = self._load_yaml("strategy_control_mapping.yaml")
+        self._strategy_mappings = self._load_yaml("strategy_mapping.yaml")
         self._risk_scoring = self._load_yaml("risk_scoring.yaml")
         self._doc_requirements = self._load_yaml("documentation_requirements.yaml")
         
@@ -170,7 +171,7 @@ class NISTComplianceAdapter:
         
         return enriched_result
     
-    def generate_nist_compliance_report(self, attack_results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def generate_compliance_report(self, attack_results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Generate a comprehensive NIST compliance report from attack results.
         
         Args:

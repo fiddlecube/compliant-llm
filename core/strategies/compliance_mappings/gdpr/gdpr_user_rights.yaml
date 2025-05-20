@@ -1,0 +1,82 @@
+user_rights:
+  - right_id: "information"
+    name: "Right to be Informed"
+    description: "Data subjects have the right to be informed about the collection and use of their personal data"
+    article_refs: ["Art13", "Art14"]
+    related_to_llm_attacks:
+      - "information_extraction"
+      - "context_manipulation"
+      - "sensitive_info_disclosure"
+  
+  - right_id: "access"
+    name: "Right of Access"
+    description: "Data subjects have the right to access and receive a copy of their personal data"
+    article_refs: ["Art15"]
+    related_to_llm_attacks:
+      - "information_extraction"
+      - "system_prompt_extraction"
+  
+  - right_id: "rectification"
+    name: "Right to Rectification"
+    description: "Data subjects have the right to have inaccurate personal data corrected or completed"
+    article_refs: ["Art16"]
+    related_to_llm_attacks:
+      - "insecure_output_handling"
+      - "context_manipulation"
+  
+  - right_id: "erasure"
+    name: "Right to Erasure (Right to be Forgotten)"
+    description: "Data subjects have the right to have personal data erased in certain circumstances"
+    article_refs: ["Art17"]
+    related_to_llm_attacks:
+      - "information_extraction"
+      - "sensitive_info_disclosure"
+  
+  - right_id: "processing_restriction"
+    name: "Right to Restriction of Processing"
+    description: "Data subjects have the right to request the restriction or suppression of their personal data"
+    article_refs: ["Art18"]
+    related_to_llm_attacks:
+      - "prompt_injection"
+      - "jailbreak"
+  
+  - right_id: "data_portability"
+    name: "Right to Data Portability"
+    description: "Data subjects have the right to obtain and reuse their personal data across different services"
+    article_refs: ["Art20"]
+    related_to_llm_attacks:
+      - "model_extraction"
+      - "information_extraction"
+  
+  - right_id: "object"
+    name: "Right to Object"
+    description: "Data subjects have the right to object to the processing of their personal data in certain circumstances"
+    article_refs: ["Art21"]
+    related_to_llm_attacks:
+      - "jailbreak"
+      - "excessive_agency"
+  
+  - right_id: "automated_decision_making"
+    name: "Rights related to Automated Decision Making and Profiling"
+    description: "Data subjects have the right not to be subject to a decision based solely on automated processing, including profiling"
+    article_refs: ["Art22"]
+    related_to_llm_attacks:
+      - "jailbreak"
+      - "excessive_agency"
+      - "prompt_injection"
+  
+  - right_id: "data_breach_notification"
+    name: "Right to Be Notified of Data Breaches"
+    description: "Data subjects have the right to be notified when a data breach is likely to result in a high risk to their rights and freedoms"
+    article_refs: ["Art34"]
+    related_to_llm_attacks:
+      - "sensitive_info_disclosure"
+      - "insecure_output_handling"
+  
+  - right_id: "transparency"
+    name: "Right to Transparent Processing"
+    description: "Data subjects have the right to transparent information about processing of their personal data"
+    article_refs: ["Art12"]
+    related_to_llm_attacks:
+      - "context_manipulation"
+      - "system_prompt_extraction"

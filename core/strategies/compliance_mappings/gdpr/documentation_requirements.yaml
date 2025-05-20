@@ -1,0 +1,140 @@
+# GDPR Documentation Requirements for LLM Security Testing
+# Based on GDPR Article 30 (Records of processing activities) and Article 35 (DPIA)
+
+# Attack documentation requirements
+attack_documentation:
+  required_fields:
+    - field_id: "test_id"
+      description: "Unique identifier for the test case"
+      example: "GDPR-IOH-001"
+      required: true
+    
+    - field_id: "gdpr_references"
+      description: "GDPR articles and principles being tested"
+      example: ["Art5_1f", "Art32"]
+      required: true
+    
+    - field_id: "test_objective"
+      description: "Clear statement of what data protection aspect is being tested"
+      example: "Verify that the LLM properly protects personal data from extraction attempts"
+      required: true
+    
+    - field_id: "test_method"
+      description: "Testing approach used to evaluate compliance"
+      example: "Dynamic testing with simulated personal data extraction attempts"
+      required: true
+      allowed_values: ["Examine", "Interview", "Test", "Automated Test", "Manual Test"]
+    
+    - field_id: "expected_results"
+      description: "Expected outcome if data protection controls are functioning properly"
+      example: "The LLM should refuse to disclose personal data to unauthorized requests"
+      required: true
+    
+    - field_id: "actual_results"
+      description: "Actual outcome observed during testing"
+      example: "The LLM revealed personal data after persistent extraction attempts"
+      required: true
+    
+    - field_id: "test_status"
+      description: "Pass/Fail determination"
+      example: "Failed"
+      required: true
+      allowed_values: ["Passed", "Failed", "Not Applicable", "Not Tested"]
+    
+    - field_id: "data_subject_impact"
+      description: "Assessment of potential impact on data subject rights and freedoms"
+      example: "High - could lead to disclosure of sensitive personal information"
+      required: true
+      allowed_values: ["Minimal", "Low", "Medium", "High", "Critical"]
+    
+    - field_id: "dpia_required"
+      description: "Whether a Data Protection Impact Assessment is required"
+      example: "Yes"
+      required: true
+      allowed_values: ["Yes", "No", "Already Completed"]
+    
+    - field_id: "assessment_date"
+      description: "Date when assessment was performed"
+      example: "2025-05-20"
+      required: true
+    
+    - field_id: "assessor"
+      description: "Person or system that performed the assessment"
+      example: "Prompt Secure Framework v1.2.3"
+      required: true
+  
+  optional_fields:
+    - field_id: "lawful_basis"
+      description: "Lawful basis for processing the data (GDPR Article 6)"
+      example: "Legitimate interests"
+      allowed_values: ["Consent", "Contract", "Legal Obligation", "Vital Interests", "Public Task", "Legitimate Interests"]
+    
+    - field_id: "data_categories"
+      description: "Categories of personal data involved in the test"
+      example: ["Contact Information", "Health Data"]
+    
+    - field_id: "remediation_steps"
+      description: "Recommended steps to mitigate identified risks"
+      example: "Implement additional output validation for personal data patterns"
+    
+    - field_id: "controller_processor_roles"
+      description: "Clarification of roles in the processing activity"
+      example: "LLM Provider acts as processor, Customer acts as controller"
+
+# Remediation documentation requirements
+remediation_documentation:
+  required_fields:
+    - field_id: "risk_id"
+      description: "Identifier for the risk being remediated"
+      example: "GDPR-RISK-001"
+      required: true
+    
+    - field_id: "risk_description"
+      description: "Clear description of the data protection risk"
+      example: "LLM system reveals personal data in response to crafted prompts"
+      required: true
+    
+    - field_id: "remediation_action"
+      description: "Action taken to address the risk"
+      example: "Implemented enhanced output filtering for personal data patterns"
+      required: true
+    
+    - field_id: "gdpr_articles_addressed"
+      description: "GDPR articles addressed by the remediation"
+      example: ["Art5_1f", "Art32"]
+      required: true
+    
+    - field_id: "implementation_date"
+      description: "Date when remediation was implemented"
+      example: "2025-06-01"
+      required: true
+    
+    - field_id: "residual_risk"
+      description: "Assessment of any remaining risk after remediation"
+      example: "Low - some edge cases may still exist but core vulnerability addressed"
+      required: true
+      allowed_values: ["None", "Minimal", "Low", "Medium", "High"]
+    
+    - field_id: "verification_method"
+      description: "How the remediation was verified to be effective"
+      example: "Regression testing with original test cases plus additional variants"
+      required: true
+    
+    - field_id: "approver"
+      description: "Person who approved the remediation as sufficient"
+      example: "Jane Smith, DPO"
+      required: true
+  
+  optional_fields:
+    - field_id: "post_remediation_dpia"
+      description: "Whether a new DPIA was performed after remediation"
+      example: "Yes"
+      allowed_values: ["Yes", "No", "Not Required"]
+    
+    - field_id: "technical_details"
+      description: "Technical details of the remediation implementation"
+      example: "Added regex pattern matching for common personal data formats"
+    
+    - field_id: "follow_up_date"
+      description: "Date for follow-up assessment of the remediation"
+      example: "2025-09-01"

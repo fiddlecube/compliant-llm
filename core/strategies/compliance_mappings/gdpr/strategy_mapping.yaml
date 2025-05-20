@@ -1,0 +1,175 @@
+# GDPR Compliance Mappings for LLM Attack Strategies
+# This file maps each attack strategy to specific GDPR principles, articles, and rights
+
+strategy_mappings:
+  # Prompt Injection Attack Strategy
+  prompt_injection:
+    description: "Strategy for testing LLM security against prompt injection vulnerabilities"
+    
+    gdpr_principles:
+      - principle_id: "data_minimization"
+        name: "Data Minimization"
+        description: "Tests if LLM appropriately minimizes data exposure through prompt injection"
+        article_ref: "Art5_1c"
+      - principle_id: "integrity_confidentiality"
+        name: "Integrity and Confidentiality"
+        description: "Tests if LLM maintains data security when faced with prompt injection attempts"
+        article_ref: "Art5_1f"
+    
+    gdpr_articles:
+      - article_id: "Art5_1f"
+        name: "Article 5(1)(f)"
+        description: "Security, integrity, and confidentiality principle"
+        category: "Data Protection Principles"
+      - article_id: "Art32"
+        name: "Article 32"
+        description: "Security of processing"
+        category: "Security of Processing"
+    
+    gdpr_rights:
+      - right_id: "confidentiality"
+        name: "Right to Confidential Processing"
+        description: "Tests if user rights to confidential data processing are maintained"
+        article_ref: "Art5_1f"
+    
+    attack_categories:
+      - name: "Unauthorized Data Access"
+        severity: "High"
+        impact_level: "high_risk"
+        control_objective: "Prevent LLM from revealing sensitive information through prompt injection"
+
+  # Jailbreak Attack Strategy
+  jailbreak:
+    description: "Strategy for testing LLM security against jailbreak vulnerabilities"
+    
+    gdpr_principles:
+      - principle_id: "lawfulness_fairness_transparency"
+        name: "Lawfulness, Fairness, and Transparency"
+        description: "Tests if LLM processing remains lawful and transparent when facing jailbreak attempts"
+        article_ref: "Art5_1a"
+      - principle_id: "purpose_limitation"
+        name: "Purpose Limitation"
+        description: "Tests if LLM properly maintains purpose limitations despite jailbreak attempts"
+        article_ref: "Art5_1b"
+    
+    gdpr_articles:
+      - article_id: "Art5_1a"
+        name: "Article 5(1)(a)"
+        description: "Lawfulness, fairness, and transparency principle"
+        category: "Data Protection Principles"
+      - article_id: "Art5_1b"
+        name: "Article 5(1)(b)"
+        description: "Purpose limitation principle"
+        category: "Data Protection Principles"
+      - article_id: "Art25"
+        name: "Article 25"
+        description: "Data protection by design and by default"
+        category: "Controller Obligations"
+    
+    gdpr_rights:
+      - right_id: "transparency"
+        name: "Right to Transparent Processing"
+        description: "Tests if user rights to transparent processing are maintained"
+        article_ref: "Art5_1a"
+      - right_id: "object"
+        name: "Right to Object"
+        description: "Tests if user rights to object to certain types of processing are maintained"
+        article_ref: "Art21"
+    
+    attack_categories:
+      - name: "Unauthorized Processing"
+        severity: "High"
+        impact_level: "high_risk"
+        control_objective: "Prevent LLM from processing data outside its designed and lawful purposes"
+
+  # Information Extraction Attack Strategy
+  information_extraction:
+    description: "Strategy for testing LLM security against information extraction vulnerabilities"
+    
+    gdpr_principles:
+      - principle_id: "data_minimization"
+        name: "Data Minimization"
+        description: "Tests if LLM properly minimizes data in responses to extraction attempts"
+        article_ref: "Art5_1c"
+      - principle_id: "storage_limitation"
+        name: "Storage Limitation"
+        description: "Tests if LLM handles stored sensitive data appropriately during extraction attempts"
+        article_ref: "Art5_1e"
+    
+    gdpr_articles:
+      - article_id: "Art5_1c"
+        name: "Article 5(1)(c)"
+        description: "Data minimization principle"
+        category: "Data Protection Principles"
+      - article_id: "Art25"
+        name: "Article 25"
+        description: "Data protection by design and by default"
+        category: "Controller Obligations"
+      - article_id: "Art17"
+        name: "Article 17"
+        description: "Right to erasure ('right to be forgotten')"
+        category: "Data Subject Rights"
+    
+    gdpr_rights:
+      - right_id: "erasure"
+        name: "Right to Erasure"
+        description: "Tests if extraction attacks can bypass right to erasure guarantees"
+        article_ref: "Art17"
+      - right_id: "access"
+        name: "Right of Access"
+        description: "Tests if extraction attacks can manipulate access controls"
+        article_ref: "Art15"
+    
+    attack_categories:
+      - name: "Data Exposure"
+        severity: "High"
+        impact_level: "high_risk"
+        control_objective: "Prevent LLM from exposing sensitive personal data through extraction techniques"
+
+  # Insecure Output Handling Attack Strategy
+  insecure_output_handling:
+    description: "Strategy for testing LLM security against insecure output handling vulnerabilities"
+    
+    gdpr_principles:
+      - principle_id: "integrity_confidentiality"
+        name: "Integrity and Confidentiality"
+        description: "Tests if LLM maintains integrity and confidentiality in generated outputs"
+        article_ref: "Art5_1f"
+      - principle_id: "accuracy"
+        name: "Accuracy"
+        description: "Tests if LLM generates accurate outputs resistant to manipulation"
+        article_ref: "Art5_1d"
+    
+    gdpr_articles:
+      - article_id: "Art5_1f"
+        name: "Article 5(1)(f)"
+        description: "Security, integrity, and confidentiality principle"
+        category: "Data Protection Principles"
+      - article_id: "Art32"
+        name: "Article 32"
+        description: "Security of processing"
+        category: "Security of Processing"
+      - article_id: "Art34"
+        name: "Article 34"
+        description: "Communication of a personal data breach to the data subject"
+        category: "Data Breach Notification"
+    
+    gdpr_rights:
+      - right_id: "data_breach_notification"
+        name: "Right to Be Notified of Data Breaches"
+        description: "Tests if insecure outputs could lead to data breaches requiring notification"
+        article_ref: "Art34"
+      - right_id: "rectification"
+        name: "Right to Rectification"
+        description: "Tests if outputs can be manipulated to prevent rectification rights"
+        article_ref: "Art16"
+    
+    attack_categories:
+      - name: "Output Manipulation"
+        severity: "High"
+        impact_level: "high_risk"
+        control_objective: "Prevent LLM outputs from being manipulated in ways that compromise security"
+      - name: "Downstream System Exploitation"
+        severity: "Critical"
+        impact_level: "high_risk"
+        control_objective: "Prevent LLM outputs from exploiting downstream systems or applications"
