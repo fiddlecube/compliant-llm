@@ -85,7 +85,7 @@ All reports are automatically saved to the `reports/` directory, which is exclud
 
 ## CLI Documentation
 
-Prompt Secure provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
+Compliant LLM provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
 More details in documentation folder.
 
 ## Development
@@ -302,7 +302,7 @@ strategies_config:
 
 ## Configuration Format
 
-Prompt Secure uses YAML for configuration. Here's an example:
+Compliant LLM uses YAML for configuration. Here's an example:
 
 ```yaml
 name: "System Prompt Test"

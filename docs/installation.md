@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide provides instructions for installing Prompt Secure on your system.
+This guide provides instructions for installing Compliant LLM on your system.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ This guide provides instructions for installing Prompt Secure on your system.
 
 ### Installing from PyPI (Recommended)
 
-The simplest way to install Prompt Secure is using pip:
+The simplest way to install Compliant LLM is using pip:
 
 ```bash
 pip install compliant-llm
@@ -44,17 +44,17 @@ pip install -e .
 
 ## Verifying Installation
 
-To verify that Prompt Secure is correctly installed, run:
+To verify that Compliant LLM is correctly installed, run:
 
 ```bash
 python -m cli.main --version
 ```
 
-This should display the version number of Prompt Secure.
+This should display the version number of Compliant LLM.
 
 ## API Key Setup
 
-Prompt Secure requires API keys for the LLM providers you want to use. Set these as environment variables:
+Compliant LLM requires API keys for the LLM providers you want to use. Set these as environment variables:
 
 ### OpenAI API Key
 
@@ -80,7 +80,7 @@ You can also create a `.env` file in your project root with these variables.
 
 ### For Development
 
-If you want to contribute to Prompt Secure or run tests, install the development dependencies:
+If you want to contribute to Compliant LLM or run tests, install the development dependencies:
 
 ```bash
 pip install -e ".[dev]"
@@ -125,4 +125,4 @@ If the tests run but fail to connect to the API:
 
 ## Next Steps
 
-After installation, proceed to the [Quick Start Guide](quickstart.md) to begin using Prompt Secure.
+After installation, proceed to the [Quick Start Guide](quickstart.md) to begin using Compliant LLM.

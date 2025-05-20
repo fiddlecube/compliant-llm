@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-This guide will help you get up and running with Prompt Secure quickly.
+This guide will help you get up and running with Compliant LLM quickly.
 
 ## Prerequisites
 
@@ -9,7 +9,7 @@ This guide will help you get up and running with Prompt Secure quickly.
 
 ## Installation
 
-If you haven't installed Prompt Secure yet, follow the [installation instructions](installation.md).
+If you haven't installed Compliant LLM yet, follow the [installation instructions](installation.md).
 
 ## Basic Usage
 

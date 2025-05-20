@@ -1,6 +1,6 @@
-# Prompt Secure Documentation
+# Compliant LLM Documentation
 
-This directory contains detailed documentation for the Prompt Secure project.
+Detailed documentation of Compliant LLM to test your AI Agents against various attack vectors.
 
 ## Contents
 

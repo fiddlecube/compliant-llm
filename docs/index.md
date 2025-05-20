@@ -1,10 +1,10 @@
-# Prompt Secure Documentation
+# Compliant LLM Documentation
 
-Welcome to the Prompt Secure documentation. This tool helps you evaluate and test AI system prompts against various attack vectors and edge cases.
+Welcome to the Compliant LLM documentation. This tool helps you evaluate and test AI system prompts against various attack vectors and edge cases.
 
 ## Overview
 
-Prompt Secure is designed to help AI developers and security researchers test the robustness of their system prompts by simulating various attack strategies such as prompt injection, jailbreaking, adversarial inputs, and more.
+Compliant LLM is designed to help AI developers and security researchers test the robustness of their system prompts by simulating various attack strategies such as prompt injection, jailbreaking, adversarial inputs, and more.
 
 ## Getting Started
 

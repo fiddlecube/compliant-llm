@@ -1,6 +1,6 @@
 # Test Command
 
-The `test` command is the primary function of Prompt Secure, allowing you to evaluate system prompts against various attack strategies.
+The `test` command is the primary function of Compliant LLM, allowing you to evaluate system prompts against various attack strategies.
 
 ## Synopsis
 

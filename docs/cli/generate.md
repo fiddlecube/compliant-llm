@@ -1,6 +1,6 @@
 # Generate Command
 
-The `generate` command creates template files for configurations and prompts to help you get started quickly with Prompt Secure.
+The `generate` command creates template files for configurations and prompts to help you get started quickly with Compliant LLM.
 
 ## Synopsis
 
@@ -10,7 +10,7 @@ python -m cli.main generate [TYPE] [OPTIONS]
 
 ## Description
 
-The generate command helps you create starter templates for configurations and system prompts. This is particularly useful when you're first getting started with Prompt Secure or when you want to create a new configuration based on a predefined template.
+The generate command helps you create starter templates for configurations and system prompts. This is particularly useful when you're first getting started with Compliant LLM or when you want to create a new configuration based on a predefined template.
 
 ## Arguments
 
