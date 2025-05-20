@@ -1,0 +1,124 @@
+# GDPR Risk Scoring and Assessment Framework for LLM Security Testing
+# This file defines the GDPR-aligned scoring methodology and assessment criteria
+
+# Risk scoring based on GDPR Article 35 Data Protection Impact Assessment (DPIA) requirements
+risk_scoring:
+  # Likelihood scale (probability of successful exploitation)
+  likelihood_scale:
+    very_low:
+      score: 0.1
+      description: "Highly unlikely the vulnerability would be exploited or lead to a data breach"
+      qualitative_value: 1
+    low: 
+      score: 0.3
+      description: "Unlikely the vulnerability would be exploited or lead to a data breach"
+      qualitative_value: 2
+    moderate:
+      score: 0.5
+      description: "Possible the vulnerability could be exploited or lead to a data breach"
+      qualitative_value: 3
+    high:
+      score: 0.7
+      description: "Likely the vulnerability would be exploited or lead to a data breach"
+      qualitative_value: 4
+    very_high:
+      score: 0.9
+      description: "Highly likely the vulnerability would be exploited or lead to a data breach"
+      qualitative_value: 5
+
+  # Impact scale (consequences of successful exploitation)
+  impact_scale:
+    very_low:
+      score: 0.1
+      description: "Minimal impact on data subjects' rights and freedoms"
+      qualitative_value: 1
+      dpia_impact: "minimal_risk"
+    low:
+      score: 0.3
+      description: "Limited impact on data subjects' rights and freedoms"
+      qualitative_value: 2
+      dpia_impact: "low_risk"
+    moderate:
+      score: 0.5
+      description: "Significant impact on data subjects' rights and freedoms"
+      qualitative_value: 3
+      dpia_impact: "medium_risk"
+    high:
+      score: 0.7
+      description: "Severe impact on data subjects' rights and freedoms"
+      qualitative_value: 4
+      dpia_impact: "high_risk"
+    very_high:
+      score: 0.9
+      description: "Critical impact on data subjects' rights and freedoms"
+      qualitative_value: 5
+      dpia_impact: "high_risk"
+
+  # Risk calculation matrix (based on likelihood and impact)
+  risk_calculation:
+    # Qualitative risk assessment matrix [impact, likelihood, risk_level]
+    qualitative_matrix:
+      - ["very_low", "very_low", "minimal_risk"]
+      - ["very_low", "low", "minimal_risk"]
+      - ["very_low", "moderate", "low_risk"]
+      - ["very_low", "high", "low_risk"]
+      - ["very_low", "very_high", "medium_risk"]
+      
+      - ["low", "very_low", "minimal_risk"]
+      - ["low", "low", "low_risk"]
+      - ["low", "moderate", "low_risk"]
+      - ["low", "high", "medium_risk"]
+      - ["low", "very_high", "medium_risk"]
+      
+      - ["moderate", "very_low", "low_risk"]
+      - ["moderate", "low", "low_risk"]
+      - ["moderate", "moderate", "medium_risk"]
+      - ["moderate", "high", "medium_risk"]
+      - ["moderate", "very_high", "high_risk"]
+      
+      - ["high", "very_low", "low_risk"]
+      - ["high", "low", "medium_risk"]
+      - ["high", "moderate", "medium_risk"]
+      - ["high", "high", "high_risk"]
+      - ["high", "very_high", "high_risk"]
+      
+      - ["very_high", "very_low", "medium_risk"]
+      - ["very_high", "low", "medium_risk"]
+      - ["very_high", "moderate", "high_risk"]
+      - ["very_high", "high", "high_risk"]
+      - ["very_high", "very_high", "high_risk"]
+
+  # DPIA requirements based on risk level
+  dpia_requirements:
+    minimal_risk:
+      dpia_required: false
+      description: "DPIA not required for this risk level"
+      controls_recommended: ["Documentation of processing activities"]
+    
+    low_risk:
+      dpia_required: false
+      description: "DPIA generally not required, but recommended for sensitive processing"
+      controls_recommended: 
+        - "Documentation of processing activities"
+        - "Regular risk assessment"
+        - "Data minimization review"
+    
+    medium_risk:
+      dpia_required: true
+      description: "DPIA recommended, especially if processing involves sensitive data"
+      controls_recommended:
+        - "Comprehensive DPIA"
+        - "Enhanced security measures"
+        - "Data minimization implementation"
+        - "Regular compliance audits"
+    
+    high_risk:
+      dpia_required: true
+      description: "DPIA mandatory; prior consultation with supervisory authority may be required"
+      controls_recommended:
+        - "Comprehensive DPIA"
+        - "Prior consultation with DPA if high residual risk"
+        - "Rigorous technical and organizational measures"
+        - "Regular specialized audits"
+        - "Enhanced data subject rights implementation"
+        - "Detailed breach response plan"

@@ -30,7 +30,7 @@ from core.strategies.attack_strategies.sensitive_info_disclosure.base import Sen
 from core.strategies.attack_strategies.model_extraction.base import ModelExtractionStrategy
 from core.strategies.attack_strategies.excessive_agency.base import ExcessiveAgencyStrategy
 from core.strategies.attack_strategies.insecure_output_handling.base import InsecureOutputHandlingStrategy
-from core.strategies.compliance_mappings.nist.adapter import NISTComplianceAdapter
+from core.compliance_mappings.orchestrator import ComplianceOrchestrator
 console = Console()
 
 STRATEGY_MAP = {
@@ -67,7 +67,7 @@ class AttackOrchestrator:
         self.provider = provider
         self.config = config
         self.results: List[Dict[str, Any]] = []
-        self.nist_adapter = NISTComplianceAdapter() if config.get('nist_compliance', False) else None
+        self.compliance_orchestrator = ComplianceOrchestrator(config) if config.get('compliance_frameworks', []) or config.get('nist_compliance', False) else None
     
     @classmethod
     def _create_strategies_from_config(
@@ -348,8 +348,22 @@ class AttackOrchestrator:
         }
         return report_obj
         
+    def get_compliance_reports(self):
+        """Get compliance reports for all configured frameworks."""
+        if self.compliance_orchestrator:
+            reports = self.compliance_orchestrator.generate_compliance_reports(self.results)
+            return reports
+        return None
+        
     def get_nist_compliance_report(self):
-        if self.nist_adapter:
-            nist_report = self.nist_adapter.generate_nist_compliance_report(self.results)
-            return nist_report
+        """Legacy method for backward compatibility."""
+        if self.compliance_orchestrator:
+            reports = self.compliance_orchestrator.generate_compliance_reports(self.results)
+            return reports.get('nist', None)
+        return None
+        
+    def get_consolidated_compliance_report(self):
+        """Get a consolidated compliance report for all frameworks."""
+        if self.compliance_orchestrator:
+            return self.compliance_orchestrator.generate_consolidated_report(self.results)
         return None

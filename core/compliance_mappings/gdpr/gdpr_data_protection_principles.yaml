@@ -1,0 +1,64 @@
+data_protection_principles:
+  - principle_id: "lawfulness_fairness_transparency"
+    name: "Lawfulness, Fairness, and Transparency"
+    description: "Personal data shall be processed lawfully, fairly, and in a transparent manner in relation to the data subject"
+    article_ref: "Art5_1a"
+    controls:
+      - "Ensure valid legal basis for all processing"
+      - "Provide clear privacy notices"
+      - "Maintain transparent processing activities"
+  
+  - principle_id: "purpose_limitation"
+    name: "Purpose Limitation"
+    description: "Personal data shall be collected for specified, explicit and legitimate purposes and not further processed in a manner incompatible with those purposes"
+    article_ref: "Art5_1b"
+    controls:
+      - "Define and document processing purposes"
+      - "Prevent scope creep in data usage"
+      - "Implement purpose-based access controls"
+  
+  - principle_id: "data_minimization"
+    name: "Data Minimization"
+    description: "Personal data shall be adequate, relevant and limited to what is necessary in relation to the purposes for which they are processed"
+    article_ref: "Art5_1c"
+    controls:
+      - "Collect only necessary data"
+      - "Implement data minimization reviews"
+      - "Regularly audit and purge unnecessary data"
+  
+  - principle_id: "accuracy"
+    name: "Accuracy"
+    description: "Personal data shall be accurate and, where necessary, kept up to date"
+    article_ref: "Art5_1d"
+    controls:
+      - "Implement data validation processes"
+      - "Provide data correction mechanisms"
+      - "Regular data quality checks"
+  
+  - principle_id: "storage_limitation"
+    name: "Storage Limitation"
+    description: "Personal data shall be kept in a form which permits identification of data subjects for no longer than is necessary for the purposes for which the personal data are processed"
+    article_ref: "Art5_1e"
+    controls:
+      - "Implement retention policies"
+      - "Automatic deletion/anonymization"
+      - "Regular data retention audits"
+  
+  - principle_id: "integrity_confidentiality"
+    name: "Integrity and Confidentiality"
+    description: "Personal data shall be processed in a manner that ensures appropriate security of the personal data, including protection against unauthorised or unlawful processing and against accidental loss, destruction or damage"
+    article_ref: "Art5_1f"
+    controls:
+      - "Implement encryption for sensitive data"
+      - "Access controls and authentication"
+      - "Security monitoring and incident response"
+  
+  - principle_id: "accountability"
+    name: "Accountability"
+    description: "The controller shall be responsible for, and be able to demonstrate compliance with, the data protection principles"
+    article_ref: "Art5_2"
+    controls:
+      - "Document all processing activities"
+      - "Implement data protection policies"
+      - "Regular compliance audits"
+      - "Maintain records of processing activities"
