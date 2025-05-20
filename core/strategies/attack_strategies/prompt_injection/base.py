@@ -112,9 +112,11 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         return attack_data
     
     async def attack_and_evaluate(self, system_prompt: str, attack_prompts: List[Dict[str, Any]], provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Run the prompt injection strategy asynchronously"""
-        results = []
-        for attack_data in attack_prompts:
+        """Run the prompt injection strategy asynchronously with parallel execution"""
+        import asyncio
+        
+        async def process_attack_prompt(attack_data):
+            """Process a single attack prompt asynchronously"""
             attack_prompt = attack_data['attack_instruction']
             messages = [
                 {"role": "system", "content": attack_data['system_prompt']},
@@ -122,17 +124,15 @@ class PromptInjectionStrategy(BaseAttackStrategy):
             ]
             try:
                 # Execute against provider
-                response = await provider.chat(
-                    messages,
-                    config
-                )
+                response = await provider.chat(messages, config)
                 
                 # clean up response here, remove unwanted elements
                 
                 # Evaluate the response
                 evaluation = await self.evaluate(system_prompt, attack_prompt, response)
+                
                 # Compile result
-                result = {
+                return {
                     'strategy': self.name,
                     'system_prompt': system_prompt,
                     'attack_prompt': attack_prompt,
@@ -142,18 +142,20 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                     'evaluation': evaluation,
                     'success': evaluation.get('passed', False)
                 }
-                results.append(result)
             except Exception as e:
                 # Handle errors
-                results.append({
+                return {
                     'strategy': self.name,
                     'system_prompt': system_prompt,
                     'attack_prompt': attack_prompt,
                     'mutation_technique': attack_data.get('mutation_technique', ''),
                     'error': str(e),
                     'success': False
-                })
+                }
         
+        # Process all attack prompts in parallel
+        tasks = [process_attack_prompt(attack_data) for attack_data in attack_prompts]
+        results = await asyncio.gather(*tasks)
         return results
         
     async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:

@@ -7,6 +7,8 @@ LLM safeguards through jailbreak techniques.
 """
 from typing import Dict, List, Any
 import random
+import asyncio
+import datetime
 import os
 import re
 import yaml
@@ -32,7 +34,6 @@ class JailbreakStrategy(BaseAttackStrategy):
     def _load_data(self):
         """Load jailbreak data from YAML file"""
         data_file_path = os.path.join(os.path.dirname(__file__), 'data.yaml')
-        print(f"Loading data from: {data_file_path}")
         try:
             with open(data_file_path, 'r') as file:
                 content = file.read()
@@ -133,31 +134,24 @@ class JailbreakStrategy(BaseAttackStrategy):
         return entries
     
     async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
-        """Run the jailbreak strategy asynchronously"""
-        results = []
-        attack_prompts = await self.get_attack_prompts(config, system_prompt)
+        """Run the jailbreak strategy asynchronously with parallel execution"""
         
-        
-        for attack_data in attack_prompts:
+        async def process_attack_prompt(attack_data):
+            """Process a single attack prompt asynchronously"""
             attack_prompt = attack_data['attack_instruction']
             messages = [
                 {"role": "system", "content": attack_data['system_prompt']},
                 {"role": "user", "content": attack_prompt}
             ]
+            
             try:
                 # Execute against provider
-                response = await provider.chat(
-                    messages,
-                    config
-                )
-                
-                # clean up response here, remove unwanted elements
-
+                response = await provider.chat(messages, config)
                 
                 # Evaluate the response
                 evaluation = await self.evaluate(system_prompt, attack_prompt, response)
                 # Compile result
-                result = {
+                return {
                     'strategy': self.name,
                     'system_prompt': system_prompt,
                     'attack_prompt': attack_prompt,
@@ -168,18 +162,24 @@ class JailbreakStrategy(BaseAttackStrategy):
                     'success': evaluation.get('passed', False),
                     'mutation_technique': attack_data.get('mutation_technique', ''),
                 }
-                results.append(result)
             except Exception as e:
                 # Handle errors
-                results.append({
+                return {
                     'strategy': self.name,
                     'system_prompt': system_prompt,
                     'attack_prompt': attack_prompt,
                     'error': str(e),
                     'success': False,
                     'mutation_technique': attack_data.get('mutation_technique', ''),
-                })
+                }
         
+        # Get attack prompts
+        attack_prompts = await self.get_attack_prompts(config, system_prompt)
+       
+        
+        # Process all attack prompts in parallel
+        tasks = [process_attack_prompt(attack_data) for attack_data in attack_prompts]
+        results = await asyncio.gather(*tasks)
         return results
     
     async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:
