@@ -5,7 +5,7 @@ Attack strategies for red teaming LLM systems.
 This module contains a collection of attack strategies for testing prompt security,
 each implementing different approaches to attempt bypassing LLM safeguards.
 """
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 import random
 
 from ..base import BaseAttackStrategy
