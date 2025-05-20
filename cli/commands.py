@@ -232,6 +232,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
             "Total Security Breaches": f"[{attack_success_style}]{attack_success_count}",
             "Tested Strategies": ','.join(metadata.get('strategies', ['Unknown'])),
             "Breached Strategies": ','.join(metadata.get('breached_strategies', ['Unknown'])),
+            "Successful Mutations": metadata.get('successful_mutation_techniques', ['Unknown']),
             "Execution Time": f"{metadata.get('elapsed_seconds', 0):.2f} seconds"
         }
         

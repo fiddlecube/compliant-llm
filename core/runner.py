@@ -97,11 +97,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     )
 
     # try running an attack with orchestrator
-    orchestrator_attack_results = asyncio.run(orchestrator.orchestrate_attack(system_prompt, strategies))
-    
-   
-    
-    
+    asyncio.run(orchestrator.orchestrate_attack(system_prompt, strategies))
     
     # calculate elapsed time
     elapsed_time = datetime.now() - start_time
@@ -111,7 +107,6 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     report_data['metadata']['elapsed_seconds'] = elapsed_time.total_seconds()
     report_data['strategy_summaries'] = orchestrator_summary['strategy_summaries']
     report_data['results'] = orchestrator_summary['results']
-    
     
     
     # Save report (optional)

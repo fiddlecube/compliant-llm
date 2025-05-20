@@ -80,9 +80,11 @@ class PromptInjectionStrategy(BaseAttackStrategy):
             if 'mutations' in entry and entry['mutations']:
                 # Get the mutation object (which has technique and obfuscated_prompt)
                 mutation = random.choice(entry['mutations'])
+                mutation_technique = mutation['technique']
                 instruction_template = mutation['obfuscated_prompt']
             else:
                 # Fallback to original prompt if no mutations
+                mutation_technique = None
                 instruction_template = entry['original_prompt']
             
             # Replace any case variant of __PROMPT__ with system_prompt
@@ -92,7 +94,8 @@ class PromptInjectionStrategy(BaseAttackStrategy):
             attack_data.append({
                 'system_prompt': system_prompt,
                 'category': self.name,
-                'attack_instruction': instruction
+                'attack_instruction': instruction,
+                'mutation_technique': mutation_technique
             })
         
         # Cache the generated attack data
@@ -125,8 +128,8 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                     'strategy': self.name,
                     'system_prompt': system_prompt,
                     'attack_prompt': attack_prompt,
-                    'instruction': attack_data.get('instruction', ''),
                     'category': attack_data.get('category', ''),
+                    'mutation_technique': attack_data.get('mutation_technique', ''),
                     'response': response,
                     'evaluation': evaluation,
                     'success': evaluation.get('passed', False)
@@ -138,6 +141,7 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                     'strategy': self.name,
                     'system_prompt': system_prompt,
                     'attack_prompt': attack_prompt,
+                    'mutation_technique': attack_data.get('mutation_technique', ''),
                     'error': str(e),
                     'success': False
                 })
