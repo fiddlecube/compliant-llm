@@ -86,7 +86,15 @@ class JailbreakStrategy(BaseAttackStrategy):
         entries = self._load_instructions()
         
         # Sample up to max_prompts entries
-        sampled_entries = random.sample(entries, min(max_prompts, len(entries)))
+        sample_size = min(max_prompts, len(entries))
+        sampled_entries = random.sample(entries, sample_size)
+        
+        # Check if we already have cached attack data for this system prompt
+        # Create a deterministic cache key based on the system prompt and sample size to ensure uniqueness
+        cache_key = f"{hash(system_prompt)}_{sample_size}"
+        
+        if cache_key in JailbreakStrategy._cached_attack_data:
+            return JailbreakStrategy._cached_attack_data[cache_key]
         
         for entry in sampled_entries:
             original_prompt = entry['original_prompt']
@@ -111,6 +119,8 @@ class JailbreakStrategy(BaseAttackStrategy):
                 'mutation_technique': mutation_technique
             })
         
+        # Cache the generated attack data
+        JailbreakStrategy._cached_attack_data[cache_key] = attack_data
         return attack_data
     
     def _load_entries(self) -> List[Dict[str, Any]]:

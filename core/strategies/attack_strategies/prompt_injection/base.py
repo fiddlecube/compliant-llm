@@ -72,10 +72,9 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         sampled_entries = random.sample(instruction_entries, sample_size) if instruction_entries else []
         
         # Check if we already have cached attack data for this system prompt
-        # Create a cache key based on the system prompt and sample size to ensure uniqueness
-    
+        # Create a deterministic cache key based on the system prompt and sample size to ensure uniqueness
+        cache_key = f"{hash(system_prompt)}_{sample_size}"
         
-        cache_key = str(uuid.uuid4())
         if cache_key in PromptInjectionStrategy._cached_attack_data:
             return PromptInjectionStrategy._cached_attack_data[cache_key]
             
