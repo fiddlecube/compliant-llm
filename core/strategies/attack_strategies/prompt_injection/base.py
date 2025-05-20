@@ -11,6 +11,7 @@ from typing import Dict, List, Any
 import random
 import os
 import re
+import uuid
 import yaml
 from ...base import BaseAttackStrategy
 from core.providers.base import LLMProvider
@@ -33,10 +34,8 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         """Return the name of the strategy"""
         return "prompt_injection"
     
-    async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
-        """Generate prompt injection attack prompts"""
-
-        # Use cached instruction entries if available
+    def _load_instructions(self):
+        """Load malicious instructions from YAML file"""
         if PromptInjectionStrategy._cached_instruction_entries is not None:
             instruction_entries = PromptInjectionStrategy._cached_instruction_entries
         else:
@@ -60,6 +59,13 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                 # Fallback to default list if there's an error loading the file
                 print(f"Error loading data.yaml: {e}")
                 instruction_entries = []
+        return instruction_entries
+    
+    async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
+        """Generate prompt injection attack prompts"""
+
+        # Use cached instruction entries if available
+        instruction_entries = self._load_instructions()
         
         # Sample prompts (or fewer if there aren't enough)
         sample_size = min(10, len(instruction_entries))
@@ -67,7 +73,9 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         
         # Check if we already have cached attack data for this system prompt
         # Create a cache key based on the system prompt and sample size to ensure uniqueness
-        cache_key = f"{system_prompt}_{sample_size}"
+    
+        
+        cache_key = str(uuid.uuid4())
         if cache_key in PromptInjectionStrategy._cached_attack_data:
             return PromptInjectionStrategy._cached_attack_data[cache_key]
             

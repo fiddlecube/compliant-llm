@@ -88,7 +88,7 @@ class AttackOrchestrator:
                             "obj": strategy_class(**strategy_config) if strategy_config else strategy_class()
                         }
                         strategy_classes.append(strategy_obj)
-                        console.print(f"[green]Added strategy: {strategy_obj['name']}[/green]")
+                        console.print(f"[green] Added strategy: {strategy_obj['name']}[/green]")
                     except Exception as e:
                         console.print(f"[yellow]Warning: Could not create strategy '{name}': {e}[/yellow]")
                 else:

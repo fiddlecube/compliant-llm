@@ -6,11 +6,14 @@ This package contains implementations of various attack strategies for testing L
 """
 from .base import BaseAttackStrategy
 from ._attack_enhancers._enhanced_strategy import EnhancedAttackStrategy
-from .attack_strategies.strategy import JailbreakStrategy, PromptInjectionStrategy
+from .attack_strategies.strategy import ContextManipulationStrategy, InformationExtractionStrategy, StressTesterStrategy, BoundaryTestingStrategy, SystemPromptExtractionStrategy
 
 __all__ = [
     'BaseAttackStrategy',
     'EnhancedAttackStrategy',
-    'JailbreakStrategy',
-    'PromptInjectionStrategy',
+    'ContextManipulationStrategy',
+    'InformationExtractionStrategy',
+    'StressTesterStrategy',
+    'BoundaryTestingStrategy',
+    'SystemPromptExtractionStrategy',
 ]
