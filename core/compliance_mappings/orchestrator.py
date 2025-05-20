@@ -74,9 +74,9 @@ class ComplianceOrchestrator:
                 enriched_result['compliance'] = {}
                 
             # Get the specific compliance data and add it under the framework namespace
-            framework_compliance = compliance_data.get(f'{framework_name}_compliance', {})
+            framework_compliance = enriched_result.get(f'{framework}_compliance', {})
             if framework_compliance:
-                enriched_result['compliance'][framework_name] = framework_compliance
+                enriched_result['compliance'][framework] = framework_compliance
         
         return enriched_result
     
