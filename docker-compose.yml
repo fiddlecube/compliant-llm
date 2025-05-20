@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  prompt_secure:
+  compliant_llm:
     build: .
     ports:
       - "8001:8001"

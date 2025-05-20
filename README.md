@@ -27,14 +27,14 @@ Prompt Secure helps developers evaluate the robustness of their AI assistant sys
 ### Using pip
 
 ```bash
-pip install prompt_secure
+pip install compliant-llm
 ```
 
 ### From source
 
 ```bash
-git clone https://github.com/yourusername/prompt_secure.git
-cd prompt_secure
+git clone https://github.com/fiddlecube/compliant-llm.git
+cd compliant-llm
 pip install -e .
 ```
 
@@ -93,8 +93,8 @@ More details in documentation folder.
 ### Development Installation
 
 ```bash
-git clone https://github.com/yourusername/prompt_secure.git
-cd prompt_secure
+git clone https://github.com/fiddlecube/compliant-llm.git
+cd compliant-llm
 
 pip install -r requirements.txt
 
@@ -332,8 +332,8 @@ output:
 ## Docker
 
 ```bash
-docker build -t prompt_secure .
-docker run -p 8501:8501 prompt_secure
+docker build -t compliant_llm .
+docker run -p 8501:8501 compliant_llm
 ```
 
 ## Contributing

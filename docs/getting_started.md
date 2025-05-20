@@ -1,18 +1,18 @@
-# Getting Started with Prompt Secure
+# Getting Started with Compliant LLM
 
-Prompt Secure is a tool designed to evaluate the robustness of AI system prompts against various types of attacks and edge cases.
+Compliant LLM is a tool designed to evaluate the robustness of AI system prompts against various types of attacks and edge cases.
 
 ## Installation
 
 ### Using pip
 ```bash
-pip install prompt_secure
+pip install compliant-llm
 ```
 
 ### From source
 ```bash
-git clone https://github.com/yourusername/prompt_secure.git
-cd prompt_secure
+git clone https://github.com/fiddlecube/compliant-llm.git
+cd compliant-llm
 pip install -e .
 ```
 
@@ -37,13 +37,13 @@ OPENAI_API_KEY=your_api_key_here
 3. Run the tool:
 
 ```bash
-prompt_secure test --config configs/your_config.yaml
+compliant-llm test --config configs/your_config.yaml
 ```
 
 4. View the results:
 
 ```bash
-prompt_secure ui
+compliant-llm ui
 ```
 
 ## Next Steps

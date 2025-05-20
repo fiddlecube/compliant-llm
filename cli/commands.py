@@ -92,9 +92,9 @@ CONFIG_DIRS = [
     # Package configs
     os.path.join(os.path.dirname(os.path.dirname(__file__)), "configs"),
     # User configs
-    os.path.expanduser(os.path.join("~", ".config", "prompt_secure")),
+    os.path.expanduser(os.path.join("~", ".config", "compliant-llm")),
     # Project configs (current directory)
-    os.path.join(os.getcwd(), ".prompt_secure")
+    os.path.join(os.getcwd(), ".compliant-llm")
 ]
 
 
@@ -460,9 +460,9 @@ def config(list, show, validate):
             # Package configs
             os.path.join(os.path.dirname(os.path.dirname(__file__)), "configs"),
             # User configs
-            os.path.expanduser(os.path.join("~", ".config", "prompt_secure")),
+            os.path.expanduser(os.path.join("~", ".config", "compliant-llm")),
             # Project configs (current directory)
-            os.path.join(os.getcwd(), ".prompt_secure")
+            os.path.join(os.getcwd(), ".compliant-llm")
         ]
         
         for config_dir in config_dirs:
