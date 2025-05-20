@@ -6,7 +6,7 @@ Compliant LLM is a tool designed to evaluate the robustness of AI system prompts
 
 ### Using pip
 ```bash
-pip install -i https://test.pypi.org/simple/ compliant-llm
+pip install compliant-llm
 ```
 
 ### From source

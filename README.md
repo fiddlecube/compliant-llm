@@ -27,7 +27,7 @@ Prompt Secure helps developers evaluate the robustness of their AI assistant sys
 ### Using pip
 
 ```bash
-pip install -i https://test.pypi.org/simple/ compliant-llm
+pip install compliant-llm
 ```
 
 ### From source
