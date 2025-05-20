@@ -189,7 +189,7 @@ class AttackOrchestrator:
                     if risk_score:
                         nist_compliance.append({
                             "strategy": strategy_name,
-                            "severity": test_result.get("evaluation", {}).get("severity", "medium"),
+                            "severity": test_result.get("evaluation", {}).get("severity", ""),
                             "risk_score": risk_score,
                             "controls": enriched_result.get("nist_compliance", {}).get("controls", []),
                             "ai_rmf": enriched_result.get("nist_compliance", {}).get("ai_rmf", [])

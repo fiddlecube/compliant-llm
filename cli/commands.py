@@ -7,6 +7,7 @@ import sys
 import json
 import yaml
 import click
+from datetime import datetime
 from rich.console import Console
 from rich.table import Table
 from rich.progress import (
@@ -204,6 +205,17 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         click.echo(f"Error processing configuration: {e}", err=True)
         sys.exit(1)
 
+    # Generate timestamp for report file
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    # Create output directory if it doesn't exist
+    output_dir = "reports"
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Generate unique report filename
+    report_filename = f"report_{timestamp}.json"
+    report_path = os.path.join(output_dir, report_filename)
+    
     # Run the tests with a progress indicator
     console.print("\nRunning tests...")
     with Progress(
@@ -215,7 +227,12 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         report_data = execute_prompt_tests(config_dict=runner_config)
         progress.update(task, completed=True)
     
-    console.print("[bold green]Tests completed successfully![/]")
+    # Save the report
+    with open(report_path, 'w') as f:
+        json.dump(report_data, f, indent=2)
+    
+    console.print(f"[bold green]Tests completed successfully![/]")
+    console.print(f"[bold cyan]Report saved to: {report_path}[/]")
     console.print("\n")
 
     # Check if data has the new schema with metadata and tests
@@ -270,12 +287,27 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
 
 
 @cli.command()
-@click.argument('report_file', required=False, default='reports/report.json')
+@click.argument('report_file', required=False, default=None)
 @click.option('--format', '-f', type=click.Choice(['text', 'json', 'html']), default='text', help='Output format')  # noqa: E501
 @click.option('--summary', '-s', is_flag=True, help='Show only summary statistics')
 def report(report_file, format, summary):
-    """Analyze and view previous test results."""
+    """Analyze and view previous test results. If no file is specified, uses the latest report."""
     try:
+        # If no report file is specified, find the latest one
+        if not report_file:
+            report_dir = "reports"
+            if not os.path.exists(report_dir):
+                raise FileNotFoundError(f"No reports found in {report_dir}")
+                
+            # Find all report files
+            report_files = [f for f in os.listdir(report_dir) if f.startswith("report_") and f.endswith(".json")]
+            if not report_files:
+                raise FileNotFoundError(f"No report files found in {report_dir}")
+                
+            # Sort by timestamp and get the latest one
+            latest_file = sorted(report_files)[-1]
+            report_file = os.path.join(report_dir, latest_file)
+            
         with open(report_file, 'r') as f:
             data = json.load(f)
 

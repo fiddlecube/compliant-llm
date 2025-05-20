@@ -1,6 +1,6 @@
 import streamlit as st
 import json
-
+import os
 from utils.report_loader import load_report
 from components.risk_severity import render_risk_severity
 from components.security_findings import render_security_findings
@@ -24,7 +24,24 @@ def create_dashboard():
     )
     
     # Default report path
-    default_report_path = "reports/report.json"
+    report_dir = "reports"
+    
+    # If no file is uploaded, find the latest report
+    if uploaded_file is None:
+        if os.path.exists(report_dir):
+            # Find all report files with timestamp format
+            report_files = [f for f in os.listdir(report_dir) 
+                          if f.startswith("report_") and 
+                          f.endswith(".json") and
+                          len(f) == len("report_YYYYMMDD_HHMMSS.json")]
+            if report_files:
+                # Sort by timestamp (which is in the filename)
+                latest_file = sorted(report_files)[-1]
+                default_report_path = os.path.join(report_dir, latest_file)
+            else:
+                default_report_path = None
+        else:
+            default_report_path = None
     
     # Determine which report to load
     if uploaded_file is not None:
