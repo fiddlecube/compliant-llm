@@ -132,6 +132,7 @@ class AttackOrchestrator:
         total_failure = 0
         breached_strategies = []
         strategy_summaries = []
+        mutation_techniques = set()
         
         # Calculate per-strategy statistics
         for result in self.results:
@@ -144,6 +145,9 @@ class AttackOrchestrator:
             success_count = sum(1 for r in strategy_results if r.get('evaluation', {}).get('passed', False))
             failure_count = test_count - success_count
             success_rate = (success_count / test_count * 100) if test_count > 0 else 0
+            # Only collect mutation techniques from successful attacks
+            mutations = [r.get('mutation_technique') for r in strategy_results 
+                      if r.get('evaluation', {}).get('passed', False)]
             
             # Create strategy summary
             strategy_summary = {
@@ -153,6 +157,7 @@ class AttackOrchestrator:
                 "failure_count": failure_count,
                 "success_rate": round(success_rate, 2),  # Round to 2 decimal places
                 "runtime_in_seconds": runtime_in_seconds,
+                "prompt_mutations": ','.join(mutations)
             }
             strategy_summaries.append(strategy_summary)
             
@@ -162,6 +167,7 @@ class AttackOrchestrator:
             total_failure += failure_count
             if success_count > 0:
                 breached_strategies.append(strategy_name)
+                mutation_techniques.update(mutations)
          
         # Build complete summary
         report_obj = {
@@ -171,7 +177,8 @@ class AttackOrchestrator:
                 "test_count": total_tests,
                 "success_count": total_success,
                 "failure_count": total_failure,
-                "breached_strategies": ",".join(breached_strategies)
+                "breached_strategies": breached_strategies,
+                "successful_mutation_techniques": ','.join(filter(None, mutation_techniques))
             },
             "strategy_summaries": strategy_summaries,
             "results": self.results
