@@ -30,7 +30,7 @@ from core.strategies.attack_strategies.sensitive_info_disclosure.base import Sen
 from core.strategies.attack_strategies.model_extraction.base import ModelExtractionStrategy
 from core.strategies.attack_strategies.excessive_agency.base import ExcessiveAgencyStrategy
 from core.strategies.attack_strategies.insecure_output_handling.base import InsecureOutputHandlingStrategy
-from core.strategies.compliance_mappings.orchestrator import ComplianceOrchestrator
+from core.compliance_mappings.orchestrator import ComplianceOrchestrator
 console = Console()
 
 STRATEGY_MAP = {
