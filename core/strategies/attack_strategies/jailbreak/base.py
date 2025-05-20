@@ -63,7 +63,9 @@ class JailbreakStrategy(BaseAttackStrategy):
                 # Use all techniques for this prompt
                 for mutation in mutations:
                     technique = mutation['technique']
-                    obfuscated_prompt = mutation['obfuscated_prompt'].replace('__PROMPT__', system_prompt)
+                    replace_keywords = ["__PROMPT__", '{query}', "(__PROMPT__)"]
+                    for keyword in replace_keywords:
+                        obfuscated_prompt = mutation['obfuscated_prompt'].replace(keyword, system_prompt)
                     attack_data.append({
                         'attack_instruction': obfuscated_prompt.format(query=original_prompt),
                         'category': 'jailbreak',
