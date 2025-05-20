@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='prompt_secure',
+    name='compliant-llm',
     version='0.1.0',
     packages=find_packages(),
     install_requires=[
@@ -31,12 +31,12 @@ setup(
         ],
     },
     python_requires='>=3.9',
-    author='Prompt Secure Contributors',
+    author='Compliant LLM Contributors',
     author_email='example@example.com',
     description='Tool for testing AI system prompts against various attack vectors',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/yourusername/prompt_secure',
+    url='https://github.com/fiddlecube/compliant-llm',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

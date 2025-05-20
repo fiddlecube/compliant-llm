@@ -3,14 +3,14 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "prompt_secure"
+name = "compliant-llm"
 version = "0.1.0"
 description = "Tool for testing AI system prompts against various attack vectors"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
-    {name = "Prompt Secure Contributors", email = "example@example.com"},
+    {name = "Compliant LLM Contributors", email = "example@example.com"},
 ]
 dependencies = [
     "pyyaml",

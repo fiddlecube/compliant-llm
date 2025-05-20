@@ -15,7 +15,7 @@ This guide provides instructions for installing Prompt Secure on your system.
 The simplest way to install Prompt Secure is using pip:
 
 ```bash
-pip install prompt_secure
+pip install -i https://test.pypi.org/simple/compliant-llm
 ```
 
 ### Installing from Source
@@ -24,8 +24,8 @@ For the latest development version or to contribute to the project, you can inst
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/prompt_secure.git
-cd prompt_secure
+git clone https://github.com/fiddlecube/compliant-llm.git
+cd compliant-llm
 
 # Install in development mode
 pip install -e .
@@ -111,7 +111,7 @@ pip install -e ".[all]"
 If you encounter permission errors, you may need to use `sudo` or install in user mode:
 
 ```bash
-pip install --user prompt_secure
+pip install -i https://test.pypi.org/simple/ compliant-llm
 ```
 
 #### API Connection Issues

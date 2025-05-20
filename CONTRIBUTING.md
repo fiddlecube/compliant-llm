@@ -1,6 +1,6 @@
-# Contributing to Prompt Secure
+# Contributing to Compliant LLM
 
-Thank you for considering contributing to Prompt Secure! This document outlines the process for contributing to the project.
+Thank you for considering contributing to Compliant LLM! This document outlines the process for contributing to the project.
 
 ## Code of Conduct
 
@@ -35,8 +35,8 @@ By participating in this project, you agree to abide by our Code of Conduct.
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/prompt_secure.git
-   cd prompt_secure
+   git clone https://github.com/fiddlecube/compliant-llm.git
+   cd compliant-llm
    ```
 
 2. Create a virtual environment
