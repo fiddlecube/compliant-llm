@@ -26,7 +26,23 @@ from core.strategies.attack_strategies.indirect_prompt_injection.base import Ind
 from core.strategies.attack_strategies.model_dos.base import ModelDoSStrategy
 from core.strategies.attack_strategies.sensitive_info_disclosure.base import SensitiveInfoDisclosureStrategy
 from core.strategies.attack_strategies.model_extraction.base import ModelExtractionStrategy
+from core.strategies.attack_strategies.excessive_agency.base import ExcessiveAgencyStrategy
 console = Console()
+
+STRATEGY_MAP = {
+    "prompt_injection": PromptInjectionStrategy,
+    "jailbreak": JailbreakStrategy,
+    "context_manipulation": ContextManipulationStrategy,
+    "information_extraction": InformationExtractionStrategy,
+    "stress_tester": StressTesterStrategy,
+    "boundary_testing": BoundaryTestingStrategy,
+    "system_prompt_extraction": SystemPromptExtractionStrategy,
+    "indirect_prompt_injection": IndirectPromptInjectionStrategy,
+    "model_dos": ModelDoSStrategy,
+    "sensitive_info_disclosure": SensitiveInfoDisclosureStrategy,
+    "model_extraction": ModelExtractionStrategy,
+    "excessive_agency": ExcessiveAgencyStrategy
+}
 class AttackOrchestrator:
     """Orchestrates attack strategies against LLM providers"""
     
@@ -66,20 +82,7 @@ class AttackOrchestrator:
         strategy_classes = []
         
         # Define available strategies map
-        strategy_map = {
-            'prompt_injection': PromptInjectionStrategy,
-            'jailbreak': JailbreakStrategy,
-            'context_manipulation': ContextManipulationStrategy,
-            'information_extraction': InformationExtractionStrategy,
-            'stress_tester': StressTesterStrategy,
-            'boundary_testing': BoundaryTestingStrategy,
-            'system_prompt_extraction': SystemPromptExtractionStrategy,
-            'indirect_prompt_injection': IndirectPromptInjectionStrategy,
-            'model_dos': ModelDoSStrategy,
-            'sensitive_info_disclosure': SensitiveInfoDisclosureStrategy,
-            'model_extraction': ModelExtractionStrategy
-            # Add more strategies as they become available
-        }
+        strategy_map = STRATEGY_MAP
         
         # Create strategies from names
         if strategy_names:

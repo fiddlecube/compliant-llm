@@ -156,6 +156,7 @@ class IndirectPromptInjectionStrategy(BaseAttackStrategy):
                 
                 # Convert generated data to our attack data format
                 attack_data = []
+                category = self.name
                 for entry in generated_data:
                     if not isinstance(entry, dict):
                         continue
@@ -165,7 +166,7 @@ class IndirectPromptInjectionStrategy(BaseAttackStrategy):
                         # If no mutations, create one from the original prompt
                         attack_data.append({
                             'system_prompt': system_prompt,
-                            'category': self.name,
+                            'category': category,
                             'attack_instruction': entry.get('original_prompt', ''),
                             'description': entry.get('description', ''),
                             'severity': entry.get('severity', 'medium'),
@@ -176,7 +177,7 @@ class IndirectPromptInjectionStrategy(BaseAttackStrategy):
                         for mutation in mutations:
                             attack_data.append({
                                 'system_prompt': system_prompt,
-                                'category': self.name,
+                                'category': category,
                                 'attack_instruction': mutation.get('obfuscated_prompt', ''),
                                 'description': entry.get('description', ''),
                                 'severity': entry.get('severity', 'medium'),
@@ -197,7 +198,7 @@ class IndirectPromptInjectionStrategy(BaseAttackStrategy):
         """Generate indirect prompt injection attack prompts"""
         # Get configuration options
         max_prompts = config.get("max_prompts_per_strategy", 10)
-        use_dynamic_generation = True
+        use_dynamic_generation = False
         
         # Check if we should use dynamic generation
         dynamic_attack_data = []
