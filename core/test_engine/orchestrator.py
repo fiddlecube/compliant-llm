@@ -25,6 +25,7 @@ from core.strategies.attack_strategies.jailbreak.base import JailbreakStrategy
 from core.strategies.attack_strategies.indirect_prompt_injection.base import IndirectPromptInjectionStrategy
 from core.strategies.attack_strategies.model_dos.base import ModelDoSStrategy
 from core.strategies.attack_strategies.sensitive_info_disclosure.base import SensitiveInfoDisclosureStrategy
+from core.strategies.attack_strategies.model_extraction.base import ModelExtractionStrategy
 console = Console()
 class AttackOrchestrator:
     """Orchestrates attack strategies against LLM providers"""
@@ -75,7 +76,8 @@ class AttackOrchestrator:
             'system_prompt_extraction': SystemPromptExtractionStrategy,
             'indirect_prompt_injection': IndirectPromptInjectionStrategy,
             'model_dos': ModelDoSStrategy,
-            'sensitive_info_disclosure': SensitiveInfoDisclosureStrategy
+            'sensitive_info_disclosure': SensitiveInfoDisclosureStrategy,
+            'model_extraction': ModelExtractionStrategy
             # Add more strategies as they become available
         }
         
