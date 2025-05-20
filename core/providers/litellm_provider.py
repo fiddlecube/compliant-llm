@@ -62,7 +62,7 @@ class LiteLLMProvider(LLMProvider):
     async def chat(self, messages: List[Dict[str, str]], config: Dict[str, Any]) -> Dict[str, Any]:  # noqa: E501
         try:
             # Import litellm here to avoid dependency issues
-            from litellm import completion
+            from litellm import acompletion  # Using acompletion instead of completion for async
             chat_history = self.history + messages
             # Extract provider-specific configuration
             provider_config = config.get("provider_config", {})
@@ -71,15 +71,15 @@ class LiteLLMProvider(LLMProvider):
             timeout = provider_config.get("timeout", 30)
             api_key = provider_config.get("api_key")
 
-            # Execute the prompt
-            response = completion(
+            # Execute the prompt asynchronously
+            response = await acompletion(
                 model=model,
                 messages=chat_history,
                 temperature=temperature,
                 timeout=timeout,
                 api_key=api_key
             )
-            
+
             # Properly extract the message and add to history in the correct format
             if response and hasattr(response, 'choices') and response.choices:
                 message_to_add = {
@@ -97,7 +97,6 @@ class LiteLLMProvider(LLMProvider):
 
         except Exception as e:
             # Handle errors
-            print("====error====", e)
             return {
                 "success": False,
                 "error": str(e),
@@ -139,10 +138,16 @@ class LiteLLMProvider(LLMProvider):
                 timeout=timeout,
                 api_key=api_key
             )
+            
+            # Extract the message content in the same way as the chat method
+            if response and hasattr(response, 'choices') and response.choices:
+                response_content = response.choices[0].message.content
+            else:
+                response_content = "No response generated"
 
             return {
                 "success": True,
-                "response": response,
+                "response": response_content,  # Return just the content, not the whole object
                 "provider": "litellm",
                 "model": model
             }

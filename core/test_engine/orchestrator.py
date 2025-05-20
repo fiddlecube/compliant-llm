@@ -4,6 +4,7 @@ Attack orchestrator module.
 
 This module orchestrates attack strategies against LLM providers.
 """
+import asyncio
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 from ..strategies.base import BaseAttackStrategy
@@ -87,7 +88,7 @@ class AttackOrchestrator:
                             "obj": strategy_class(**strategy_config) if strategy_config else strategy_class()
                         }
                         strategy_classes.append(strategy_obj)
-                        console.print(f"[green]Added strategy: {strategy_obj['name']}[/green]")
+                        console.print(f"[green] Added strategy: {strategy_obj['name']}[/green]")
                     except Exception as e:
                         console.print(f"[yellow]Warning: Could not create strategy '{name}': {e}[/yellow]")
                 else:
@@ -108,19 +109,38 @@ class AttackOrchestrator:
 
 
     async def orchestrate_attack(self, system_prompt: str, strategies: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Run the orchestrator"""
-        results = []
-        for strategy in strategies:
-            console.print(f"[bold]Running strategy: {strategy['name']}[/bold]")
+        """Run the orchestrator with parallel execution using asyncio.gather"""
+        
+        async def run_strategy(strategy):
+            """Helper function to run a single strategy and track its timing"""
+            console.print(f"[yellow bold]Running strategy: {strategy['name']}[/yellow bold]")
             strategy_start_time = datetime.now()
-            strategy_class = strategy['obj']
-            strategy_results = await strategy_class.a_run(system_prompt, self.provider, self.config)
-            strategy_results = {
-                "strategy": strategy['name'],
-                "results": strategy_results,
-                "runtime_in_seconds": (datetime.now() - strategy_start_time).total_seconds()
-            }
-            results.append(strategy_results)
+            
+            try:
+                strategy_class = strategy['obj']
+                strategy_results = await strategy_class.a_run(system_prompt, self.provider, self.config)
+                
+                return {
+                    "strategy": strategy['name'],
+                    "results": strategy_results,
+                    "runtime_in_seconds": (datetime.now() - strategy_start_time).total_seconds()
+                }
+            except Exception as e:
+                console.print(f"[red]Error running strategy {strategy['name']}: {str(e)}[/red]")
+                # Return a result with the error to ensure we don't lose track of the strategy
+                return {
+                    "strategy": strategy['name'],
+                    "results": [],
+                    "error": str(e),
+                    "runtime_in_seconds": (datetime.now() - strategy_start_time).total_seconds()
+                }
+        
+        # Create tasks for all strategies
+        strategy_tasks = [run_strategy(strategy) for strategy in strategies]
+        
+        # Execute all tasks in parallel
+        results = await asyncio.gather(*strategy_tasks)
+        
         self.results = results
         return results
 

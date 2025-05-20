@@ -11,6 +11,7 @@ from typing import Dict, List, Any
 import random
 import os
 import re
+import uuid
 import yaml
 from ...base import BaseAttackStrategy
 from core.providers.base import LLMProvider
@@ -33,10 +34,8 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         """Return the name of the strategy"""
         return "prompt_injection"
     
-    async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
-        """Generate prompt injection attack prompts"""
-
-        # Use cached instruction entries if available
+    def _load_instructions(self):
+        """Load malicious instructions from YAML file"""
         if PromptInjectionStrategy._cached_instruction_entries is not None:
             instruction_entries = PromptInjectionStrategy._cached_instruction_entries
         else:
@@ -60,6 +59,13 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                 # Fallback to default list if there's an error loading the file
                 print(f"Error loading data.yaml: {e}")
                 instruction_entries = []
+        return instruction_entries
+    
+    async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
+        """Generate prompt injection attack prompts"""
+
+        # Use cached instruction entries if available
+        instruction_entries = self._load_instructions()
         
         # Sample prompts (or fewer if there aren't enough)
         sample_size = min(10, len(instruction_entries))
@@ -67,7 +73,9 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         
         # Check if we already have cached attack data for this system prompt
         # Create a cache key based on the system prompt and sample size to ensure uniqueness
-        cache_key = f"{system_prompt}_{sample_size}"
+    
+        
+        cache_key = str(uuid.uuid4())
         if cache_key in PromptInjectionStrategy._cached_attack_data:
             return PromptInjectionStrategy._cached_attack_data[cache_key]
             
@@ -104,9 +112,11 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         return attack_data
     
     async def attack_and_evaluate(self, system_prompt: str, attack_prompts: List[Dict[str, Any]], provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Run the prompt injection strategy asynchronously"""
-        results = []
-        for attack_data in attack_prompts:
+        """Run the prompt injection strategy asynchronously with parallel execution"""
+        import asyncio
+        
+        async def process_attack_prompt(attack_data):
+            """Process a single attack prompt asynchronously"""
             attack_prompt = attack_data['attack_instruction']
             messages = [
                 {"role": "system", "content": attack_data['system_prompt']},
@@ -114,17 +124,15 @@ class PromptInjectionStrategy(BaseAttackStrategy):
             ]
             try:
                 # Execute against provider
-                response = await provider.chat(
-                    messages,
-                    config
-                )
+                response = await provider.chat(messages, config)
                 
                 # clean up response here, remove unwanted elements
                 
                 # Evaluate the response
                 evaluation = await self.evaluate(system_prompt, attack_prompt, response)
+                
                 # Compile result
-                result = {
+                return {
                     'strategy': self.name,
                     'system_prompt': system_prompt,
                     'attack_prompt': attack_prompt,
@@ -134,18 +142,20 @@ class PromptInjectionStrategy(BaseAttackStrategy):
                     'evaluation': evaluation,
                     'success': evaluation.get('passed', False)
                 }
-                results.append(result)
             except Exception as e:
                 # Handle errors
-                results.append({
+                return {
                     'strategy': self.name,
                     'system_prompt': system_prompt,
                     'attack_prompt': attack_prompt,
                     'mutation_technique': attack_data.get('mutation_technique', ''),
                     'error': str(e),
                     'success': False
-                })
+                }
         
+        # Process all attack prompts in parallel
+        tasks = [process_attack_prompt(attack_data) for attack_data in attack_prompts]
+        results = await asyncio.gather(*tasks)
         return results
         
     async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:
