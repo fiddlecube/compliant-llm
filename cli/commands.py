@@ -1,6 +1,6 @@
 #  flake8: noqa : E501
 """
-Enhanced CLI commands for Prompt Secure.
+Enhanced CLI commands for Compliant LLM.
 """
 import os
 import sys
@@ -132,7 +132,7 @@ def load_config(config_path: str) -> Dict[str, Any]:
 
 @click.group()
 def cli():
-    """Prompt Secure - Test your AI system prompts for vulnerabilities."""
+    """Compliant LLM - Test your AI system prompts for vulnerabilities."""
     pass
 
 
@@ -260,7 +260,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         # Create and print the table using the generic function
         report_table = dict_to_cli_table(
             report_metrics,
-            title="🔒 Prompt Secure Report Summary",
+            title="🔒 Compliant LLM Report Summary",
             key_column="Metric",
             value_column="Value"
         )
@@ -279,7 +279,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
     else:
         # Legacy schema
         # Create a new table for report summary
-        table = Table(title="🔒 Prompt Secure Report Summary", box=box.ROUNDED)
+        table = Table(title="🔒 Compliant LLM Report Summary", box=box.ROUNDED)
         table.add_column("Metric", style="cyan")
         table.add_column("Value", style="green")
         table.add_row("Total Tests", f"{len(report_data)}")
@@ -346,7 +346,7 @@ def report(report_file, format, summary):
             # Generate HTML report
             html_path = report_file.replace('.json', '.html')
             with open(html_path, 'w') as f:
-                f.write("<html><head><title>Prompt Secure Test Report</title></head><body>")
+                f.write("<html><head><title>Compliant LLM Test Report</title></head><body>")
                 f.write("<h1>Test Report</h1>")
                 # Add more HTML formatting here
                 f.write("</body></html>")
@@ -606,7 +606,7 @@ def rerun(prompt, report_file):
             # Create and print the table using the generic function
             report_table = dict_to_cli_table(
                 report_metrics,
-                title="🔒 Prompt Secure Report Summary",
+                title="🔒 Compliant LLM Report Summary",
                 key_column="Metric",
                 value_column="Value"
             )
@@ -625,7 +625,7 @@ def rerun(prompt, report_file):
         else:
             # Legacy schema
             # Create a new table for report summary
-            table = Table(title="🔒 Prompt Secure Report Summary", box=box.ROUNDED)
+            table = Table(title="Compliant LLM Report Summary", box=box.ROUNDED)
             table.add_column("Metric", style="cyan")
             table.add_column("Value", style="green")
             table.add_row("Total Tests", f"{len(report_data)}")

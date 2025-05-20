@@ -48,7 +48,7 @@ attack_documentation:
     
     - field_id: "assessor"
       description: "Person or system that performed the assessment"
-      example: "Prompt Secure Framework v1.2.3"
+      example: "Compliant LLM Framework v1.2.3"
       required: true
 
   supplemental_fields:

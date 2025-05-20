@@ -1,6 +1,6 @@
 # CLI Documentation
 
-Prompt Secure provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
+Compliant LLM provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
 
 ## Command Overview
 

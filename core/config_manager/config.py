@@ -1,5 +1,5 @@
 """
-Configuration management for Prompt Secure.
+Configuration management for Compliant LLM.
 
 This module handles configuration loading, validation, and template processing.
 """
@@ -13,7 +13,7 @@ from datetime import datetime
 
 
 class ConfigManager:
-    """Manages configuration for Prompt Secure."""
+    """Manages configuration for Compliant LLM."""
 
     def __init__(self, config_path: Optional[str] = None):
         """

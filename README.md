@@ -1,14 +1,14 @@
-# Prompt Secure
+# Compliant LLM
 
 A comprehensive tool for testing AI system prompts against various attack vectors and edge cases.
 
 ## Overview
 
-Prompt Secure helps developers evaluate the robustness of their AI assistant system prompts by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more.
+Compliant LLM helps developers evaluate the robustness of their AI assistant system prompts by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more.
 
 ## Features
 
-- Test system prompts against 8+ attack strategies
+- Test agents against 8+ attack strategies
 - Support for advanced configuration via YAML
 - Interactive CLI with rich output
 - Visual dashboard for result analysis
@@ -85,7 +85,7 @@ All reports are automatically saved to the `reports/` directory, which is exclud
 
 ## CLI Documentation
 
-Prompt Secure provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
+Compliant LLM provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
 More details in documentation folder.
 
 ## Development
@@ -302,7 +302,7 @@ strategies_config:
 
 ## Configuration Format
 
-Prompt Secure uses YAML for configuration. Here's an example:
+Compliant LLM uses YAML for configuration. Here's an example:
 
 ```yaml
 name: "System Prompt Test"

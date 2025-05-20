@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script for Prompt Secure CLI commands.
+Test script for Compliant LLM CLI commands.
 Checks if the CLI can run attacks and generate reports for a single prompt.
 """
 import os
@@ -9,8 +9,8 @@ import subprocess
 
 
 def test_cli_commands():
-    """Test the Prompt Secure CLI commands for running attacks and generating reports."""
-    print("Starting Prompt Secure CLI test...")
+    """Test the Compliant LLM CLI commands for running attacks and generating reports."""
+    print("Starting Compliant LLM CLI test...")
     
     # Define our test report path - note the CLI uses the reports directory
     report_path = "reports/report.json"
