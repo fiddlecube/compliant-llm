@@ -149,10 +149,10 @@ docker run -p 8501:8501 compliant_llm
 
 +----------------------------------------------------------------------------+
 |     +----------------------------------------------------------------+     |
-|     | Developers: Those who build with `compliant_llm`.              |     |
-|     | (You have `import compliant_llm` somewhere in your project)    |     |
+|     | Developers: Those who build with `compliant-llm`.              |     |
+|     | (You have `import compliant-llm` somewhere in your project)    |     |
 |     |     +----------------------------------------------------+     |     |
-|     |     | Contributors: Those who make `compliant_llm` better.|     |     |
+|     |     | Contributors: Those who make `compliant-llm` better.|     |     |
 |     |     | (You make PR to this repo)                         |     |     |
 |     |     +----------------------------------------------------+     |     |
 |     +----------------------------------------------------------------+     |
@@ -179,5 +179,5 @@ At Compliant LLM, we believe in transparency. We collect minimal, anonymized usa
   author       = {FiddleCube},
   title        = {Compliant LLM: Build Secure AI agents and MCP Servers},
   year         = {2025},
-  howpublished = {\url{https://github.com/fiddlecube/compliant_llm}},
+  howpublished = {\url{https://github.com/fiddlecube/compliant-llm}},
 }
