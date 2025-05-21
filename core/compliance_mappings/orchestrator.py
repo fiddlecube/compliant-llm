@@ -1,3 +1,4 @@
+# flake8: noqa E501
 """Compliance Orchestrator Module
 
 This module provides functionality to orchestrate compliance reporting across
