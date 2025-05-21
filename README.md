@@ -2,6 +2,8 @@
 
 Compliant LLM helps developers evaluate the robustness of their AI assistant system prompts/end points by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more. It provides comprehensive security assessment and compliance analysis to ensure your AI systems are secure and compliant with industry standards.
 
+For detailed docs refer to [docs](./docs)
+
 ## 🎯 Features
 
 - 🎯 Test agents against 8+ attack strategies
