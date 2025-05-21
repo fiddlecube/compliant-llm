@@ -1,7 +1,5 @@
 # Compliant LLM
 
-A comprehensive tool for testing AI system prompts against various attack vectors and edge cases.
-
 ## Overview
 
 Compliant LLM helps developers evaluate the robustness of their AI assistant system prompts by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more.
