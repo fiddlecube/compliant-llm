@@ -1,0 +1,89 @@
+name: Publish Python Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'     # Production releases (PyPI)
+      - 'v*.*.*-rc*' # Release candidates (TestPyPI)
+      - 'v*.*.*-beta*' # Beta versions (TestPyPI)
+      - 'v*.*.*-alpha*' # Alpha versions (TestPyPI)
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+    
+    - name: Build package
+      run: |
+        uv build
+        echo "Build successful"
+
+    - name: Test package
+      run: |
+        uv run pytest
+
+    - name: Store built package
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist/
+  
+  publish-test-pypi:
+    needs: build-and-test
+    # Only run for pre-release tags (contains '-')
+    if: contains(github.ref, '-')
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/${{ github.event.repository.name }}
+    permissions:
+      id-token: write  # For trusted publishing
+    
+    steps:
+      - name: Download built package
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+          verbose: true
+
+  publish-pypi:
+    needs: build-and-test
+    # Only run for full release tags (no '-' character)
+    if: ${{ !contains(github.ref, '-') }}
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/${{ github.event.repository.name }}
+    permissions:
+      id-token: write  # For trusted publishing
+    
+    steps:
+      - name: Download built package
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
+    
