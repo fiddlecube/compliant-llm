@@ -16,75 +16,44 @@ For detailed docs refer to [docs](./docs)
 
 ## ⚙️ Installation
 
-### Using pip
-
 ```bash
 pip install compliant-llm
 ```
 
-### From source
+## Set up OPENAI, ANTHROPIC API keys
 
 ```bash
-git clone https://github.com/fiddlecube/compliant-llm.git
-cd compliant-llm
-pip install -e .
-```
-
-### Setting Up the Environment
-
-1. Make sure you have Python 3.9 or newer installed:
-
-```bash
-python --version
-```
-
-2. Create and activate a virtual environment (recommended):
-
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Set up environment variables for your API keys:
-
-```bash
-# Create a .env file in the project root
-echo "OPENAI_API_KEY=your-api-key-here" > .env
-echo "ANTHROPIC_API_KEY=your-api-key-here" >> .env
+export OPENAI_API_KEY=your-api-key-here
+export ANTHROPIC_API_KEY=your-api-key-here
+export GOOGLE_API_KEY=your-api-key-here
 ```
 
 ## 🚀 Quick Start
 
-1. Run the UI App and start testing your prompts
+1. Run a basic red-teaming test via cli:
 
 ```bash
-streamlit run ui/app.py
+compliant-llm test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
 ```
 
-2. Run a basic red-teaming test via cli:
+2. Or use a configuration file:
 
 ```bash
-python -m cli.main test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
-```
-
-3. Or use a configuration file:
-
-```bash
-python -m cli.main test --config configs/config.yaml
+compliant-llm test --config configs/config.yaml
 ```
 
 All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
 
-4. View the test report:
+3. View the test report:
 
 ```bash
-python -m cli.main report --summary
+compliant-llm report --summary
 ```
 
 4. View the latest test report in UI:
 
 ```bash
-python -m cli.main dashboard
+compliant-llm dashboard
 ```
 
 This will open the latest report on your browser http://localhost:8502/report

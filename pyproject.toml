@@ -21,6 +21,7 @@ dependencies = [
     "python-dotenv",
     "pytest",
     "aiofiles",
+    "plotly",
 ]
 
 [project.scripts]
