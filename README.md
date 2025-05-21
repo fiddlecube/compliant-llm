@@ -177,7 +177,7 @@ At Compliant LLM, we believe in transparency. We collect minimal, anonymized usa
 
 @misc{compliant_llm2025,
   author       = {FiddleCube},
-  title        = {Compliant LLM: Secure Your AI Assistant Systems},
-  year         = {2024},
+  title        = {Compliant LLM: Build Secure AI agents and MCP Servers},
+  year         = {2025},
   howpublished = {\url{https://github.com/fiddlecube/compliant_llm}},
 }
