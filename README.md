@@ -81,13 +81,13 @@ All reports are automatically saved to the `reports/` directory, which is exclud
 python -m cli.main report --summary
 ```
 
-4. View the test report in a dashboard UI:
+4. View the latest test report in UI:
 
 ```bash
 python -m cli.main dashboard
 ```
 
-The dashboard will open in your browser at http://localhost:8501
+This will open the latest report on your browser http://localhost:8502/report
 
 
 ### File Structure
