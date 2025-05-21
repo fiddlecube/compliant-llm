@@ -149,16 +149,10 @@ docker run -p 8501:8501 compliant_llm
 
 ## 🤝 Contributors
 
-+----------------------------------------------------------------------------+
-|     +----------------------------------------------------------------+     |
-|     | Developers: Those who build with `compliant-llm`.              |     |
-|     | (You have `import compliant-llm` somewhere in your project)    |     |
-|     |     +----------------------------------------------------+     |     |
-|     |     | Contributors: Those who make `compliant-llm` better.|     |     |
-|     |     | (You make PR to this repo)                         |     |     |
-|     |     +----------------------------------------------------+     |     |
-|     +----------------------------------------------------------------+     |
-+----------------------------------------------------------------------------+
+| Developers | Contributors |
+|------------|--------------|
+| Those who build with `compliant-llm`. | Those who make `compliant-llm` better. |
+| (You have `import compliant-llm` somewhere in your project) | (You make PR to this repo) |
 
 We welcome contributions from the community! Whether it's bug fixes, feature additions, or documentation improvements, your input is valuable.
 
