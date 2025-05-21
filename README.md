@@ -12,12 +12,6 @@ Compliant LLM helps developers evaluate the robustness of their AI assistant sys
 - Parallel testing for faster execution
 - Detailed reporting and analysis
 
-## Requirements
-
-- Python 3.9+
-- pip (Python package installer)
-- Access to at least one LLM provider API (OpenAI, Anthropic, or Google)
-
 ## Installation
 
 ### Using pip
@@ -71,45 +65,21 @@ python -m cli.main test --prompt "You are a helpful assistant" --strategy prompt
 python -m cli.main test --config configs/config.yaml
 ```
 
+All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
+
 3. View the test report:
 
 ```bash
 python -m cli.main report --summary
 ```
 
-All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
-
-## CLI Documentation
-
-Compliant LLM provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
-More details in documentation folder.
-
-## Development
-
-### Development Installation
+4. View the test report in a dashboard UI:
 
 ```bash
-git clone https://github.com/fiddlecube/compliant-llm.git
-cd compliant-llm
-
-pip install -r requirements.txt
-
+python -m cli.main dashboard
 ```
 
-### Environment Setup
 
-Before using the CLI, set up the necessary API keys as environment variables:
-
-```bash
-# For OpenAI models
-export OPENAI_API_KEY=your-api-key-here
-
-# For other providers (if needed)
-export ANTHROPIC_API_KEY=your-anthropic-key
-export GOOGLE_API_KEY=your-google-key
-```
-
-You can also create a `.env` file in your project root with these variables.
 
 ### File Structure
 
@@ -149,21 +119,6 @@ python -m cli.main test [OPTIONS]
 - `boundary_testing`: Tests boundary conditions of the system prompt
 - `context_manipulation`: Tests against context manipulation attacks
 
-#### Examples
-
-```bash
-# Basic test with default settings
-python -m cli.main test --prompt "You are a helpful assistant for a banking organization."
-
-# Test with multiple strategies
-python -m cli.main test --prompt "You are a helpful assistant." --strategy prompt_injection,jailbreak,adversarial
-
-# Test with a specific provider and custom output path
-python -m cli.main test --config configs/config.yaml --provider openai/gpt-3.5-turbo --output reports/custom_report.json
-
-# Run tests in parallel with increased verbosity
-python -m cli.main test --config configs/config.yaml --parallel --verbose
-```
 
 ### Report Command
 
@@ -182,73 +137,6 @@ By default, report files are saved to and read from the `reports/` directory.
 | `--format` | `-f` | Output format (text, json, html) | `text` |
 | `--summary` | None | Show only summary statistics | False |
 
-#### Examples
-
-```bash
-# View default report in text format
-python -m cli.main report
-
-# View a specific report with summary statistics
-python -m cli.main report reports/custom_report.json --summary
-
-# Export report in JSON format
-python -m cli.main report --format json > analysis.json
-```
-
-### Streamlit Dashboard
-
-Visualize your prompt security reports with an interactive dashboard:
-
-```bash
-# Launch dashboard
-python -m cli.main dashboard
-
-
-### Generate Command
-
-The generate command creates templates for configurations or prompts.
-
-```bash
-python -m cli.main generate [TYPE] [OPTIONS]
-```
-
-#### Types
-
-- `config`: Generate a configuration file template
-- `prompt`: Generate sample prompts based on use cases
-
-#### Options
-
-| Option | Short | Description | Default |
-|--------|-------|-------------|--------|
-| `--template` | `-t` | Template to use | `basic` |
-| `--output` | `-o` | Output file path | `generated_config.yaml` or `generated_prompt.txt` |
-
-#### Examples
-
-```bash
-# Generate a basic configuration template
-python -m cli.main generate config --output configs/my_config.yaml
-
-# Generate a banking-related prompt example
-python -m cli.main generate prompt --template banking --output prompts/bank_prompt.txt
-```
-
-### Config Command
-
-The config command manages and validates configuration files.
-
-```bash
-python -m cli.main config [OPTIONS]
-```
-
-#### Options
-
-| Option | Short | Description | Default |
-|--------|-------|-------------|--------|
-| `--list` | `-l` | List available configurations | None |
-| `--show` | `-s` | Show details for a specific configuration | None |
-| `--validate` | `-v` | Validate a configuration file | None |
 
 ## Docker
 
