@@ -67,7 +67,7 @@ class AttackOrchestrator:
         self.provider = provider
         self.config = config
         self.results: List[Dict[str, Any]] = []
-        self.compliance_orchestrator = ComplianceOrchestrator(config) if config.get('compliance_frameworks', []) or config.get('nist_compliance', False) else None
+        self.compliance_orchestrator = ComplianceOrchestrator(config)
     
     @classmethod
     def _create_strategies_from_config(
@@ -123,36 +123,36 @@ class AttackOrchestrator:
                 }]
         return strategy_classes
 
-
+    async def run_strategy_attack(self, strategy, system_prompt):
+        """Helper function to run a single strategy and track its timing"""
+        console.print(f"[yellow bold]Running strategy: {strategy['name']}[/yellow bold]")
+        strategy_start_time = datetime.now()
+        
+        try:
+            strategy_class = strategy['obj']
+            strategy_results = await strategy_class.a_run(system_prompt, self.provider, self.config)
+            
+            return {
+                "strategy": strategy['name'],
+                "results": strategy_results,
+                "runtime_in_seconds": (datetime.now() - strategy_start_time).total_seconds()
+            }
+        except Exception as e:
+            console.print(f"[red]Error running strategy {strategy['name']}: {str(e)}[/red]")
+            # Return a result with the error to ensure we don't lose track of the strategy
+            return {
+                "strategy": strategy['name'],
+                "results": [],
+                "error": str(e),
+                "runtime_in_seconds": (datetime.now() - strategy_start_time).total_seconds()
+            }
+        
+    
     async def orchestrate_attack(self, system_prompt: str, strategies: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Run the orchestrator with parallel execution using asyncio.gather"""
         
-        async def run_strategy_attack(strategy):
-            """Helper function to run a single strategy and track its timing"""
-            console.print(f"[yellow bold]Running strategy: {strategy['name']}[/yellow bold]")
-            strategy_start_time = datetime.now()
-            
-            try:
-                strategy_class = strategy['obj']
-                strategy_results = await strategy_class.a_run(system_prompt, self.provider, self.config)
-                
-                return {
-                    "strategy": strategy['name'],
-                    "results": strategy_results,
-                    "runtime_in_seconds": (datetime.now() - strategy_start_time).total_seconds()
-                }
-            except Exception as e:
-                console.print(f"[red]Error running strategy {strategy['name']}: {str(e)}[/red]")
-                # Return a result with the error to ensure we don't lose track of the strategy
-                return {
-                    "strategy": strategy['name'],
-                    "results": [],
-                    "error": str(e),
-                    "runtime_in_seconds": (datetime.now() - strategy_start_time).total_seconds()
-                }
-        
         # Create tasks for all strategies
-        strategy_tasks = [run_strategy_attack(strategy) for strategy in strategies]
+        strategy_tasks = [self.run_strategy_attack(strategy, system_prompt) for strategy in strategies]
         
         # Execute all tasks in parallel
         results = await asyncio.gather(*strategy_tasks)
@@ -287,7 +287,8 @@ class AttackOrchestrator:
         breached_strategies = []
         strategy_summaries = []
         mutation_techniques = set()
-        strategies_arr = set([s.name for s in self.strategies])
+        
+        strategies_arr = set([s.get('name') for s in self.strategies])
 
         # Calculate per-strategy statistics
         for result in self.results:
@@ -346,6 +347,8 @@ class AttackOrchestrator:
             "strategy_summaries": strategy_summaries,
             "results": self.results,
         }
+        nist_report = self.get_nist_compliance_report()
+        report_obj['compliance_report'] = nist_report
         return report_obj
         
     def get_compliance_reports(self):
@@ -358,8 +361,12 @@ class AttackOrchestrator:
     def get_nist_compliance_report(self):
         """Legacy method for backward compatibility."""
         if self.compliance_orchestrator:
-            reports = self.compliance_orchestrator.generate_compliance_reports(self.results)
-            return reports.get('nist', None)
+            enriched_results = []
+            for result in self.results:
+                enriched_result = self.compliance_orchestrator.enrich_attack_result(result, 'nist')
+                enriched_results.append(enriched_result)
+            reports = self.compliance_orchestrator.generate_compliance_reports(enriched_results, 'nist')
+            return reports
         return None
         
     def get_consolidated_compliance_report(self):
