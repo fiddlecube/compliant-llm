@@ -108,6 +108,10 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     report_data['strategy_summaries'] = orchestrator_summary['strategy_summaries']
     report_data['results'] = orchestrator_summary['results']
     
+    # Add compliance report if available
+    if 'compliance_report' in orchestrator_summary:
+        report_data['compliance_report'] = orchestrator_summary['compliance_report']
+    
     
     # Save report (optional)
     output = config.get('output')  # Get from CLI argument

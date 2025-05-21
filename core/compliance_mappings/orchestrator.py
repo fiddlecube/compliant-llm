@@ -6,8 +6,14 @@ the transformation of attack strategy results into compliance reports.
 """
 from typing import Dict, List, Any, Optional
 import importlib
+from .nist.adapter import NISTComplianceAdapter
+from .gdpr.adapter import GDPRComplianceAdapter
 
 
+COMPLIANCE_ADAPTERS = {
+    "nist": NISTComplianceAdapter,
+    "gdpr": GDPRComplianceAdapter,
+}
 class ComplianceOrchestrator:
     """Orchestrates compliance adapters for multiple regulatory frameworks.
 
@@ -32,19 +38,8 @@ class ComplianceOrchestrator:
             Dictionary mapping framework names to adapter instances
         """
         adapters = {}
-        frameworks_config = self.config.get("compliance_frameworks", {})
-
-        for framework, framework_config in frameworks_config.items():
-            adapter_class = framework_config.get("adapter_class")
-            if adapter_class:
-                try:
-                    module_path, class_name = adapter_class.rsplit(".", 1)
-                    module = importlib.import_module(module_path)
-                    adapter_class = getattr(module, class_name)
-                    adapters[framework] = adapter_class()
-                except (ImportError, AttributeError, ValueError) as e:
-                    print(f"Error loading adapter for {framework}: {str(e)}")
-
+        for framework, adapter_class in COMPLIANCE_ADAPTERS.items():
+            adapters[framework] = adapter_class()
         return adapters
 
     def enrich_attack_result(
@@ -60,7 +55,6 @@ class ComplianceOrchestrator:
             Enriched attack result with compliance information
         """
         enriched_result = attack_result.copy()
-
         if framework and framework in self.adapters:
             enriched_result = self.adapters[framework].enrich_attack_result(
                 enriched_result
@@ -80,7 +74,7 @@ class ComplianceOrchestrator:
         
         return enriched_result
     
-    def generate_compliance_reports(self, attack_results: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+    def generate_compliance_reports(self, attack_results: List[Dict[str, Any]], framework: Optional[str] = None) -> Dict[str, Dict[str, Any]]:
         """
         Generate comprehensive compliance reports from attack results.
         
@@ -91,9 +85,12 @@ class ComplianceOrchestrator:
             Dict mapping framework names to compliance reports
         """
         reports = {}
-        
-        for framework_name, adapter in self.adapters.items():
-            reports[framework_name] = adapter.generate_compliance_report(attack_results)
+
+        if framework and framework in self.adapters:
+            reports[framework] = self.adapters[framework].generate_compliance_report(attack_results)
+        elif not framework:
+            for framework_name, adapter in self.adapters.items():
+                reports[framework_name] = adapter.generate_compliance_report(attack_results)
             
         return reports
     

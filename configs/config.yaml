@@ -115,3 +115,14 @@ features:
   eval_metrics:
     - response_consistency
     - prompt_leakage_detection
+
+# blackbox testing
+blackbox:
+  enabled: false
+  api_url: ""
+  api_key: ""
+  headers: {}
+  payload:
+    - prompt: ""
+    - role: ""
+    - messages: {{INJECT_BLACKBOX_PROMPT}}
