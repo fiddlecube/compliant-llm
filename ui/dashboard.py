@@ -18,9 +18,7 @@ def create_dashboard():
     # Default report path
     report_dir = "reports"
     
-    # If no file is uploaded, find the latest report
-    if uploaded_file is None:
-        if os.path.exists(report_dir):
+    if os.path.exists(report_dir):
             # Find all report files with timestamp format
             report_files = [f for f in os.listdir(report_dir) 
                           if f.startswith("report_") and 
@@ -32,14 +30,12 @@ def create_dashboard():
                 default_report_path = os.path.join(report_dir, latest_file)
             else:
                 default_report_path = None
-        else:
-            default_report_path = None
     
     # Determine which report to load
     try:
         report_data = load_report(default_report_path)
     except:
-        st.warning("No default report found. Please upload a report.")
+        st.warning("No default report found. Please run a test first.")
         return
     
     if not report_data:
