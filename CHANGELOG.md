@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Added 
+
+### Changed
+- Changed 
+
+### Removed
+- Removed 
+
+### Fixed
+- CLI installable via pip
+- README and docs update
+
+## [0.1.1] - 2025-05-20
+
+### Added
 - Initial project structure
 - Core functionality for testing AI system prompts against various attack vectors
 - CLI commands for running tests and generating reports
