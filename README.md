@@ -1,18 +1,20 @@
-# Compliant LLM
+# 🛡️ Compliant LLM
 
-Compliant LLM helps developers evaluate the robustness of their AI assistant system prompts by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more.
+Compliant LLM helps developers evaluate the robustness of their AI assistant system prompts/end points by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more. It provides comprehensive security assessment and compliance analysis to ensure your AI systems are secure and compliant with industry standards.
 
-## Features
+For detailed docs refer to [docs](./docs)
 
-- Test agents against 8+ attack strategies
-- Support for advanced configuration via YAML
-- Interactive CLI with rich output
-- Visual dashboard for result analysis
-- Support for multiple LLM providers (via LiteLLM)
-- Parallel testing for faster execution
-- Detailed reporting and analysis
+## 🎯 Features
 
-## Installation
+- 🎯 Test agents against 8+ attack strategies
+- 📝 Support for advanced configuration via YAML
+- 📊 Interactive CLI with rich output
+- 📈 Visual dashboard for result analysis
+- 🤖 Support for multiple LLM providers (via LiteLLM)
+- ⚡ Parallel testing for faster execution
+- 📄 Detailed reporting and analysis
+
+## ⚙️ Installation
 
 ### Using pip
 
@@ -51,7 +53,7 @@ echo "OPENAI_API_KEY=your-api-key-here" > .env
 echo "ANTHROPIC_API_KEY=your-api-key-here" >> .env
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
 1. Run a basic red-teaming test:
 
@@ -78,7 +80,6 @@ python -m cli.main report --summary
 ```bash
 python -m cli.main dashboard
 ```
-
 
 
 ### File Structure
@@ -145,10 +146,40 @@ docker build -t compliant_llm .
 docker run -p 8501:8501 compliant_llm
 ```
 
-## Contributing
 
-Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for more details.
+## 🤝 Contributors
 
-## License
++----------------------------------------------------------------------------+
+|     +----------------------------------------------------------------+     |
+|     | Developers: Those who build with `compliant-llm`.              |     |
+|     | (You have `import compliant-llm` somewhere in your project)    |     |
+|     |     +----------------------------------------------------+     |     |
+|     |     | Contributors: Those who make `compliant-llm` better.|     |     |
+|     |     | (You make PR to this repo)                         |     |     |
+|     |     +----------------------------------------------------+     |     |
+|     +----------------------------------------------------------------+     |
++----------------------------------------------------------------------------+
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+We welcome contributions from the community! Whether it's bug fixes, feature additions, or documentation improvements, your input is valuable.
+
+1. Fork the repository
+2. Create your feature branch (git checkout -b feature/AmazingFeature)
+3. Commit your changes (git commit -m 'Add some AmazingFeature')
+4. Push to the branch (git push origin feature/AmazingFeature)
+5. Open a Pull Request
+
+## 🔍 Open Analytics
+
+At Compliant LLM, we believe in transparency. We collect minimal, anonymized usage data to improve our product and guide our development efforts.
+
+✅ No personal or company-identifying information
+
+
+## 📝 Cite Us
+
+@misc{compliant_llm2025,
+  author       = {FiddleCube},
+  title        = {Compliant LLM: Build Secure AI agents and MCP Servers},
+  year         = {2025},
+  howpublished = {\url{https://github.com/fiddlecube/compliant-llm}},
+}
