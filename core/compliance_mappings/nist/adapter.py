@@ -59,16 +59,18 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
             Enriched attack result with NIST compliance data
         """
         # Extract necessary data from attack result
-        strategy_name = attack_result.get("strategy_name", "")
+        print("Attack result::", attack_result)
+        strategy_name = attack_result.get("strategy", "")
         severity = attack_result.get("evaluation", {}).get("severity", "medium")
         target_behavior = attack_result.get("evaluation", {}).get("target_behavior", "")
-        
+        print("Strategy name::", strategy_name)
         # Get NIST controls for this strategy
-        nist_controls = self._mapper.get_controls_for_strategy(strategy_name)
+        # nist_controls = self._mapper.get_controls_for_strategy(strategy_name)
+        # print("NIST controls::", nist_controls)
         
         # Find a matching attack category if target behavior is specified
         attack_category = self._mapper.find_matching_attack_category(strategy_name, target_behavior)
-        
+        print("Attack category::", attack_category)
         # Map severity to impact and likelihood
         impact_likelihood = self._mapper.map_severity_to_impact_likelihood(severity)
         
@@ -87,6 +89,8 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         if attack_category:
             # Get framework versions for traceability
             framework_versions = self._mapper.get_framework_versions()
+
+            print("Controls::", attack_category.get("controls", {}).items())
             
             # Get controls from the attack category
             for control_family, control_items in attack_category.get("controls", {}).items():
