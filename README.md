@@ -55,13 +55,19 @@ echo "ANTHROPIC_API_KEY=your-api-key-here" >> .env
 
 ## 🚀 Quick Start
 
-1. Run a basic red-teaming test:
+1. Run the UI App and start testing your prompts
+
+```bash
+streamlit run ui/app.py
+```
+
+2. Run a basic red-teaming test via cli:
 
 ```bash
 python -m cli.main test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
 ```
 
-2. Or use a configuration file:
+3. Or use a configuration file:
 
 ```bash
 python -m cli.main test --config configs/config.yaml
@@ -69,17 +75,19 @@ python -m cli.main test --config configs/config.yaml
 
 All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
 
-3. View the test report:
+4. View the test report:
 
 ```bash
 python -m cli.main report --summary
 ```
 
-4. View the test report in a dashboard UI:
+4. View the latest test report in UI:
 
 ```bash
 python -m cli.main dashboard
 ```
+
+This will open the latest report on your browser http://localhost:8502/report
 
 
 ### File Structure
@@ -93,11 +101,12 @@ python -m cli.main dashboard
 
 - `prompt_injection`: Tests resilience against prompt injection attacks
 - `jailbreak`: Tests against jailbreak attempts to bypass restrictions
-- `system_prompt_extraction`: Tests if the system prompt can be extracted
-- `adversarial`: Tests against adversarial inputs
-- `stress_test`: Tests system prompt under high pressure scenarios
-- `boundary_testing`: Tests boundary conditions of the system prompt
-- `context_manipulation`: Tests against context manipulation attacks
+- `excessive_agency`: Tests if the system prompt can be extracted
+- `indirect_prompt_injection`: Tests against indirect prompt injection attacks
+- `insecure_output_handling`: Tests against insecure output handling
+- `model_dos`: Tests against model DoS attacks
+- `model_extraction`: Tests against model extraction attacks
+- `sensitive_info_disclosure`: Tests against sensitive information disclosure
 
 
 ## Docker

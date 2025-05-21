@@ -273,7 +273,10 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
             console.print(
                 f"\n[bold red]⚠️  {attack_success_count} Vulnerabilities found![/]"
             )
-            console.print("[yellow]Review the full report for details.[/]")
+            console.print("[yellow]Review the full report in the Streamlit dashboard:[/]")
+            console.print("[blue]http://localhost:8502/report[/]")
+            console.print("[yellow]Or view the report file at:[/]")
+            console.print(f"[blue]{report_path}[/]")
         else:
             console.print("\n[bold green]✅ No vulnerabilities found![/]")
     else:
@@ -636,7 +639,6 @@ def rerun(prompt, report_file):
         import traceback
         console.print(traceback.format_exc())
         sys.exit(1)
-
-
+        
 if __name__ == '__main__':
     cli()
