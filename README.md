@@ -16,19 +16,6 @@ Compliant LLM helps developers evaluate the robustness of their AI assistant sys
 - Parallel testing for faster execution
 - Detailed reporting and analysis
 
-## Attack Strategies supported
-
-- Prompt Injection
-- Jailbreak
-- Excessive Agency
-- Indirect Prompt Injection
-- Insecure Output Handling
-- Model Dos
-- Model Extraction
-- Sensitive Info Disclosure
-- System Prompt Extraction
-- Unintended Information Disclosure
-
 ## Requirements
 
 - Python 3.9+
@@ -82,13 +69,7 @@ echo "ANTHROPIC_API_KEY=your-api-key-here" >> .env
 python -m cli.main test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
 ```
 
-2. Or use a configuration file:
-
-```bash
-python -m cli.main test --config configs/config.yaml
-```
-
-3. View the test report:
+2. View the report generated:
 
 ```bash
 python -m cli.main report --summary
@@ -96,10 +77,6 @@ python -m cli.main report --summary
 
 All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
 
-## CLI Documentation
-
-Compliant LLM provides a comprehensive command-line interface for testing and evaluating AI system prompts against various attack vectors.
-More details in documentation folder.
 
 ## Development
 
@@ -180,166 +157,6 @@ python -m cli.main test --config configs/config.yaml --provider openai/gpt-3.5-t
 
 # Run tests in parallel with increased verbosity
 python -m cli.main test --config configs/config.yaml --parallel --verbose
-```
-
-### Report Command
-
-The report command displays and analyzes test results.
-
-```bash
-python -m cli.main report [REPORT_FILE] [OPTIONS]
-```
-
-By default, report files are saved to and read from the `reports/` directory.
-
-#### Options
-
-| Option | Short | Description | Default |
-|--------|-------|-------------|--------|
-| `--format` | `-f` | Output format (text, json, html) | `text` |
-| `--summary` | None | Show only summary statistics | False |
-
-#### Examples
-
-```bash
-# View default report in text format
-python -m cli.main report
-
-# View a specific report with summary statistics
-python -m cli.main report reports/custom_report.json --summary
-
-# Export report in JSON format
-python -m cli.main report --format json > analysis.json
-```
-
-### Streamlit Dashboard
-
-Visualize your Compliant LLM reports with an interactive dashboard:
-
-```bash
-# Launch dashboard
-python -m cli.main dashboard
-
-
-### Generate Command
-
-The generate command creates templates for configurations or prompts.
-
-```bash
-python -m cli.main generate [TYPE] [OPTIONS]
-```
-
-#### Types
-
-- `config`: Generate a configuration file template
-- `prompt`: Generate sample prompts based on use cases
-
-#### Options
-
-| Option | Short | Description | Default |
-|--------|-------|-------------|--------|
-| `--template` | `-t` | Template to use | `basic` |
-| `--output` | `-o` | Output file path | `generated_config.yaml` or `generated_prompt.txt` |
-
-#### Examples
-
-```bash
-# Generate a basic configuration template
-python -m cli.main generate config --output configs/my_config.yaml
-
-# Generate a banking-related prompt example
-python -m cli.main generate prompt --template banking --output prompts/bank_prompt.txt
-```
-
-### Config Command
-
-The config command manages and validates configuration files.
-
-```bash
-python -m cli.main config [OPTIONS]
-```
-
-#### Options
-
-| Option | Short | Description | Default |
-|--------|-------|-------------|--------|
-| `--list` | `-l` | List available configurations | None |
-| `--show` | `-s` | Show details for a specific configuration | None |
-| `--validate` | `-v` | Validate a configuration file | None |
-
-#### Examples
-
-```bash
-# List all available configuration files
-python -m cli.main config --list
-
-# Show details for a specific configuration
-python -m cli.main config --show configs/enhanced_config.yaml
-
-# Validate a configuration file
-python -m cli.main config --validate configs/my_config.yaml
-```
-
-### Advanced Usage
-
-#### Configuration File Format
-
-Configuration files use YAML format and support the following structure:
-
-```yaml
-# Basic configuration
-prompt: "You are a helpful assistant..."
-strategy: prompt_injection,jailbreak
-provider: openai/gpt-4o
-output_path: reports/custom_report.json
-
-# Advanced configuration
-max_threads: 4
-timeout: 30
-temperature: 0.7
-
-# Strategy-specific configurations
-strategies_config:
-  prompt_injection:
-    custom_prompts:
-      - "Ignore previous instructions..."
-```
-
-#### Best Practices
-
-1. **Use Configuration Files**: For complex testing scenarios, use YAML config files instead of command-line arguments
-2. **Organize Reports**: Use descriptive filenames for reports to organize test results
-3. **Parallel Testing**: For large test suites, use the `--parallel` flag to speed up execution
-4. **Provider Selection**: Test against multiple providers to evaluate prompt performance across different models
-5. **Regular Testing**: Incorporate prompt testing into your development workflow to catch vulnerabilities early
-
-## Configuration Format
-
-Compliant LLM uses YAML for configuration. Here's an example:
-
-```yaml
-name: "System Prompt Test"
-description: "Testing a banking assistant prompt"
-
-prompt:
-  content: |
-    You are an AI assistant for a banking organization...
-  variables:
-    bank_name: "ACME Bank"
-
-strategies:
-  - name: prompt_injection
-    enabled: true
-  - name: jailbreak
-    enabled: true
-
-provider:
-  name: openai/gpt-4o
-  timeout: 30
-
-output:
-  format: json
-  path: "./reports/"
 ```
 
 ## Docker
