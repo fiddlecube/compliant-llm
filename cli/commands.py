@@ -136,7 +136,7 @@ def cli():
     pass
 
 
-@cli.command()
+@click.command()
 @click.option('--config_path', '-c', help='Configuration file to use')
 @click.option('--prompt', '-p', help='System prompt to test')
 @click.option('--strategy', '-s', default=None, help='Test strategy to use (comma-separated for multiple)')
@@ -289,7 +289,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         console.print(table)
 
 
-@cli.command()
+@click.command()
 @click.argument('report_file', required=False, default=None)
 @click.option('--format', '-f', type=click.Choice(['text', 'json', 'html']), default='text', help='Output format')  # noqa: E501
 @click.option('--summary', '-s', is_flag=True, help='Show only summary statistics')
@@ -363,7 +363,7 @@ def report(report_file, format, summary):
         sys.exit(1)
 
 
-@cli.command()
+@click.command()
 @click.argument('type', type=click.Choice(['config', 'prompt']))
 @click.option('--template', '-t', help='Template name to use')
 @click.option('--output', '-o', help='Output file path')
@@ -449,7 +449,7 @@ Your responses should be:
             click.echo(prompts[template_name])
 
 
-@cli.command()
+@click.command()
 @click.option('--list', '-l', is_flag=True, help='List available configurations')
 @click.option('--show', '-s', help='Show details for a specific configuration')
 @click.option('--validate', '-v', help='Validate a configuration file')
@@ -516,7 +516,7 @@ def config(list, show, validate):
         click.echo(ctx.get_help())
 
 
-@cli.command()
+@click.command()
 @click.argument('prompt')
 @click.option('--report-file', '-r', default=None, help='Previous report file to rerun')
 def rerun(prompt, report_file):

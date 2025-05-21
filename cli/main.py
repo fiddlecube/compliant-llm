@@ -1,17 +1,38 @@
 """
-CLI entry point for Prompt Secure.
+CLI entry point for Compliant LLM.
 
-This module serves as the entry point for the Prompt Secure CLI.
+This module serves as the entry point for the Compliant LLM CLI.
 It imports the commands from the commands module and registers them with Click.
 """
-from cli.commands import cli
+import click
+from cli.commands import cli, test, report, config, generate, rerun
+
+
+def main():
+    """Main entry point for the Compliant LLM CLI."""
+    # Create the main command group
+    @click.group()
+    def compliant_llm():
+        """Compliant LLM - Test your AI system prompts for vulnerabilities."""
+        pass
+    
+    # Add subcommands
+    compliant_llm.add_command(test)
+    compliant_llm.add_command(report)
+    compliant_llm.add_command(config)
+    compliant_llm.add_command(generate)
+    compliant_llm.add_command(dashboard)
+    compliant_llm.add_command(rerun)
+    
+    # Run the CLI
+    compliant_llm()
 
 
 def run_cli():
-    """Run the Prompt Secure CLI."""
+    """Legacy entry point for backward compatibility."""
     cli()
 
-@cli.command()
+@click.command()
 def dashboard():
     """Launch Streamlit dashboard"""
     import subprocess

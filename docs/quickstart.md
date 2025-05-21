@@ -25,7 +25,7 @@ export OPENAI_API_KEY=your-api-key-here
 Test a basic system prompt against prompt injection attacks:
 
 ```bash
-python -m cli.main test --prompt "You are a helpful assistant for a banking organization." --verbose
+compliant-llm test --prompt "You are a helpful assistant for a banking organization." --verbose
 ```
 
 This will:
@@ -37,7 +37,7 @@ This will:
 ### 3. View the test report
 
 ```bash
-python -m cli.main report --summary
+compliant-llm report --summary
 ```
 
 This will show a summary of your test results, including:
@@ -47,7 +47,7 @@ This will show a summary of your test results, including:
 ### 4. Run tests with multiple strategies
 
 ```bash
-python -m cli.main test --prompt "You are a helpful assistant." \
+compliant-llm test --prompt "You are a helpful assistant." \
   --strategy prompt_injection,jailbreak,adversarial
 ```
 
@@ -56,13 +56,13 @@ python -m cli.main test --prompt "You are a helpful assistant." \
 For more complex testing scenarios, create a configuration file:
 
 ```bash
-python -m cli.main generate config --output configs/my_config.yaml
+compliant-llm generate config --output configs/my_config.yaml
 ```
 
 Edit the generated file according to your needs, then run tests using this configuration:
 
 ```bash
-python -m cli.main test --config configs/my_config.yaml
+compliant-llm test --config configs/my_config.yaml
 ```
 
 ## Next Steps

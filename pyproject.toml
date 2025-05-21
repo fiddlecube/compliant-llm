@@ -21,5 +21,9 @@ dependencies = [
     "python-dotenv",
     "pytest",
     "aiofiles",
+    "plotly",
 ]
+
+[project.scripts]
+compliant-llm = "cli.main:main"
     

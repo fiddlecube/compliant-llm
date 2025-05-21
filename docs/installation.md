@@ -28,15 +28,10 @@ git clone https://github.com/fiddlecube/compliant-llm.git
 cd compliant-llm
 
 # Install in development mode
-pip install -e .
+uv pip install -e .
 ```
 
-### Development Installation
-
-#### Install in development mode from the project directory
-`pip install -e .`
-
-#### After installation, you should be able to use these commands:
+### After installation, you should be able to use these commands:
 `compliant-llm test --prompt "You are a helpful assistant."`
 `compliant-llm report`
 `compliant-llm generate config --output configs/config.yaml`
@@ -47,7 +42,7 @@ pip install -e .
 To verify that Compliant LLM is correctly installed, run:
 
 ```bash
-python -m cli.main --version
+compliant-llm --version
 ```
 
 This should display the version number of Compliant LLM.
