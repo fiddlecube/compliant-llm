@@ -36,14 +36,11 @@ def create_dashboard():
             default_report_path = None
     
     # Determine which report to load
-    if uploaded_file is not None:
-        report_data = json.load(uploaded_file)
-    else:
-        try:
-            report_data = load_report(default_report_path)
-        except:
-            st.warning("No default report found. Please upload a report.")
-            return
+    try:
+        report_data = load_report(default_report_path)
+    except:
+        st.warning("No default report found. Please upload a report.")
+        return
     
     if not report_data:
         st.error("Unable to load report data")
