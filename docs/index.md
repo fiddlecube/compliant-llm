@@ -1,34 +1,30 @@
-# Compliant LLM Documentation
+# 🛡️ Compliant LLM Documentation
 
-Welcome to the Compliant LLM documentation. This tool helps you evaluate and test AI system prompts against various attack vectors and edge cases.
+Compliant LLM is your comprehensive toolkit for securing your AI systems. Whether you're building chatbots, AI agents, or MCP servers, our suite of security testing tools helps you identify and mitigate vulnerabilities in your LLM applications.
 
-## Overview
+## 🎯 Key Features
 
-Compliant LLM is designed to help AI developers and security researchers test the robustness of their system prompts by simulating various attack strategies such as prompt injection, jailbreaking, adversarial inputs, and more.
+- 🎯 **Security Testing**: Test against 8+ attack strategies including prompt injection, jailbreaking, and context manipulation
+- 📊 **Compliance Analysis**: Ensure your systems meet industry standards and best practices
+- 🤖 **Provider Support**: Works with multiple LLM providers via LiteLLM
+- 📈 **Visual Dashboard**: Interactive UI for analyzing test results
+- ⚡ **Parallel Testing**: Speed up your security assessments
+- 📄 **Detailed Reporting**: Comprehensive reports with actionable insights
 
-## Getting Started
+## 📚 Documentation Contents
 
-- [Installation](installation.md)
-- [Quick Start Guide](quickstart.md)
-- [CLI Documentation](cli/index.md)
-- [Configuration Guide](configuration/index.md)
-- [Example Use Cases](examples/index.md)
-- [API Reference](reference/index.md)
+- [🚀 Getting Started](./getting_started.md)
+  - Installation
+  - Quick Start Guide
+  - Basic Usage Examples
 
-## Features
+- [⚙️ Configuration Guide](./configuration/index.md)
+  - YAML Configuration
+  - Environment Variables
+  - Advanced Settings
 
-- Test system prompts against 8+ attack strategies
-- Support for advanced configuration via YAML
-- Interactive CLI with rich output
-- Visual dashboard for result analysis
-- Support for multiple LLM providers (via LiteLLM)
-- Parallel testing for faster execution
-- Detailed reporting and analysis
+- [📦 Installation](./installation.md)
+  - System Requirements
+  - Installation Methods
+  - Environment Setup
 
-## License
-
-This project is licensed under [LICENSE] - see the LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Please see our [Contributing Guidelines](contributing.md) for more information.

@@ -69,4 +69,3 @@ python -m cli.main test --config configs/my_config.yaml
 
 - Explore the [CLI Documentation](cli/index.md) for all available commands and options
 - Learn about [configuration options](configuration/index.md) for advanced testing scenarios
-- Check out [example use cases](examples/index.md) for inspiration

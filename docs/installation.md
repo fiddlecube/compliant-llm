@@ -39,7 +39,7 @@ pip install -e .
 #### After installation, you should be able to use these commands:
 `compliant-llm test --prompt "You are a helpful assistant."`
 `compliant-llm report`
-`compliant-llm generate config --output configs/my_config.yaml`
+`compliant-llm generate config --output configs/config.yaml`
 `compliant-llm config --list`
 
 ## Verifying Installation
@@ -76,27 +76,6 @@ export GOOGLE_API_KEY=your-google-key
 
 You can also create a `.env` file in your project root with these variables.
 
-## Installing Optional Dependencies
-
-### For Development
-
-If you want to contribute to Compliant LLM or run tests, install the development dependencies:
-
-```bash
-pip install -e ".[dev]"
-```
-
-### For Visualization Features
-
-For enhanced report visualization:
-
-```bash
-pip install -e ".[viz]"
-```
-
-## Troubleshooting
-
-### Common Installation Issues
 
 #### Missing Dependencies
 

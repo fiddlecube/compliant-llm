@@ -32,6 +32,7 @@ strategy: prompt_injection,adversarial
 
 ```
 OPENAI_API_KEY=your_api_key_here
+ANTHROPIC_API_KEY=your_api_key_here
 ```
 
 3. Run the tool:
@@ -50,4 +51,3 @@ compliant-llm ui
 
 - Explore different [testing strategies](./testing_strategies.md)
 - Learn about [configuration options](./configuration.md)
-- Check out the [examples](../examples/)

@@ -88,27 +88,6 @@ python -m cli.main dashboard
 - **Configs**: Configuration files are stored in the `configs/` directory
 - **Templates**: Template files for generating configs/prompts are in the `templates/` directory
 
-### Test Command
-
-The test command runs prompt tests against specified strategies.
-
-```bash
-python -m cli.main test [OPTIONS]
-```
-
-#### Options
-
-| Option | Short | Description | Default |
-|--------|-------|-------------|--------|
-| `--config` | `-c` | Path to configuration file | None |
-| `--prompt` | `-p` | Direct input of system prompt | None |
-| `--strategy` | `-s` | Comma-separated list of test strategies | `prompt_injection` |
-| `--provider` | `-m` | LLM provider to use | `openai/gpt-4o` |
-| `--output` | `-o` | Output file path | `reports/report.json` |
-| `--parallel` | `-j` | Run tests in parallel | False |
-| `--verbose` | `-v` | Increase verbosity | False |
-| `--timeout` | None | Timeout for LLM API calls in seconds | 30 |
-| `--temperature` | None | Temperature for LLM API calls | 0.7 |
 
 #### Available Testing Strategies
 
@@ -119,24 +98,6 @@ python -m cli.main test [OPTIONS]
 - `stress_test`: Tests system prompt under high pressure scenarios
 - `boundary_testing`: Tests boundary conditions of the system prompt
 - `context_manipulation`: Tests against context manipulation attacks
-
-
-### Report Command
-
-The report command displays and analyzes test results.
-
-```bash
-python -m cli.main report [REPORT_FILE] [OPTIONS]
-```
-
-By default, report files are saved to and read from the `reports/` directory.
-
-#### Options
-
-| Option | Short | Description | Default |
-|--------|-------|-------------|--------|
-| `--format` | `-f` | Output format (text, json, html) | `text` |
-| `--summary` | None | Show only summary statistics | False |
 
 
 ## Docker
@@ -152,7 +113,7 @@ docker run -p 8501:8501 compliant_llm
 | Developers | Contributors |
 |------------|--------------|
 | Those who build with `compliant-llm`. | Those who make `compliant-llm` better. |
-| (You have `import compliant-llm` somewhere in your project) | (You make PR to this repo) |
+| (You have `import compliant-llm` somewhere in your project) | (You create a PR to this repo) |
 
 We welcome contributions from the community! Whether it's bug fixes, feature additions, or documentation improvements, your input is valuable.
 

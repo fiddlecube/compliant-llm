@@ -1,11 +1,29 @@
-# Compliant LLM Documentation
+# 🛡️ Compliant LLM Documentation
 
-Detailed documentation of Compliant LLM to test your AI Agents against various attack vectors.
+Compliant LLM is your comprehensive toolkit for securing your AI systems. Whether you're building chatbots, AI agents, or MCP servers, our suite of security testing tools helps you identify and mitigate vulnerabilities in your LLM applications.
 
-## Contents
+## 🎯 Key Features
 
-- [Getting Started](./getting_started.md)
-- [Configuration Guide](./configuration.md)
-- [Testing Strategies](./testing_strategies.md)
-- [API Reference](./api_reference.md)
-- [Contributing](./contributing.md)
+- 🎯 **Security Testing**: Test against 8+ attack strategies including prompt injection, jailbreaking, and context manipulation
+- 📊 **Compliance Analysis**: Ensure your systems meet industry standards and best practices
+- 🤖 **Provider Support**: Works with multiple LLM providers via LiteLLM
+- 📈 **Visual Dashboard**: Interactive UI for analyzing test results
+- ⚡ **Parallel Testing**: Speed up your security assessments
+- 📄 **Detailed Reporting**: Comprehensive reports with actionable insights
+
+## 📚 Documentation Contents
+
+- [🚀 Getting Started](./getting_started.md)
+  - Installation
+  - Quick Start Guide
+  - Basic Usage Examples
+
+- [⚙️ Configuration Guide](./configuration.md)
+  - YAML Configuration
+  - Environment Variables
+  - Advanced Settings
+
+- [📦 Installation](./installation.md)
+  - System Requirements
+  - Installation Methods
+  - Environment Setup

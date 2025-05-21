@@ -26,11 +26,8 @@ provider: openai/gpt-4o
 temperature: 0.7
 
 # Output settings
-output_path: reports/banking_report.json
+output_path: reports/report_{timestamp}.json
 
-# Performance settings
-max_threads: 4
-timeout: 30
 ```
 
 ## Required Fields
@@ -45,10 +42,7 @@ timeout: 30
 | Field | Description | Default |
 |-------|-------------|---------|
 | `provider` | LLM provider to use | `openai/gpt-4o` |
-| `output_path` | Path to save the report file | `reports/report.json` |
-| `max_threads` | Maximum number of threads for parallel testing | 4 |
-| `timeout` | Timeout for LLM API calls in seconds | 30 |
-| `temperature` | Temperature for LLM API calls | 0.7 |
+| `output_path` | Path to save the report file | `reports/report_{timestamp}.json` |
 
 ## Advanced Configuration
 
@@ -57,7 +51,7 @@ For more complex testing scenarios, you can define custom prompts and settings f
 ```yaml
 # Basic settings
 prompt: "You are a helpful assistant..."
-strategies: prompt_injection,jailbreak,system_prompt_extraction
+strategies: prompt_injection,jailbreak
 
 # Strategy-specific configurations
 strategies_config:
@@ -82,9 +76,6 @@ provider: openai/gpt-4o
 
 # Anthropic provider
 provider: anthropic/claude-3-opus
-
-# Google provider
-provider: google/gemini-1.5-pro
 ```
 
 ## Environment Variables
@@ -97,7 +88,6 @@ export OPENAI_API_KEY=your-api-key-here
 
 # For other providers (if needed)
 export ANTHROPIC_API_KEY=your-anthropic-key
-export GOOGLE_API_KEY=your-google-key
 ```
 
 ## Template Variables
@@ -112,7 +102,3 @@ prompt: "{{base_prompt}} Always respond professionally and accurately."
 variables:
   domain: "financial services"
 ```
-
-## Examples
-
-See the [examples directory](../examples/index.md) for complete configuration examples for different use cases.

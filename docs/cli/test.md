@@ -83,14 +83,6 @@ python -m cli.main test --prompt "You are a helpful assistant." \
   --output reports/custom_report.json
 ```
 
-### Parallel Execution
-
-Run tests in parallel for faster execution:
-
-```bash
-python -m cli.main test --config configs/config.yaml --parallel
-```
-
 ### Verbose Output
 
 Enable verbose output for more detailed information:
