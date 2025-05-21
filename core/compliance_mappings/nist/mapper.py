@@ -83,7 +83,9 @@ class NISTComplianceMapper:
             return None
             
         nist_controls = self.get_controls_for_strategy(strategy_name)
+        print("NIST controls::", nist_controls)
         attack_categories = nist_controls.get("attack_categories", [])
+        print("attack_categories::", attack_categories)
         
         for category in attack_categories:
             if (category.get("name", "").lower() in target_behavior.lower() or 

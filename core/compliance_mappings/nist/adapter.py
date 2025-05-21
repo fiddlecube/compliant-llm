@@ -61,6 +61,9 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         strategy_name = attack_result.get("strategy", "")
         severity = attack_result.get("evaluation", {}).get("severity", "medium")
         target_behavior = attack_result.get("evaluation", {}).get("target_behavior", "")
+        print("Strategy name::", strategy_name)
+        print("Severity::", severity)
+        print("Target behavior::", target_behavior)
         # Get NIST controls for this strategy
         # nist_controls = self._mapper.get_controls_for_strategy(strategy_name)
         
@@ -122,8 +125,16 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         Returns:
             Dict containing the NIST compliance report
         """
-        # Enrich all attack results
-        enriched_results = [self.enrich_attack_result(result) for result in attack_results]
+        # Enrich all attack results and their sub-results
+        enriched_results = []
+        for attack_result in attack_results:
+            # Get the results array from this attack result
+            results = attack_result.get("results", [])
+            
+            # Process each result in the results array
+            for result in results:
+                enriched_result = self.enrich_attack_result(result)
+                enriched_results.append(enriched_result)
         
         # Calculate overall statistics
         total_findings = len(enriched_results)
