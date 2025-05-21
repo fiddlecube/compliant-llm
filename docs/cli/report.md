@@ -72,7 +72,7 @@ python -m cli.main report --format json
 Save the report output to a file:
 
 ```bash
-python -m cli.main report --format json > analysis.json
+python -m cli.main report --format json > reports/analysis.json
 ```
 
 ## Report Structure

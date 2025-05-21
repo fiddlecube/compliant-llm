@@ -23,19 +23,7 @@ Compliant LLM is your comprehensive toolkit for securing your AI systems. Whethe
   - Environment Variables
   - Advanced Settings
 
-- [🎯 Testing Strategies](./testing_strategies.md)
-  - Available Strategies
-  - Strategy Configuration
-  - Custom Strategy Development
-
-- [📚 API Reference](./api_reference.md)
-  - Core Components
-  - Configuration Management
-  - Testing Framework
-  - Compliance Adapters
-
-- [🤝 Contributing](./contributing.md)
-  - Development Setup
-  - Code Style
-  - Testing
-  - Submitting PRs
+- [📦 Installation](./installation.md)
+  - System Requirements
+  - Installation Methods
+  - Environment Setup
