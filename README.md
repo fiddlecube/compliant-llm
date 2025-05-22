@@ -77,6 +77,10 @@ This will open the latest report on your browser http://localhost:8502/report
 - `model_extraction`: Tests against model extraction attacks
 - `sensitive_info_disclosure`: Tests against sensitive information disclosure
 
+#### Available Attacks
+
+- 100+ attacks on top of each testing strategy, updated in real time based on latest attacks
+
 
 ## Docker
 

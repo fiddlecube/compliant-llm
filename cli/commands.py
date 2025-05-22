@@ -231,7 +231,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
     with open(report_path, 'w') as f:
         json.dump(report_data, f, indent=2)
     
-    console.print(f"[bold green]Tests completed successfully![/]")
+    console.print("[bold green]Tests completed successfully![/]")
     console.print(f"[bold cyan]Report saved to: {report_path}[/]")
     console.print("\n")
 
