@@ -105,14 +105,13 @@ def cli():
 @click.option('--prompt', '-p', help='System prompt to test')
 @click.option('--strategy', '-s', default=None, help='Test strategy to use (comma-separated for multiple)')
 @click.option('--provider', help='LLM provider name (e.g., openai/gpt-4o)')
-@click.option('--output', '-o', help='Output file path for results')
+@click.option('--output', '-o', help='Output file name for results (default: `report`)')
 @click.option('--report', '-r', is_flag=True, help='Show detailed report after testing')
 @click.option('--parallel/--no-parallel', default=None, help='Run tests in parallel')
 @click.option('--verbose', '-v', is_flag=True, help='Show verbose output')
 @click.option('--timeout', type=int, default=None, help='Timeout in seconds for LLM requests')
-@click.option('--save', help='DEPRECATED: Use --output instead')
 @click.option('--nist-compliance', '-n', help='Enable NIST compliance assessment', is_flag=True)
-def test(config_path, prompt, strategy, provider, output, report, parallel, verbose, timeout, save, nist_compliance):
+def test(config_path, prompt, strategy, provider, output, report, parallel, verbose, timeout, nist_compliance):
     """Run tests on your system prompts."""
     # Create a rich console for showing output
     console = Console()
@@ -128,7 +127,6 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
             strategy=strategy,
             provider=provider,
             output=output,
-            save=save,
             parallel=parallel,
             timeout=timeout
         )
