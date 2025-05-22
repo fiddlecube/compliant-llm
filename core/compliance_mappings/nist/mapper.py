@@ -69,28 +69,30 @@ class NISTComplianceMapper:
             "fips_version": fips_version
         }
         
-    def find_matching_attack_category(self, strategy_name: str, target_behavior: str) -> Optional[Dict[str, Any]]:
+    def find_matching_attack_category(self, strategy_name: str, mutation_technique: Optional[str]) -> Optional[Dict[str, Any]]:
         """Find a matching attack category based on target behavior.
         
         Args:
             strategy_name: Name of the attack strategy
-            target_behavior: Description of the target behavior
+            mutation_technique: Description of the mutation technique
             
         Returns:
             Matching attack category dict if found, None otherwise
         """
-        if not target_behavior:
-            return None
+        if not mutation_technique:
+            mutation_technique = strategy_name
             
         nist_controls = self.get_controls_for_strategy(strategy_name)
         attack_categories = nist_controls.get("attack_categories", [])
         
+        attack_category = None
         for category in attack_categories:
-            if (category.get("name", "").lower() in target_behavior.lower() or 
-                category.get("control_objective", "").lower() in target_behavior.lower()):
-                return category
-                
-        return None
+            if (category.get("id", "").lower() == mutation_technique.lower()):
+                attack_category = category
+                break
+        if not attack_category:
+            attack_category = attack_categories[0]
+        return attack_category
         
     def map_severity_to_impact_likelihood(self, severity: str) -> Dict[str, str]:
         """Map severity levels to impact and likelihood levels.
