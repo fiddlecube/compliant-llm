@@ -99,15 +99,8 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     
     
     # Save report (optional)
-    output = config.get('output')  # Get from CLI argument
-    if not output:  # If not specified, use default path
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output = f'reports/report_{timestamp}.json'
-    
-    # Ensure the directory exists
-    os.makedirs(os.path.dirname(output), exist_ok=True)
-    
-    save_report(report_data, output)
+    output = config_dict.get('output_path')  # Get from CLI argument
+    save_report(report_data, output_path=output)
     return report_data
 
 
@@ -123,6 +116,7 @@ def execute_prompt_tests(config_path=None, config_dict=None):
         Dictionary containing test results
     """
     # If config_dict is provided, use it directly (CLI has already processed it)
+    
     if config_dict:
         return execute_prompt_tests_with_orchestrator(config_dict=config_dict)
     
@@ -181,15 +175,9 @@ def execute_rerun_test(config_dict, report_file):
     report_data['metadata']['elapsed_seconds'] = elapsed_time.total_seconds()
 
     # Save report (optional)
-    output = config.get('output')  # Get from CLI argument
-    if not output:  # If not specified, use default path
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output = f'reports/rerun_report_{timestamp}.json'
-    
-    # Ensure the directory exists
-    os.makedirs(os.path.dirname(output), exist_ok=True)
+    output = config_dict.get('output_path')  # Get from CLI argument
     
     if len(report_data["results"]) > 0:    
-        save_report(report_data, output)
+        save_report(report_data, output_path=output)
     return report_data
 

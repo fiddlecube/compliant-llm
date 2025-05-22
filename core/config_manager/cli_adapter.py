@@ -22,7 +22,7 @@ class CLIConfigAdapter:
     
     def __init__(self, config_manager: Optional[ConfigManager] = None):
         """Initialize the adapter."""
-        self.config_manager = config_manager
+        self.config_manager = config_manager or ConfigManager()
     
     def load_from_cli(self, 
                     config_path: Optional[str] = None,
@@ -50,7 +50,7 @@ class CLIConfigAdapter:
             Processed configuration dictionary
         """
         # Initialize a ConfigManager instance
-        self.config_manager = None
+        self.config_manager = self.config_manager or ConfigManager()
         config_dict = {}
         
         # Load from config file if specified
@@ -96,9 +96,7 @@ class CLIConfigAdapter:
                 config_dict['provider'] = provider
         
         # Set output path
-        output_path = output
-        if output_path:
-            config_dict['output'] = {'path': os.path.dirname(output_path), 'file': os.path.basename(output_path)}
+        config_dict['output'] = {"path": "reports", "filename": output or "report"}
             
         # Set timeout if provided
         if timeout:

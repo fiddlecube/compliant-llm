@@ -15,7 +15,7 @@ from datetime import datetime
 class ConfigManager:
     """Manages configuration for Compliant LLM."""
 
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
         """
         Initialize the config manager.
         Args:
@@ -28,6 +28,9 @@ class ConfigManager:
         # If config path provided, load it
         if config_path:
             self.load_config(config_path)
+        
+        if config:
+            self.config = config
 
     def load_config(self, config_path: str) -> Dict[str, Any]:
         """
@@ -289,33 +292,29 @@ class ConfigManager:
         
         return 'openai/gpt-4o'  # Default
     
-    def get_output_path(self) -> str:
+    def get_output_path(self) -> Dict[str, str]:
         """
         Get the output path for reports.
         
         Returns:
             Output file path
         """
+
         if not self.config:
-            return 'report.json'  # Default
+            return {'path': 'reports', 'file': 'report'}  # Default
         
         # Extract output path
-        if 'output' in self.config and isinstance(self.config['output'], dict):
+        if 'output' in self.config:
             output_config = self.config['output']
             path = output_config.get('path', './')
-            filename = output_config.get('filename', 'report-{timestamp}.json')
-            
-            # Replace timestamp if present
-            if '{timestamp}' in filename:
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                filename = filename.replace('{timestamp}', timestamp)
+            filename = output_config.get('filename', 'report')
             
             # Ensure path exists
             os.makedirs(path, exist_ok=True)
             
-            return os.path.join(path, filename)
+            return {'path': path, 'filename': filename}
         
-        return 'report.json'  # Default
+        return {'path': './', 'filename': 'report'}  # Default
     
     def get_runner_config(self) -> Dict[str, Any]:
         """
@@ -359,7 +358,6 @@ class ConfigManager:
         
         # Output options
         runner_config['output_path'] = self.get_output_path()
-        
         return runner_config
 
 
