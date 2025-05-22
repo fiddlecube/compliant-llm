@@ -33,7 +33,7 @@ def run_cli():
     cli()
 
 @click.command()
-def dashboard():
+def run_app():
     """Launch Streamlit dashboard"""
     import subprocess
     import sys
@@ -43,21 +43,21 @@ def dashboard():
     dashboard_path = os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
         'ui', 
-        'dashboard.py'
+        'app.py'
     )
     
     # Start Streamlit with specific route
     subprocess.Popen([sys.executable, "-m", "streamlit", "run", dashboard_path, "--server.port", "8502", "--server.baseUrlPath", "/report"])
 
 @cli.command()
-def run_app():
+def dashboard():
     """Launch Streamlit for running app"""
     import subprocess
     import sys
     import os
 
     # Get the absolute path to the app.py file
-    app_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ui', 'app.py')
+    app_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ui', 'dashboard.py')
     
     # Start Streamlit with app
     subprocess.run([

@@ -1,71 +1,176 @@
 import streamlit as st
+import subprocess
 import json
 import os
-from utils.report_loader import load_report
-from components.risk_severity import render_risk_severity
-from components.security_findings import render_security_findings
-from components.strategy_table import render_strategy_table
+import sys
+from pathlib import Path
+import webbrowser
+import time
+from datetime import datetime
 
-def create_dashboard():
-    st.set_page_config(
-        page_title="AI Security Risk Dashboard", 
-        page_icon=":shield:", 
-        layout="wide"
-    )
-    
-    st.title("🛡️ AI Security Risk Assessment")
-    
-    # Default report path
-    report_dir = "reports"
-    
-    if os.path.exists(report_dir):
-            # Find all report files with timestamp format
-            report_files = [f for f in os.listdir(report_dir) 
-                          if f.startswith("report_") and 
-                          f.endswith(".json") and
-                          len(f) == len("report_YYYYMMDD_HHMMSS.json")]
-            if report_files:
-                # Sort by timestamp (which is in the filename)
-                latest_file = sorted(report_files)[-1]
-                default_report_path = os.path.join(report_dir, latest_file)
-            else:
-                default_report_path = None
-    
-    # Determine which report to load
+# Add project root to Python path to access core modules
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# Get reports directory
+reports_dir = project_root / "reports"
+
+# Function to get list of reports with timestamps
+def get_reports():
+    reports = []
+    if reports_dir.exists():
+        for file in reports_dir.glob("*.json"):
+            try:
+                # Get modification time
+                mod_time = datetime.fromtimestamp(file.stat().st_mtime)
+                reports.append({
+                    "name": file.name,
+                    "path": str(file),
+                    "modified": mod_time.strftime("%Y-%m-%d %H:%M:%S")
+                })
+            except:
+                continue
+    return sorted(reports, key=lambda x: x["modified"], reverse=True)
+
+# Function to open dashboard with specific report
+def open_dashboard_with_report(report_path):
+    dashboard_path = project_root / "ui" / "app.py"
+    subprocess.Popen([
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        str(dashboard_path),
+        "--server.port",
+        "8502",  # Use different port to avoid conflict
+        "--server.baseUrlPath",
+        "/report",
+        "--",  # Pass additional arguments to dashboard
+        "--report",
+        report_path
+    ])
+
+# Set page configuration
+st.set_page_config(
+    page_title="Compliant LLM UI",
+    page_icon="",
+    layout="wide"
+)
+
+def get_available_strategies():
+    """Get list of available strategies from the README"""
+    strategies = [
+        "prompt_injection",
+        "jailbreak",
+        "excessive_agency",
+        "indirect_prompt_injection",
+        "insecure_output_handling",
+        "model_dos",
+        "model_extraction",
+        "sensitive_info_disclosure"
+    ]
+    return strategies
+
+def run_test(prompt, selected_strategies):
+    """Run the test command with selected parameters"""
     try:
-        report_data = load_report(default_report_path)
-    except:
-        st.warning("No default report found. Please run a test first.")
-        return
-    
-    if not report_data:
-        st.error("Unable to load report data")
-        return
-    
-    # Sidebar for risk configuration
-    st.sidebar.header("Risk Configuration")
-    risk_tolerance = st.sidebar.slider("Risk Tolerance", 0, 100, 30)
-    
-    # Main dashboard sections
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.metric("Total Security Tests", report_data['metadata']['test_count'], 
-                  help="Number of security assessments performed")
-    with col2:
-        st.metric("Passed Tests", report_data['metadata']['success_count'], 
-                  help="Tests that passed security checks")
-    with col3:
-        st.metric("Failed Tests", report_data['metadata']['failure_count'], 
-                  help="Tests that failed security checks")
-    
-    # Render dashboard components
-    render_strategy_table(report_data)
-    render_security_findings(report_data)
-    render_risk_severity(report_data)
+        # Get the absolute path to the main.py
+        main_path = project_root / "cli" / "main.py"
+        
+        # Format the command
+        command = [
+            sys.executable,
+            "-m",
+            "cli.main",
+            "test",
+            "--prompt",
+            f"\"{prompt}\"",
+            "--strategy",
+            ",".join(selected_strategies)
+        ]
+        
+        # Run the command and capture output
+        result = subprocess.run(command, capture_output=True, text=True)
+        
+        return result.stdout, result.stderr
+    except Exception as e:
+        return "", str(e)
+
+def create_app_ui():
+    """Create and display the main UI components"""
+    # Main UI
+    st.title(" Compliant LLM UI")
+
+    # Sidebar with report list
+    with st.sidebar:
+        st.header("Test Reports")
+        reports = get_reports()
+        
+        if not reports:
+            st.info("No reports found. Run a test to generate reports.")
+        else:
+            st.write("### Recent Reports")
+            for report in reports:
+                if st.button(f"{report['name']} (Last modified: {report['modified']})"):
+                    open_dashboard_with_report(report['path'])
+
+    # Prompt input section
+    st.header("Run New Test")
+
+    # Prompt input
+    with st.form("test_form"):
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            prompt = st.text_area("Enter your prompt:", 
+                                height=150,
+                                placeholder="Enter your system prompt here...")
+        
+        with col2:
+            st.write("### Select Testing Strategies")
+            strategies = get_available_strategies()
+            selected_strategies = st.multiselect(
+                "Choose strategies to test",
+                strategies,
+                default=["prompt_injection", "jailbreak"]
+            )
+        
+        submit_button = st.form_submit_button("Run Test")
+
+    # Run test when button is clicked
+    if submit_button:
+        if not prompt:
+            st.error("Please enter a prompt!")
+            st.stop()
+        
+        if not selected_strategies:
+            st.error("Please select at least one testing strategy!")
+            st.stop()
+        
+        with st.spinner("Running tests..."):
+            stdout, stderr = run_test(prompt, selected_strategies)
+            
+        # Display results
+        st.subheader("Test Results")
+        st.write("---")
+        
+        if stdout:
+            st.success("Test Output:")
+            st.code(stdout, language="bash")
+        
+        if stderr:
+            st.error("Error Output:")
+            st.code(stderr, language="bash")
+
+# Add documentation link
+st.sidebar.markdown("""
+# Documentation
+- [Full Documentation](./docs)
+""")
 
 def main():
-    create_dashboard()
+    """Main entry point for the app"""
+    create_app_ui()
 
 if __name__ == "__main__":
     main()
