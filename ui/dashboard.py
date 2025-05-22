@@ -152,10 +152,30 @@ def run_test(prompt, selected_strategies):
         # Run the test
         results = adapter.run_test(prompt, selected_strategies)
         
-        # Convert results to string format
-        return str(results), ""
+ # Convert results to proper JSON string
+        return json.dumps(results), ""
     except Exception as e:
         return "", str(e)
+
+
+
+def render_beautiful_json_output(json_output):
+
+    with st.expander("🔍 View JSON"):
+        st.code(json.dumps(json_output, indent=2), language="json")
+
+    def render_nested_json(data, level=0):
+        if isinstance(data, dict):
+            for k, v in data.items():
+                with st.expander(f"{'  ' * level}🔑 {k}"):
+                    render_nested_json(v, level + 1)
+        elif isinstance(data, list):
+            for i, item in enumerate(data):
+                with st.expander(f"{'  ' * level}📄 Item {i+1}"):
+                    render_nested_json(item, level + 1)
+        else:
+            st.markdown(f"**Value:** `{data}`")
+
 
 def create_app_ui():
     """Create and display the main UI components"""
@@ -186,14 +206,14 @@ def create_app_ui():
             st.info("No reports found. Run a test to generate reports.")
         else:
             st.write("### Recent Reports")
-            for report in reports:
+            for i, report in enumerate(reports):
                 # Extract timestamp from filename
                 timestamp_str = report['name'].replace('report_', '').replace('.json', '')
                 timestamp = datetime.strptime(timestamp_str, '%Y%m%d_%H%M%S')
                 formatted_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
                 
                 report_button = st.button(
-                    f"{report['name']} (Runtime: {report['runtime']}, Run at: {formatted_time})",
+                    f"Report {i+1}. (Runtime: {report['runtime']}, Run at: {formatted_time})",
                     key=f"report_{report['name']}"
                 )
                 if report_button:
@@ -226,62 +246,35 @@ def create_app_ui():
 
     # Run test when button is clicked
     if submit_button:
-        if not prompt:
-            st.error("Please enter a prompt!")
+        if not prompt.strip():
+            st.error("🚫 Please enter a prompt!")
             st.stop()
-        
+
         if not selected_strategies:
-            st.error("Please select at least one testing strategy!")
+            st.error("🚫 Please select at least one testing strategy!")
             st.stop()
-        
-        with st.spinner("Running tests..."):
+
+        with st.spinner("🔍 Running tests..."):
             stdout, stderr = run_test(prompt, selected_strategies)
             reports = get_reports()
-            
-        # Display results
-        st.subheader("Test Results")
+
+        st.subheader("✅ Test Results")
         st.write("---")
-        
+
         if stdout:
             try:
-                # Try to parse the output as JSON
                 json_output = json.loads(stdout)
-                
-                # Create a container for the results
-                with st.container():
-                    st.success("Test Results")
-                    
-                    # Add some padding
-                    st.markdown("""
-                    <style>
-                        .json-container {
-                            background-color: #f8f9fa;
-                            padding: 20px;
-                            border-radius: 8px;
-                            margin-top: 10px;
-                        }
-                    </style>
-                    """, unsafe_allow_html=True)
-                    
-                    # Display JSON in a styled container
-                    st.markdown("""
-                    <div class="json-container">
-                    """, unsafe_allow_html=True)
-                    
-                    # Display JSON with proper indentation
-                    st.json(json.dumps(json_output, indent=2))
-                    
-                    st.markdown("""
-                    </div>
-                    """, unsafe_allow_html=True)
+                render_beautiful_json_output(json_output)
             except json.JSONDecodeError:
-                # If not JSON, display as regular text
-                st.success("Test Output:")
+                st.warning("⚠️ Output is not valid JSON. Showing raw output instead:")
                 st.code(stdout, language="text")
-        
+        else:
+            st.info("ℹ️ No test output received.")
+
         if stderr:
-            st.error("Error Output:")
+            st.error("❌ Error Output:")
             st.code(stderr, language="bash")
+
 
 
 def main():
