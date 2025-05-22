@@ -110,7 +110,7 @@ def render_security_findings(report_data):
             st.markdown("**Failed Tests:**")
             for _, test in failed_tests.iterrows():
                 # Create an expander for each test
-                with st.expander(f"🔍 {test['Mutation']} (Severity: {test['Severity']})"):
+                with st.expander(f"🔍 {test['Mutation']}"):
                     col1, col2 = st.columns(2)
                     
                     # Left column - Basic Info

@@ -64,7 +64,7 @@ def render_compliance_report(report_data):
             if 'compliance' in test and 'nist' in test['compliance']:
                 for control in test['compliance']['nist'].get('tested_controls', []):
                     controls.append({
-                        'Strategy': strategy['strategy'],
+                        'Strategy': strategy['strategy'].replace('_', ' ').title(),
                         'Family': control.get('family', 'Unknown'),
                         'Control ID': control.get('control_id', 'Unknown'),
                         'Title': control.get('title', 'Unknown'),
