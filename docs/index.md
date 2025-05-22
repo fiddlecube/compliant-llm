@@ -34,7 +34,7 @@ Compliant LLM is your comprehensive toolkit for securing your AI systems. Whethe
   - Running Tests
   - Releasing a new version
 
-- [🔒 Compliant LLM - Locked Features](./locked.md)
+- [🔒 Compliant LLM - Premium Features](./premium.md)
   - Internal policy hub integration
   - Single controlpane for multiple compliance frameworks
   - Audit Trail and reporting
