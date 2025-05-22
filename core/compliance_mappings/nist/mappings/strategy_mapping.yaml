@@ -45,25 +45,93 @@ strategy_mappings:
     
     attack_categories:
       - name: "XSS Generation"
+        id: "xss_generation"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent LLM from generating XSS payloads in HTML context"
+        controls:
+          System and Information Integrity:
+            - control_id: "SI-15"
+              title: "Information Output Filtering"
+              description: "The system filters potentially harmful outputs"
+              version: "1.0"
+              version_notes: "Initial mapping to insecure output handling vulnerabilities"
+          System and Communications Protection:
+            - control_id: "SC-18"
+              title: "Mobile Code"
+              description: "The system implements controls for potentially harmful code"
+              version: "1.0"
+              version_notes: "Initial mapping to insecure output handling vulnerabilities"
       - name: "SQL Injection"
+        id: "sql_injection_output"
         severity: "Critical"
         fips_impact: "High"
         control_objective: "Prevent LLM from generating SQL injection patterns"
+        controls:
+          System and Information Integrity:
+            - control_id: "SI-10"
+              title: "Information Input Validation"
+              description: "The system validates information inputs"
+              version: "1.0"
+              version_notes: "Initial mapping to insecure output handling vulnerabilities"
+            - control_id: "SI-15"
+              title: "Information Output Filtering"
+              description: "The system filters potentially harmful outputs"
+              version: "1.0"
+              version_notes: "Initial mapping to insecure output handling vulnerabilities"
       - name: "Command Injection"
+        id: "command_injection_output"
         severity: "Critical"
         fips_impact: "High"
         control_objective: "Prevent LLM from outputting shell command injections"
+        controls:
+          System and Information Integrity:
+            - control_id: "SI-15"
+              title: "Information Output Filtering"
+              description: "The system filters potentially harmful outputs"
+              version: "1.0"
+              version_notes: "Initial mapping to insecure output handling vulnerabilities"
+          System and Communications Protection:
+            - control_id: "SC-18"
+              title: "Mobile Code"
+              description: "The system implements controls for potentially harmful code"
+              version: "1.0"
+              version_notes: "Initial mapping to insecure output handling vulnerabilities"
       - name: "Unsafe Template Content"
+        id: "template_injection"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent template injection in rendered output"
+        controls:
+          System and Information Integrity:
+            - control_id: "SI-7"
+              title: "Software, Firmware, and Information Integrity"
+              description: "The system maintains information integrity"
+              version: "1.0"
+              version_notes: "Initial mapping to insecure output handling vulnerabilities"
+            - control_id: "SI-15"
+              title: "Information Output Filtering"
+              description: "The system filters potentially harmful outputs"
+              version: "1.0"
+              version_notes: "Initial mapping to insecure output handling vulnerabilities"
       - name: "Insecure Deserialization"
+        id: "insecure_deserialization"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent unsafe deserialization patterns in code output"
+        controls:
+          System and Information Integrity:
+            - control_id: "SI-7"
+              title: "Software, Firmware, and Information Integrity"
+              description: "The system maintains information integrity"
+              version: "1.0"
+              version_notes: "Initial mapping to insecure output handling vulnerabilities"
+          System and Communications Protection:
+            - control_id: "SC-8"
+              title: "Transmission Confidentiality and Integrity"
+              description: "The system protects integrity of transmitted information"
+              version: "1.0"
+              version_notes: "Initial mapping to insecure output handling vulnerabilities"
 
   # Excessive Agency (LLM08)
   excessive_agency:
@@ -121,6 +189,7 @@ strategy_mappings:
     
     attack_categories:
       - name: "Unauthorized Action Execution"
+        id: "unauthorized_action_execution"
         severity: "Critical"
         fips_impact: "High"
         control_objective: "Prevent the LLM from executing unauthorized actions"
@@ -137,6 +206,7 @@ strategy_mappings:
               version: "1.0"
               version_notes: "Initial mapping to excessive agency vulnerabilities"
       - name: "Role Boundary Violation"
+        id: "role_boundary_violation"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent the LLM from exceeding its designated role boundaries"
@@ -154,6 +224,7 @@ strategy_mappings:
               version: "1.0"
               version_notes: "Initial mapping to excessive agency vulnerabilities"
       - name: "Autonomous Decision Override"
+        id: "privilege_escalation"
         severity: "Critical"
         fips_impact: "High"
         control_objective: "Prevent the LLM from overriding human decisions or authority"
@@ -234,6 +305,7 @@ strategy_mappings:
         
     attack_categories:
       - name: "Direct Jailbreak"
+        id: "direct_jailbreak"
         severity: "Critical"
         fips_impact: "High"
         control_objective: "Prevent direct jailbreak attempts that override safety guardrails"
@@ -257,6 +329,7 @@ strategy_mappings:
               version_notes: "Initial mapping to jailbreak vulnerabilities"
               
       - name: "Prompt Engineering Attacks"
+        id: "conversational_engineering"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent sophisticated prompt manipulations that bypass safety filters"
@@ -275,6 +348,7 @@ strategy_mappings:
               version_notes: "Initial mapping to jailbreak vulnerabilities"
               
       - name: "Indirect Jailbreak"
+        id: "split_reasoning"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent multi-step or obfuscated jailbreak attempts"
@@ -338,21 +412,59 @@ strategy_mappings:
     
     attack_categories:
       - name: "Direct Prompt Injection"
+        id: "direct_injection"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent direct injection of malicious prompts"
+        controls:
+          System and Information Integrity:
+            - control_id: "SI-10"
+              title: "Information Input Validation"
+              description: "The system validates information inputs"
+              version: "1.0"
+              version_notes: "Initial mapping to prompt injection vulnerabilities"
+          Access Control:
+            - control_id: "AC-4"
+              title: "Information Flow Enforcement"
+              description: "The system enforces approved information flow"
+              version: "1.0"
+              version_notes: "Initial mapping to prompt injection vulnerabilities"
       - name: "Context Switching"
+        id: "context_shifting"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent switching context to execute arbitrary instructions"
+        controls:
+          System and Information Integrity:
+            - control_id: "SI-7"
+              title: "Software, Firmware, and Information Integrity"
+              description: "The system maintains integrity of information"
+              version: "1.0"
+              version_notes: "Initial mapping to prompt injection vulnerabilities"
       - name: "System Prompt Extraction"
+        id: "system_prompt_extraction"
         severity: "Critical"
         fips_impact: "High"
         control_objective: "Prevent extraction of system prompts or instruction sets"
+        controls:
+          System and Communications Protection:
+            - control_id: "SC-8"
+              title: "Transmission Confidentiality and Integrity"
+              description: "The system protects confidentiality of transmitted information"
+              version: "1.0"
+              version_notes: "Initial mapping to prompt injection vulnerabilities"
       - name: "Indirect Prompt Injection"
+        id: "indirect_prompt_injection"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent injection through indirectly interpreted content"
+        controls:
+          System and Communications Protection:
+            - control_id: "SC-18"
+              title: "Mobile Code"
+              description: "The system implements controls for mobile code"
+              version: "1.0"
+              version_notes: "Initial mapping to prompt injection vulnerabilities"
 
   # Model Extraction (LLM04)
   model_extraction:
@@ -404,6 +516,7 @@ strategy_mappings:
     
     attack_categories:
       - name: "Knowledge Extraction"
+        id: "knowledge_extraction"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent extraction of the LLM's knowledge base"
@@ -421,6 +534,7 @@ strategy_mappings:
               version: "1.0"
               version_notes: "Initial mapping to model extraction vulnerabilities"
       - name: "Parameter Stealing"
+        id: "parameter_extraction"
         severity: "Critical"
         fips_impact: "High"
         control_objective: "Prevent extraction of model parameters or architecture"
@@ -468,6 +582,7 @@ strategy_mappings:
     
     attack_categories:
       - name: "External Source Injection"
+        id: "indirect_content_injection"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent injection through URLs, files, or other external content"
@@ -521,6 +636,7 @@ strategy_mappings:
     
     attack_categories:
       - name: "Computational Resource Exhaustion"
+        id: "resource_exhaustion"
         severity: "High"
         fips_impact: "Moderate"
         control_objective: "Prevent excessive consumption of computational resources"
@@ -537,6 +653,7 @@ strategy_mappings:
               version: "1.0"
               version_notes: "Initial mapping to model DoS vulnerabilities"
       - name: "Token Limit Exploitation"
+        id: "token_limit_exploitation"
         severity: "Medium"
         fips_impact: "Low"
         control_objective: "Prevent attacks that exploit token limits"
@@ -591,6 +708,7 @@ strategy_mappings:
     
     attack_categories:
       - name: "Training Data Extraction"
+        id: "training_data_extraction"
         severity: "Critical"
         fips_impact: "High"
         control_objective: "Prevent disclosure of sensitive training data"
@@ -608,6 +726,7 @@ strategy_mappings:
               version: "1.0"
               version_notes: "Initial mapping to information disclosure vulnerabilities"
       - name: "PII Disclosure"
+        id: "pii_disclosure"
         severity: "High"
         fips_impact: "High"
         control_objective: "Prevent disclosure of personally identifiable information"

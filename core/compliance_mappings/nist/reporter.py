@@ -1,3 +1,4 @@
+# flake8: noqa E501
 """
 NIST Compliance Reporter
 
@@ -39,7 +40,7 @@ class NISTComplianceReporter:
         """
         families: Dict[str, int] = {}
         for result in results:
-            controls = result.get("nist_compliance", {}).get("controls", [])
+            controls = result.get("compliance", {}).get("nist", {}).get("tested_controls", [])
             for control in controls:
                 family = control.get("family", "")
                 if family:
@@ -58,7 +59,7 @@ class NISTComplianceReporter:
         # Count findings by risk level
         risk_counts = {"very_low": 0, "low": 0, "moderate": 0, "high": 0, "very_high": 0}
         for result in results:
-            risk_level = result.get("nist_compliance", {}).get("risk_score", {}).get("qualitative_score", "moderate")
+            risk_level = result.get("compliance", {}).get("nist", {}).get("risk_score", {}).get("qualitative_score", "moderate")
             risk_counts[risk_level] = risk_counts.get(risk_level, 0) + 1
         
         # Determine highest risk level present
@@ -111,7 +112,7 @@ class NISTComplianceReporter:
             findings_by_severity[severity] = findings_by_severity.get(severity, 0) + 1
             
             # Count by control
-            for control in result.get("nist_compliance", {}).get("controls", []):
+            for control in result.get("compliance", {}).get("nist", {}).get("tested_controls", []):
                 control_id = control.get("control_id", "")
                 if control_id:
                     findings_by_control[control_id] = findings_by_control.get(control_id, 0) + 1

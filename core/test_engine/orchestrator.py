@@ -307,6 +307,8 @@ class AttackOrchestrator:
             mutations = [r.get('mutation_technique') for r in strategy_results 
                       if r.get('evaluation', {}).get('passed', False)]
             
+            breached_tests = [r for r in strategy_results if r.get('evaluation', {}).get('passed', False)]
+                      
             # Create strategy summary
             strategy_summary = {
                 "strategy": strategy_name,
@@ -315,7 +317,8 @@ class AttackOrchestrator:
                 "failure_count": failure_count,
                 "success_rate": round(success_rate, 2),
                 "runtime_in_seconds": runtime_in_seconds,
-                "prompt_mutations": ','.join(mutations)
+                "prompt_mutations": ','.join(mutations),
+                "breached_tests": breached_tests
             }
             strategy_summaries.append(strategy_summary)
             strategies_arr.add(strategy_name)
@@ -361,11 +364,11 @@ class AttackOrchestrator:
     def get_nist_compliance_report(self):
         """Legacy method for backward compatibility."""
         if self.compliance_orchestrator:
-            enriched_results = []
-            for result in self.results:
-                enriched_result = self.compliance_orchestrator.enrich_attack_result(result, 'nist')
-                enriched_results.append(enriched_result)
-            reports = self.compliance_orchestrator.generate_compliance_reports(enriched_results, 'nist')
+            # enriched_results = []
+            # for result in self.results:
+            #     enriched_result = self.compliance_orchestrator.enrich_attack_result(result, 'nist')
+            #     enriched_results.append(enriched_result)
+            reports = self.compliance_orchestrator.generate_compliance_reports(self.results, 'nist')
             return reports
         return None
         
