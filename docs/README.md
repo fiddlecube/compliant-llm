@@ -27,3 +27,8 @@ Compliant LLM is your comprehensive toolkit for securing your AI systems. Whethe
   - System Requirements
   - Installation Methods
   - Environment Setup
+
+- [🧑🏻‍💻 Release Guide](./release_guide.md)
+  - Release Process
+  - Pre-release Guide
+  - Full Release Guide
