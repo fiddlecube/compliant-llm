@@ -4,7 +4,7 @@ Compliant LLM helps developers evaluate the robustness of their AI assistant sys
 
 For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tree/main/docs)
 
-## 🎯 Features
+## 🎯 Features [@Vini: Needs Rework]
 
 - 🎯 Test agents against top 10 OWASP threats
   - 8+ attack strategies, and 100+ attack types across each strategy
@@ -15,18 +15,23 @@ For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tr
 - ⚡ Parallel testing for faster execution
 - 📄 Detailed reporting and analysis
 
-## ⚙️ Installation
+## ⚙️ Installation [@Vini: Test these commands]
 
 ```bash
+mkdir compliant-llm && cd compliant-llm
+uv venv .venv
+source .venv/bin/activate
 pip install compliant-llm
 ```
 
 ## Set up OPENAI, ANTHROPIC API keys
 
 ```bash
-export OPENAI_API_KEY=your-api-key-here
-export ANTHROPIC_API_KEY=your-api-key-here
-export GOOGLE_API_KEY=your-api-key-here
+touch .env
+# write the following in .env
+OPENAI_API_KEY=your-api-key-here
+ANTHROPIC_API_KEY=your-api-key-here
+GOOGLE_API_KEY=your-api-key-here
 ```
 
 ## 🚀 Quick Start
@@ -49,6 +54,7 @@ compliant-llm dashboard
 compliant-llm test --config_path configs/config.yaml
 ```
 
+[@Vini: Is this accurate?]
 All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
 
 3. View the test report:
@@ -80,13 +86,12 @@ compliant-llm dashboard
 - `sensitive_info_disclosure`: Tests against sensitive information disclosure
 - Upcoming attacks - ToolPoisoning, BasicMCP, MultiModal...
 
-## Docker
+## Docker [@Vini: Test these commands]
 
 ```bash
 docker build -t compliant_llm .
 docker run -p 8501:8501 compliant_llm
 ```
-
 
 ## Roadmap
 
@@ -94,7 +99,7 @@ docker run -p 8501:8501 compliant_llm
 - [ ] Compliant MCP Servers
 - [ ] Multimodal Testing and Redteaming
 - [ ] CI/CD
-- [ ] Different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
+- [ ] Support different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
 - [ ] Control Pane for different controls
 - [ ] Internal audits and documentation
 
@@ -119,12 +124,11 @@ At Compliant LLM, we believe in transparency. We collect minimal, anonymized usa
 
 ✅ No personal or company-identifying information
 
-
 ## 📝 Cite Us
 
 @misc{compliant_llm2025,
   author       = {FiddleCube},
   title        = {Compliant LLM: Build Secure AI agents and MCP Servers},
   year         = {2025},
-  howpublished = {\url{https://github.com/fiddlecube/compliant-llm}},
+  howpublished = {\url{<https://github.com/fiddlecube/compliant-llm}}>,
 }
