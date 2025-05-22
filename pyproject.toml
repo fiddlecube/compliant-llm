@@ -28,4 +28,7 @@ dependencies = [
 
 [project.scripts]
 compliant-llm = "cli.main:main"
+
+[tool.setuptools.package-data]
+"core" = ["**/*.yaml"]
     
