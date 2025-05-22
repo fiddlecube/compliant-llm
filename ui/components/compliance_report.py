@@ -22,7 +22,7 @@ def render_compliance_report(report_data):
                     risk_score = nist.get('risk_score', {})
                     
                     compliance_data.append({
-                        'Strategy': strategy['strategy'],
+                        'Strategy': strategy['strategy'].replace('_', ' ').title(),
                         'Numerical Score': risk_score.get('numerical_score', 0),
                         'Qualitative Score': risk_score.get('qualitative_score', 'unknown'),
                         'Likelihood': risk_score.get('likelihood', 'unknown'),
