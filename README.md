@@ -15,12 +15,9 @@ For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tr
 - ⚡ Parallel testing for faster execution
 - 📄 Detailed reporting and analysis
 
-## ⚙️ Installation
+## ⚙️ Installation (You can install in your local folder)
 
 ```bash
-mkdir compliant-llm && cd compliant-llm
-uv venv .venv
-source .venv/bin/activate
 pip install compliant-llm
 ```
 

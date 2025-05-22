@@ -25,18 +25,22 @@ def get_reports():
                 # Get modification time
                 mod_time = datetime.fromtimestamp(file.stat().st_mtime)
                 
-                # Read report file to get runtime information
+                # Read report file to get runtime information and test configuration
                 with open(file, 'r') as f:
                     report_data = json.load(f)
                     metadata = report_data.get('metadata', {})
                     runtime_seconds = metadata.get('elapsed_seconds', 0)
                     runtime_minutes = runtime_seconds / 60
+                    config = report_data.get('config', {})
+                    strategies = [s['strategy'] for s in report_data.get('strategy_summaries', [])]
                     
                 reports.append({
                     "name": file.name,
                     "path": str(file),
                     "modified": mod_time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "runtime": f"{runtime_minutes:.1f} min" if runtime_minutes >= 1 else f"{runtime_seconds:.1f} sec"
+                    "runtime": f"{runtime_minutes:.1f} min" if runtime_minutes >= 1 else f"{runtime_seconds:.1f} sec",
+                    "config": config,
+                    "strategies": strategies
                 })
             except:
                 continue
@@ -192,12 +196,52 @@ def create_app_ui():
                 timestamp = datetime.strptime(timestamp_str, '%Y%m%d_%H%M%S')
                 formatted_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
                 
-                report_button = st.button(
-                    f"{report['name']} (Runtime: {report['runtime']}, Run at: {formatted_time})",
-                    key=f"report_{report['name']}"
-                )
-                if report_button:
-                    open_dashboard_with_report(report['path'])
+                col1, col2 = st.columns([2, 1])
+                
+                with col1:
+                    report_button = st.button(
+                        f"{report['name']} (Runtime: {report['runtime']}, Run at: {formatted_time})",
+                        key=f"view_{report['name']}"
+                    )
+                    if report_button:
+                        open_dashboard_with_report(report['path'])
+                
+                with col2:
+                    rerun_prompt = st.text_input(
+                        "New Prompt",
+                        placeholder="Enter new prompt...",
+                        key=f"prompt_{report['name']}",
+                        label_visibility="collapsed"
+                    )
+                    
+                    rerun_button = st.button(
+                        "Rerun with New Prompt",
+                        key=f"rerun_{report['name']}",
+                        disabled=not rerun_prompt
+                    )
+                    
+                    if rerun_button:
+                        with st.spinner("Rerunning tests..."):
+                            stdout, stderr = run_test(rerun_prompt, report['strategies'])
+                            reports = get_reports()
+                            
+                        # Display results
+                        st.subheader("Rerun Results")
+                        st.write("---")
+                        
+                        if stdout:
+                            try:
+                                json_output = json.loads(stdout)
+                                with st.container():
+                                    st.success("Test Results")
+                                    st.json(json.dumps(json_output, indent=2))
+                            except json.JSONDecodeError:
+                                st.success("Test Output:")
+                                st.code(stdout, language="text")
+                        
+                        if stderr:
+                            st.error("Error Output:")
+                            st.code(stderr, language="bash")
 
 
 
