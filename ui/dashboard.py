@@ -182,7 +182,7 @@ def create_app_ui():
             except Exception as e:
                 st.error(f"Error opening documentation: {str(e)}")
 
-        st.header("Test Reports")
+        st.header("Old Reports")
         
         reports = get_reports()
         
@@ -190,7 +190,7 @@ def create_app_ui():
             st.info("No reports found. Run a test to generate reports.")
         else:
             st.write("### Recent Reports")
-            for report in reports:
+            for i, report in enumerate(reports, 1):
                 # Extract timestamp from filename
                 timestamp_str = report['name'].replace('report_', '').replace('.json', '')
                 timestamp = datetime.strptime(timestamp_str, '%Y%m%d_%H%M%S')
@@ -200,62 +200,33 @@ def create_app_ui():
                 
                 with col1:
                     report_button = st.button(
-                        f"{report['name']} (Runtime: {report['runtime']}, Run at: {formatted_time})",
-                        key=f"view_{report['name']}"
+                        f"Report {i}: (Runtime: {report['runtime']}, Run at: {formatted_time})",
+                        key=f"view_{i}"
                     )
                     if report_button:
+                        st.session_state.selected_report = report
                         open_dashboard_with_report(report['path'])
-                
-                with col2:
-                    rerun_prompt = st.text_input(
-                        "New Prompt",
-                        placeholder="Enter new prompt...",
-                        key=f"prompt_{report['name']}",
-                        label_visibility="collapsed"
-                    )
-                    
-                    rerun_button = st.button(
-                        "Rerun with New Prompt",
-                        key=f"rerun_{report['name']}",
-                        disabled=not rerun_prompt
-                    )
-                    
-                    if rerun_button:
-                        with st.spinner("Rerunning tests..."):
-                            stdout, stderr = run_test(rerun_prompt, report['strategies'])
-                            reports = get_reports()
-                            
-                        # Display results
-                        st.subheader("Rerun Results")
-                        st.write("---")
-                        
-                        if stdout:
-                            try:
-                                json_output = json.loads(stdout)
-                                with st.container():
-                                    st.success("Test Results")
-                                    st.json(json.dumps(json_output, indent=2))
-                            except json.JSONDecodeError:
-                                st.success("Test Output:")
-                                st.code(stdout, language="text")
-                        
-                        if stderr:
-                            st.error("Error Output:")
-                            st.code(stderr, language="bash")
 
 
 
     # Main content area
-    st.header("Run New Test")
+    st.header("Test Your Prompt")
 
-    # Prompt input
+    # Create a form for testing
     with st.form("test_form", clear_on_submit=True):
         col1, col2 = st.columns([2, 1])
         
         with col1:
+            # Store prompt in session state
+            if 'prompt' not in st.session_state:
+                st.session_state.prompt = ""
+            
             prompt = st.text_area("Enter your prompt:", 
                                 height=150,
-                                placeholder="Enter your system prompt here...")
+                                placeholder="Enter your system prompt here...",
+                                value=st.session_state.prompt
+                                )
+            st.session_state.prompt = prompt
         
         with col2:
             st.write("### Select Testing Strategies")
@@ -265,8 +236,97 @@ def create_app_ui():
                 strategies,
                 default=["prompt_injection", "jailbreak"]
             )
+            
+            # Add a rerun button for selected report
+            if 'selected_report' in st.session_state:
+                rerun_button = st.button(
+                    "Rerun with New Prompt",
+                    key="rerun_button",
+                    disabled=not prompt
+                )
+                if rerun_button:
+                    with st.spinner("Rerunning tests..."):
+                        stdout, stderr = run_test(prompt, st.session_state.selected_report['strategies'])
+                        reports = get_reports()
+                        
+                    # Display results
+                    st.subheader("Rerun Results")
+                    st.write("---")
+                    
+                    if stdout:
+                        try:
+                            json_output = json.loads(stdout)
+                            with st.container():
+                                st.success("Test Results")
+                                st.json(json.dumps(json_output, indent=2))
+                        except json.JSONDecodeError:
+                            st.success("Test Output:")
+                            st.code(stdout, language="text")
+                    
+                    if stderr:
+                        st.error("Error Output:")
+                        st.code(stderr, language="bash")
         
         submit_button = st.form_submit_button("Run Test")
+
+        # Run test when button is clicked
+        if submit_button:
+            if not prompt:
+                st.error("Please enter a prompt!")
+                st.stop()
+            
+            if not selected_strategies:
+                st.error("Please select at least one testing strategy!")
+                st.stop()
+            
+            with st.spinner("Running tests..."):
+                stdout, stderr = run_test(prompt, selected_strategies)
+                reports = get_reports()
+                
+            # Display results
+            st.subheader("Test Results")
+            st.write("---")
+            
+            if stdout:
+                try:
+                    # Try to parse the output as JSON
+                    json_output = json.loads(stdout)
+                    
+                    # Create a container for the results
+                    with st.container():
+                        st.success("Test Results")
+                        
+                        # Add some padding
+                        st.markdown("""
+                        <style>
+                            .json-container {
+                                background-color: #f8f9fa;
+                                padding: 20px;
+                                border-radius: 8px;
+                                margin-top: 10px;
+                            }
+                        </style>
+                        """, unsafe_allow_html=True)
+                        
+                        # Display JSON in a styled container
+                        st.markdown("""
+                        <div class="json-container">
+                        """, unsafe_allow_html=True)
+                        
+                        # Display JSON with proper indentation
+                        st.json(json.dumps(json_output, indent=2))
+                        
+                        st.markdown("""
+                        </div>
+                        """, unsafe_allow_html=True)
+                except json.JSONDecodeError:
+                    # If not JSON, display as regular text
+                    st.success("Test Output:")
+                    st.code(stdout, language="text")
+            
+            if stderr:
+                st.error("Error Output:")
+                st.code(stderr, language="bash")
 
     # Run test when button is clicked
     if submit_button:
@@ -326,6 +386,61 @@ def create_app_ui():
         if stderr:
             st.error("Error Output:")
             st.code(stderr, language="bash")
+
+    # Add a section for viewing old reports
+    with st.expander("View Old Reports", expanded=False):
+        st.write("### Previous Test Reports")
+        reports = get_reports()
+        
+        if not reports:
+            st.info("No reports found. Run a test to generate reports.")
+        else:
+            for report in reports:
+                # Extract timestamp from filename
+                timestamp_str = report['name'].replace('report_', '').replace('.json', '')
+                timestamp = datetime.strptime(timestamp_str, '%Y%m%d_%H%M%S')
+                formatted_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                
+                col1, col2 = st.columns([2, 1])
+                
+                with col1:
+                    report_button = st.button(
+                        f"{report['name']} (Runtime: {report['runtime']}, Run at: {formatted_time})",
+                        key=f"report_{report['name']}"
+                    )
+                    if report_button:
+                        st.session_state.selected_report = report
+                        open_dashboard_with_report(report['path'])
+                        
+                    # Add a rerun button that uses the main prompt input
+                    rerun_button = st.button(
+                        "Rerun with New Prompt",
+                        key=f"rerun_{report['name']}",
+                        disabled='prompt' not in st.session_state
+                    )
+                    
+                    if rerun_button and 'prompt' in st.session_state:
+                        with st.spinner("Rerunning tests..."):
+                            stdout, stderr = run_test(st.session_state.prompt, report['strategies'])
+                            reports = get_reports()
+                            
+                        # Display results
+                        st.subheader("Rerun Results")
+                        st.write("---")
+                        
+                        if stdout:
+                            try:
+                                json_output = json.loads(stdout)
+                                with st.container():
+                                    st.success("Test Results")
+                                    st.json(json.dumps(json_output, indent=2))
+                            except json.JSONDecodeError:
+                                st.success("Test Output:")
+                                st.code(stdout, language="text")
+                        
+                        if stderr:
+                            st.error("Error Output:")
+                            st.code(stderr, language="bash")
 
 
 def main():
