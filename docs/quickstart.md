@@ -67,5 +67,5 @@ compliant-llm test --config configs/my_config.yaml
 
 ## Next Steps
 
-- Explore the [CLI Documentation](cli/index.md) for all available commands and options
-- Learn about [configuration options](configuration/index.md) for advanced testing scenarios
+- Explore the [CLI Documentation](cli/commands.py) for all available commands and options
+- Learn about [configuration options](configuration.md) for advanced testing scenarios

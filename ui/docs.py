@@ -49,88 +49,45 @@ def create_markdown_viewer():
             padding: 8px;
             margin: 4px 0;
             border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
         }
         .doc-list li:hover {
             background-color: #f0f2f6;
         }
-        .doc-list li a {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-        .doc-list li a:hover {
-            color: #1a73e8;
-        }
-        .doc-list li a.active {
-            color: #1a73e8;
-            background-color: #e3f2fd;
+        .doc-list li.active {
+            background-color: #e6f7ff;
+            font-weight: bold;
         }
     </style>
     """, unsafe_allow_html=True)
     
-    # Display files as a static list
-    st.sidebar.markdown("""
-    <ul class="doc-list">
-    """, unsafe_allow_html=True)
+    # Get the selected file from URL parameters
+    selected_file = st.query_params.get('file', 'index')
     
-    # Find index.md and show it first
-    index_file = None
-    other_files = []
+    # Create list of files with active state
+    st.sidebar.markdown("<ul class='doc-list'>", unsafe_allow_html=True)
     for file in md_files:
-        if file.name == "index.md":
-            index_file = file
-        else:
-            other_files.append(file)
-    
-    # Show index.md first
-    if index_file:
-        st.sidebar.markdown(f"""
-        <li>
-            <a href="?file=index" class="active">
-                {index_file.stem.replace("_", " ").title()}
-            </a>
-        </li>
-        """, unsafe_allow_html=True)
-    
-    # Show other files
-    for file in other_files:
-        st.sidebar.markdown(f"""
-        <li>
-            <a href="?file={file.stem}">
-                {file.stem.replace("_", " ").title()}
-            </a>
-        </li>
-        """, unsafe_allow_html=True)
-    
-    st.sidebar.markdown("""
-    </ul>
-    """, unsafe_allow_html=True)
-    
-    # Get the file from URL parameters
-    file_name = st.query_params.get('file', 'index')
-    
-    # Find the selected file
-    selected_file = None
-    for file in md_files:
-        if file.stem == file_name:
-            selected_file = file
-            break
-    
-    # If no file selected, show index.md
-    if not selected_file and index_file:
-        selected_file = index_file
-    
-    # Display selected file
-    if selected_file:
-        # Read and convert markdown to HTML
-        html_content = read_markdown(selected_file)
+        file_name = file.stem
+        is_active = file.stem == selected_file
         
-        # Display content
-        st.markdown(html_content, unsafe_allow_html=True)
+        # Create a URL-friendly version of the file name
+        url_name = file.stem.replace('_', '-')
+        
+        st.sidebar.markdown(f"""
+            <li class="{'active' if is_active else ''}">
+                <a href="?file={url_name}">
+                    {file.stem.replace('_', ' ').title()}
+                </a>
+            </li>
+        """, unsafe_allow_html=True)
+    st.sidebar.markdown("</ul>", unsafe_allow_html=True)
+
+    # Display selected file
+    selected_path = Path("docs") / f"{selected_file}.md"
+    if selected_path.exists():
+        content = read_markdown(selected_path)
+        st.markdown(content, unsafe_allow_html=True)
+    else:
+        st.error(f"Documentation file '{selected_file}.md' not found!")
 
 def main():
     """Main entry point for the documentation app"""
