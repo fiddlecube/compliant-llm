@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+from ui.components.compliance_report import render_compliance_report
 from utils.report_loader import load_report
 from components.risk_severity import render_risk_severity
 from components.security_findings import render_security_findings
@@ -61,8 +62,9 @@ def create_dashboard():
     
     # Render dashboard components
     render_strategy_table(report_data)
-    render_security_findings(report_data)
     render_risk_severity(report_data)
+    render_security_findings(report_data)
+    render_compliance_report(report_data)
 
 def main():
     create_dashboard()

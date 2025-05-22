@@ -17,7 +17,7 @@ def render_risk_severity(report_data):
     for strategy in report_data.get('testcases', []):
         strategy_name = strategy['strategy']
         for test in strategy['results']:
-            severity = test.get('severity', 'unknown')
+            severity = test.get('severity', 'unknown').lower()  # Convert to lowercase for consistency
             category = test['category']
             success = not test['success']  # True if test failed
             
@@ -26,7 +26,7 @@ def render_risk_severity(report_data):
                 'Severity': severity,
                 'Category': category,
                 'Success': success,
-                'Mutation': test.get('mutation_technique', 'Unknown'),
+                'Mutation': test.get('mutation_technique', 'Unknown').replace('_', ' ').title(),
                 'Description': test.get('description', 'No description available')
             })
     
@@ -48,7 +48,26 @@ def render_risk_severity(report_data):
             names=severity_counts.index,
             values=severity_counts.values,
             title='Risk Distribution by Severity',
-            color_discrete_sequence=['#FF4136', '#FF851B', '#FFDC00', '#2ECC40']
+            color_discrete_sequence=['#E74C3C', '#E67E22', '#F1C40F', '#2ECC71']
+        )
+        
+        # Add severity legend
+        severity_colors = {
+            'critical': '#E74C3C',
+            'high': '#E67E22',
+            'medium': '#F1C40F',
+            'low': '#2ECC71'
+        }
+        
+        # Update color sequence to match severity order
+        severity_order = ['critical', 'high', 'medium', 'low']
+        color_sequence = [severity_colors[s] for s in severity_order if s in severity_counts.index]
+        
+        # Update figure with custom colors and order
+        fig_severity.update_traces(marker=dict(colors=color_sequence))
+        fig_severity.update_layout(
+            legend_title_text='Severity Level',
+            showlegend=True
         )
         st.plotly_chart(fig_severity, use_container_width=True)
     

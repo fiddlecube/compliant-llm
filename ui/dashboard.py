@@ -7,6 +7,7 @@ import psutil
 import random
 from typing import Set
 import json
+from core.config_manager.ui_adapter import UIConfigAdapter
 
 # Add project root to Python path to access core modules
 project_root = Path(__file__).parent.parent
@@ -132,7 +133,6 @@ def get_available_strategies():
     ]
     return strategies
 
-from core.config_manager.ui_adapter import UIConfigAdapter
 
 def run_test(prompt, selected_strategies):
     """Run the test command with selected parameters"""
@@ -218,6 +218,7 @@ def create_app_ui():
         
         with st.spinner("Running tests..."):
             stdout, stderr = run_test(prompt, selected_strategies)
+            reports = get_reports()
             
         # Display results
         st.subheader("Test Results")

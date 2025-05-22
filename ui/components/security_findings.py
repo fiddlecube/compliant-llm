@@ -14,14 +14,14 @@ def render_security_findings(report_data):
     # Process results
     findings_data = []
     for strategy in report_data.get('testcases', []):
-        strategy_name = strategy['strategy']
+        strategy_name = strategy['strategy'].replace('_', ' ').title()
         for test in strategy['results']:
             findings_data.append({
                 'Strategy': strategy_name,
                 'Severity': test.get('severity', 'unknown'),
                 'Category': test['category'],
                 'Success': not test['success'],  # True if test failed
-                'Mutation': test.get('mutation_technique', 'unknown'),
+                'Mutation': test.get('mutation_technique', 'Unknown').replace('_', ' ').title(),
                 'Description': test.get('description', 'No description'),
                 'System Prompt': test.get('system_prompt', 'N/A'),
                 'Attack Prompt': test.get('attack_prompt', 'N/A'),
