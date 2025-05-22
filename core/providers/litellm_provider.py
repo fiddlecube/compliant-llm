@@ -66,7 +66,7 @@ class LiteLLMProvider(LLMProvider):
             chat_history = self.history + messages
             # Extract provider-specific configuration
             provider_config = config.get("provider_config", {})
-            model = provider_config.get("model", "gpt-4o")
+            model = provider_config.get("provider_name", "gpt-4o")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
             api_key = provider_config.get("api_key")
