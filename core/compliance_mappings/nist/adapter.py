@@ -80,7 +80,45 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         # Prepare documentation requirements for each test
         # attack_doc_requirements = self.get_documentation_requirements("attack_documentation")
         # remediation_doc_requirements = self.get_documentation_requirements("remediation_documentation")
+        
+        # Below fields are for demo
+        attack_doc_field_ids = {
+            "test_id": "DEMO_FIELD",
+            "control_references": "DEMO_FIELD",
+            "test_objective": "DEMO_FIELD",
+            "test_method": "DEMO_FIELD",
+            "expected_results": "DEMO_FIELD",
+            "actual_results": "DEMO_FIELD",
+            "test_status": "DEMO_FIELD",
+            "assessment_date": "DEMO_FIELD",
+            "assessor": "DEMO_FIELD",
+            # supplemental fields
+            "test_steps": "DEMO_FIELD",
+            "assessment_methods": "DEMO_FIELD",
+            "assessment_objects": "DEMO_FIELD",
+            "risk_score": "DEMO_FIELD",
+            "security_baseline": "DEMO_FIELD"
+        }
 
+        remediation_doc_field_ids = {
+            # Required fields
+            "finding_id": "DEMO_FIELD",
+            "vulnerability": "DEMO_FIELD",
+            "remediation_action": "DEMO_FIELD",
+            "responsible_party": "DEMO_FIELD",
+            "remediation_status": "DEMO_FIELD",
+            "remediation_priority": "DEMO_FIELD",
+            "estimated_completion": "",
+            
+            # Supplemental fields
+            "remediation_approach": "",
+            "compensating_controls": "",
+            "remediation_resources": "",
+            "verification_method": "",
+            "residual_risk": ""
+        }
+
+        
         
         # Extract relevant controls based on attack category if available
         controls = []
@@ -104,8 +142,8 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
             "framework_versions": self._mapper.get_framework_versions(),
             "passed_status": attack_result.get("evaluation", {}).get("passed", False),
             "documentation_requirements": {
-                "attack": {},
-                "remediation": {}
+                "attack": attack_doc_field_ids,
+                "remediation": remediation_doc_field_ids
             }
         }
 

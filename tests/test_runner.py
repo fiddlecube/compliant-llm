@@ -213,7 +213,7 @@ def test_execute_prompt_tests_with_orchestrator():
                     'runtime_in_seconds': 0.3
                 }
             ],
-            'results': strategy_results
+            'testcases': strategy_results
         }
         
         # Configure asyncio.run to return our test results

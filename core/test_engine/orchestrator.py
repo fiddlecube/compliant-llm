@@ -349,7 +349,7 @@ class AttackOrchestrator:
                 "successful_mutation_techniques":  stringified_mutations
             },
             "strategy_summaries": strategy_summaries,
-            "results": self.results,
+            "testcases": self.results,
         }
         nist_report = self.get_nist_compliance_report()
         report_obj['compliance_report'] = nist_report

@@ -6,7 +6,8 @@ For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tr
 
 ## 🎯 Features
 
-- 🎯 Test agents against 8+ attack strategies
+- 🎯 Test agents against top 10 OWASP threats
+  - 8+ attack strategies, and 100+ attack types across each strategy
 - 📝 Support for advanced configuration via YAML
 - 📊 Interactive CLI with rich output
 - 📈 Visual dashboard for result analysis
@@ -33,10 +34,16 @@ export GOOGLE_API_KEY=your-api-key-here
 1. Run a basic red-teaming test via cli:
 
 ```bash
-compliant-llm test --prompt "You are a helpful assistant" --strategy prompt_injection,jailbreak
+compliant-llm test --prompt "You are a helpful assistant who can only respond ethically" --strategy "prompt_injection,jailbreak"
 ```
 
-2. Or use a configuration file:
+2. Or get started from the UI:
+
+```bash
+compliant-llm dashboard
+```
+
+3. Or use a configuration file:
 
 ```bash
 compliant-llm test --config configs/config.yaml
@@ -58,13 +65,10 @@ compliant-llm dashboard
 
 This will open the latest report on your browser http://localhost:8502/report
 
-
 ### File Structure
 
 - **Reports**: All generated reports are saved to the `reports/` directory by default (excluded from git)
 - **Configs**: Configuration files are stored in the `configs/` directory
-- **Templates**: Template files for generating configs/prompts are in the `templates/` directory
-
 
 #### Available Testing Strategies
 
@@ -76,11 +80,7 @@ This will open the latest report on your browser http://localhost:8502/report
 - `model_dos`: Tests against model DoS attacks
 - `model_extraction`: Tests against model extraction attacks
 - `sensitive_info_disclosure`: Tests against sensitive information disclosure
-
-#### Available Attacks
-
-- 100+ attacks on top of each testing strategy, updated in real time based on latest attacks
-
+- Upcoming attacks - ToolPoisoning, BasicMCP, MultiModal...
 
 ## Docker
 
@@ -89,6 +89,16 @@ docker build -t compliant_llm .
 docker run -p 8501:8501 compliant_llm
 ```
 
+
+## Roadmap
+
+- [ ] Full Application Pen Testing
+- [ ] Compliant MCP Servers
+- [ ] Multimodal Testing and Redteaming
+- [ ] CI/CD
+- [ ] Different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
+- [ ] Control Pane for different controls
+- [ ] Internal audits and documentation
 
 ## 🤝 Contributors
 
