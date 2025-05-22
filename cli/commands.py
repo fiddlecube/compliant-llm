@@ -88,49 +88,6 @@ def dict_to_cli_table(
     return table
 
 
-# Constants
-CONFIG_DIRS = [
-    # Package configs
-    os.path.join(os.path.dirname(os.path.dirname(__file__)), "configs"),
-    # User configs
-    os.path.expanduser(os.path.join("~", ".config", "compliant-llm")),
-    # Project configs (current directory)
-    os.path.join(os.getcwd(), ".compliant-llm")
-]
-
-
-def find_config_file(config_name: str) -> Optional[str]:
-    """Find a config file across various possible locations."""
-    # If it's an absolute path or exists in current directory
-    if os.path.isabs(config_name) or os.path.exists(config_name):
-        return config_name
-    
-    # Check standard config locations
-    for config_dir in CONFIG_DIRS:
-        config_path = os.path.join(config_dir, config_name)
-        if os.path.exists(config_path):
-            return config_path
-        
-        # Try with .yaml extension if not provided
-        if not config_name.endswith(('.yaml', '.yml')):
-            yaml_path = f"{config_path}.yaml"
-            if os.path.exists(yaml_path):
-                return yaml_path
-    
-    return None
-
-
-def load_config(config_path: str) -> Dict[str, Any]:
-    """Load and parse a YAML config file."""
-    try:
-        with open(config_path, 'r') as f:
-            config = yaml.safe_load(f)
-        return config
-    except Exception as e:
-        click.echo(f"Error loading config file: {e}", err=True)
-        sys.exit(1)
-
-
 @click.group()
 @click.version_option(
     importlib.metadata.version('compliant-llm'),
