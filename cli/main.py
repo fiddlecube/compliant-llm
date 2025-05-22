@@ -5,6 +5,7 @@ This module serves as the entry point for the Compliant LLM CLI.
 It imports the commands from the commands module and registers them with Click.
 """
 import click
+import importlib.metadata
 from cli.commands import cli, test, report, config, generate, rerun
 
 
@@ -12,6 +13,12 @@ def main():
     """Main entry point for the Compliant LLM CLI."""
     # Create the main command group
     @click.group()
+    @click.version_option(
+        importlib.metadata.version('compliant-llm'),
+        '--version',
+        '-v',
+        message='%(prog)s version %(version)s'
+    )
     def compliant_llm():
         """Compliant LLM - Test your AI system prompts for vulnerabilities."""
         pass

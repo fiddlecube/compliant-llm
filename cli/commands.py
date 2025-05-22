@@ -7,6 +7,7 @@ import sys
 import json
 import yaml
 import click
+import importlib.metadata
 from datetime import datetime
 from rich.console import Console
 from rich.table import Table
@@ -131,6 +132,12 @@ def load_config(config_path: str) -> Dict[str, Any]:
 
 
 @click.group()
+@click.version_option(
+    importlib.metadata.version('compliant-llm'),
+    '--version',
+    '-v',
+    message='%(prog)s version %(version)s'
+)
 def cli():
     """Compliant LLM - Test your AI system prompts for vulnerabilities."""
     pass
