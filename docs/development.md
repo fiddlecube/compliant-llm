@@ -9,3 +9,20 @@ uv pip install -e .
 uv pip install -e ".[dev]"
 ```
 
+## Running Commands
+
+```bash
+compliant-llm test --prompt "You are a helpful assistant who can only respond ethically" --strategy "prompt_injection,jailbreak"
+compliant-llm dashboard
+compliant-llm report --summary
+```
+
+## Running Tests
+
+```bash
+pytest
+```
+
+## Releasing a new version
+
+Follow the [release checklist](RELEASE_CHECKLIST.md)

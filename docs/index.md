@@ -28,6 +28,12 @@ Compliant LLM is your comprehensive toolkit for securing your AI systems. Whethe
   - Installation Methods
   - Environment Setup
 
+- [🛠️ Development](./development.md)
+  - Setting up the development environment
+  - Running Commands
+  - Running Tests
+  - Releasing a new version
+
 - [🔒 Compliant LLM - Locked Features](./locked.md)
   - Internal policy hub integration
   - Single controlpane for multiple compliance frameworks
