@@ -19,7 +19,7 @@ class UIConfigAdapter:
         self.config_manager = config_manager or ConfigManager()
         self.default_config = {
             "provider_name": "openai",  # Default provider
-            "model": "gpt-4",          # Default model
+            "model": "gpt-4o",          # Default model
             "temperature": 0.7,        # Default temperature
             "max_tokens": 2000,        # Default max tokens
             "timeout": 30,             # Default timeout in seconds

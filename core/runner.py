@@ -88,6 +88,10 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     report_data['metadata']['elapsed_seconds'] = elapsed_time.total_seconds()
     report_data['strategy_summaries'] = orchestrator_summary['strategy_summaries']
     report_data['testcases'] = orchestrator_summary['testcases']
+    # Remove provider field from config before adding to report
+    config_for_report = config_dict.copy()
+    config_for_report.pop('provider', None)  # Remove provider if it exists
+    report_data['config'] = config_for_report  # Add config dictionary to report
     
     # Add compliance report if available
     if 'compliance_report' in orchestrator_summary:
