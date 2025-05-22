@@ -83,7 +83,8 @@ def render_security_findings(report_data):
     
     # Strategy-based analysis
     for strategy, group in df.groupby('Strategy'):
-        st.markdown(f"### {strategy} Strategy Analysis")
+        formatted_strategy = ' '.join(word.capitalize() for word in strategy.split('_'))
+        st.markdown(f"### {formatted_strategy} Strategy Analysis")
         
         # Strategy metrics
         col1, col2 = st.columns(2)
@@ -109,15 +110,15 @@ def render_security_findings(report_data):
             st.markdown("**Failed Tests:**")
             for _, test in failed_tests.iterrows():
                 # Create an expander for each test
-                with st.expander(f"🔍 {test['Description']} (Severity: {test['Severity']})"):
+                with st.expander(f"🔍 {test['Mutation']} (Severity: {test['Severity']})"):
                     col1, col2 = st.columns(2)
                     
                     # Left column - Basic Info
                     with col1:
+                        st.write("**Attack Prompt:**", test['Attack Prompt'])
                         st.write("**Severity:**", test['Severity'])
                         st.write("**Mutation:**", test['Mutation'])
                         st.write("**System Prompt:**", test['System Prompt'])
-                        st.write("**Attack Prompt:**", test['Attack Prompt'])
                     
                     # Right column - Response and Evaluation
                     with col2:

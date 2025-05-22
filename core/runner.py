@@ -8,16 +8,6 @@ from typing import Dict, Any
 from core.strategies.base import BaseAttackStrategy
 from core.test_engine.orchestrator import AttackOrchestrator
 
-# Attack Strategies
-from core.strategies.attack_strategies.strategy import (
-    # JailbreakStrategy, 
-    # PromptInjectionStrategy,
-    ContextManipulationStrategy,
-    InformationExtractionStrategy,
-    StressTesterStrategy,
-    BoundaryTestingStrategy,
-    SystemPromptExtractionStrategy,
-)
 # Porting out strategies
 from core.strategies.attack_strategies.prompt_injection.base import PromptInjectionStrategy
 from core.strategies.attack_strategies.jailbreak.base import JailbreakStrategy
@@ -107,7 +97,8 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     # Save report (optional)
     output = config.get('output')  # Get from CLI argument
     if not output:  # If not specified, use default path
-        output = 'reports/report.json'
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output = f'reports/report_{timestamp}.json'
     
     # Ensure the directory exists
     os.makedirs(os.path.dirname(output), exist_ok=True)

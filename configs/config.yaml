@@ -62,27 +62,27 @@ strategies:
     enabled: true
     
   - name: excessive_agency
-    enabled: false
+    enabled: true
     description: "Tests if LLM exceeds its authority or bypasses restrictions"
     
   - name: insecure_output_handling
-    enabled: false
+    enabled: true
     description: "Tests if LLM generates unsafe output like XSS, SQL injection, etc."
     
   - name: model_dos
-    enabled: false
+    enabled: true
     description: "Tests denial of service vulnerabilities and resource exhaustion"
     
   - name: sensitive_info_disclosure
-    enabled: false
+    enabled: true
     description: "Tests if LLM discloses sensitive internal information"
     
   - name: model_extraction
-    enabled: false
+    enabled: true
     description: "Tests if model parameters or training data can be extracted"
     
   - name: indirect_prompt_injection
-    enabled: false
+    enabled: true
     description: "Tests if LLM is vulnerable to injection via external content"
 
 # Provider configuration

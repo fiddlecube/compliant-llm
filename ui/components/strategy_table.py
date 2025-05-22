@@ -18,7 +18,7 @@ def render_strategy_table(report_data):
     search_term = st.text_input("🔍 Search Strategies", "")
     filtered_df = strategy_df[
         strategy_df['strategy'].str.contains(search_term, case=False, na=False)
-    ]
+    ].drop(columns=['success_rate', 'breached_tests'], errors='ignore')
     
     st.dataframe(
         filtered_df,
@@ -27,13 +27,13 @@ def render_strategy_table(report_data):
             'test_count': st.column_config.NumberColumn("Total Tests"),
             'success_count': st.column_config.NumberColumn("Passed"),
             'failure_count': st.column_config.NumberColumn("Failed"),
-            'success_rate': st.column_config.ProgressColumn(
-                "Pass Rate",
-                help="Percentage of tests passed",
-                format="%f%%",
-                min_value=0,
-                max_value=100,
-            ),
+            # 'success_rate': st.column_config.ProgressColumn(
+            #     "Pass Rate",
+            #     help="Percentage of tests passed",
+            #     format="%f%%",
+            #     min_value=0,
+            #     max_value=100,
+            # ),
             'runtime_in_seconds': st.column_config.NumberColumn(
                 "Runtime (s)",
                 format="%.2f"

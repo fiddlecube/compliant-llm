@@ -51,7 +51,7 @@ compliant-llm dashboard
 3. Or use a configuration file:
 
 ```bash
-compliant-llm test --config configs/config.yaml
+compliant-llm test --config_path configs/config.yaml
 ```
 
 [@Vini: Is this accurate?]
@@ -68,8 +68,6 @@ compliant-llm report --summary
 ```bash
 compliant-llm dashboard
 ```
-
-This will open the latest report on your browser <http://localhost:8502/report>
 
 ### File Structure
 
