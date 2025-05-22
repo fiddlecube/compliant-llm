@@ -62,11 +62,14 @@ Compliant LLM configuration files use YAML format and must include at least the 
 Additional optional fields include:
 
 - `provider`: The LLM provider to use (default: `openai/gpt-4o`)
+  - ```bash
+    compliant-llm test --prompt "You are a helpful assistant" --strategy "prompt_injection, jailbreak"--provider '{"name": "anthropic/claude-3-5-sonnet-latest"}
+    ```
+  
 - `output_path`: Path to save the report file (default: `reports/report.json`)
 - `max_threads`: Maximum number of threads to use for parallel testing
 - `timeout`: Timeout for LLM API calls in seconds
 - `temperature`: Temperature for LLM API calls
-- `strategies_config`: Custom settings for specific testing strategies
 
 ## Examples
 
