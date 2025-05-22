@@ -106,7 +106,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     report_data['metadata'] = orchestrator_summary['metadata']
     report_data['metadata']['elapsed_seconds'] = elapsed_time.total_seconds()
     report_data['strategy_summaries'] = orchestrator_summary['strategy_summaries']
-    report_data['results'] = orchestrator_summary['results']
+    report_data['testcases'] = orchestrator_summary['testcases']
     
     # Add compliance report if available
     if 'compliance_report' in orchestrator_summary:
