@@ -27,8 +27,15 @@ For the latest development version or to contribute to the project, you can inst
 git clone https://github.com/fiddlecube/compliant-llm.git
 cd compliant-llm
 
-# Install in development mode
+# Activate the uv venv.
+# Install uv if you don't have it
+uv venv .venv
+source .venv/bin/activate
+
+# Install the package from source
 uv pip install -e .
+
+# This installs the compliant-llm package in the current venv
 ```
 
 ### After installation, you should be able to use these commands:
