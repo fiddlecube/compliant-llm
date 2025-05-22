@@ -23,6 +23,3 @@ compliant-llm report --summary
 pytest
 ```
 
-## Releasing a new version
-
-Follow the [release checklist](RELEASE_CHECKLIST.md)

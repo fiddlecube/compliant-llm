@@ -49,5 +49,4 @@ compliant-llm ui
 
 ## Next Steps
 
-- Explore different [testing strategies](./testing_strategies.md)
 - Learn about [configuration options](./configuration.md)

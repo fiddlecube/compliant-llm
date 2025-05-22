@@ -24,10 +24,19 @@ def get_reports():
             try:
                 # Get modification time
                 mod_time = datetime.fromtimestamp(file.stat().st_mtime)
+                
+                # Read report file to get runtime information
+                with open(file, 'r') as f:
+                    report_data = json.load(f)
+                    metadata = report_data.get('metadata', {})
+                    runtime_seconds = metadata.get('elapsed_seconds', 0)
+                    runtime_minutes = runtime_seconds / 60
+                    
                 reports.append({
                     "name": file.name,
                     "path": str(file),
-                    "modified": mod_time.strftime("%Y-%m-%d %H:%M:%S")
+                    "modified": mod_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "runtime": f"{runtime_minutes:.1f} min" if runtime_minutes >= 1 else f"{runtime_seconds:.1f} sec"
                 })
             except:
                 continue
@@ -178,7 +187,16 @@ def create_app_ui():
         else:
             st.write("### Recent Reports")
             for report in reports:
-                if st.button(f"{report['name']} (Last modified: {report['modified']})"):
+                # Extract timestamp from filename
+                timestamp_str = report['name'].replace('report_', '').replace('.json', '')
+                timestamp = datetime.strptime(timestamp_str, '%Y%m%d_%H%M%S')
+                formatted_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                
+                report_button = st.button(
+                    f"{report['name']} (Runtime: {report['runtime']}, Run at: {formatted_time})",
+                    key=f"report_{report['name']}"
+                )
+                if report_button:
                     open_dashboard_with_report(report['path'])
 
 
