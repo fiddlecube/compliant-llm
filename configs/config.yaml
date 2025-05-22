@@ -87,7 +87,7 @@ strategies:
 
 # Provider configuration
 provider:
-  name: openai/gpt-4o
+  name: anthropic/claude-3-opus
   fallbacks:
     - anthropic/claude-3-opus
     - google/gemini-pro

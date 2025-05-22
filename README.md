@@ -65,7 +65,6 @@ compliant-llm dashboard
 
 This will open the latest report on your browser http://localhost:8502/report
 
-
 ### File Structure
 
 - **Reports**: All generated reports are saved to the `reports/` directory by default (excluded from git)
@@ -81,7 +80,7 @@ This will open the latest report on your browser http://localhost:8502/report
 - `model_dos`: Tests against model DoS attacks
 - `model_extraction`: Tests against model extraction attacks
 - `sensitive_info_disclosure`: Tests against sensitive information disclosure
-- Upcoming...
+- Upcoming attacks - ToolPoisoning, BasicMCP, MultiModal...
 
 ## Docker
 
@@ -90,19 +89,16 @@ docker build -t compliant_llm .
 docker run -p 8501:8501 compliant_llm
 ```
 
-## 📚 Compliant LLM Locked Features
 
-- **Global Compliance Framework** - Compliant MCP servers, 350+ Risk Categories across USC, EU, MENA, APAC and CN's regulations.
-- **Compliant MCP Servers** - Logging, RBAC, and Monitoring of MCP servers and resources.
-- **Internal policy hub integration** for custom policy testing and evidence collection (wikis, docs, pdfs, etc.)
-- **Single controlpane for multiple compliance frameworks** (NIST, ISO, HIPAA, etc.)
-- **Audit Trail and reporting** for different compliance frameworks
-- **Monitoring and Alerting**, incl. compliance breaches
-- **Training and Documentation** autogeneration
-- **Realtime attack vector updates** & notifications for new attacks in the world
-  - Testing Agents, Model testing, Prompt etc.
-- **Guardrails**
-- **Realtime PII/Sensitive Data/Secrets Redaction**
+## Roadmap
+
+- [ ] Full Application Pen Testing
+- [ ] Compliant MCP Servers
+- [ ] Multimodal Testing and Redteaming
+- [ ] CI/CD
+- [ ] Different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
+- [ ] Control Pane for different controls
+- [ ] Internal audits and documentation
 
 ## 🤝 Contributors
 

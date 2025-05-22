@@ -28,3 +28,12 @@ Compliant LLM is your comprehensive toolkit for securing your AI systems. Whethe
   - Installation Methods
   - Environment Setup
 
+- [🔒 Compliant LLM - Locked Features](./locked.md)
+  - Internal policy hub integration
+  - Single controlpane for multiple compliance frameworks
+  - Audit Trail and reporting
+  - Monitoring and Alerting
+  - Training and Documentation
+  - Guardrails, Realtime PII/Sensitive Data/Secrets Redaction
+  - Whiteglove Support
+  
