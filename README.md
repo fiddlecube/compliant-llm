@@ -18,9 +18,6 @@ For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tr
 ## ⚙️ Installation
 
 ```bash
-mkdir compliant-llm && cd compliant-llm
-uv venv .venv
-source .venv/bin/activate
 pip install compliant-llm
 ```
 
