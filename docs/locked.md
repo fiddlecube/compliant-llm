@@ -11,13 +11,13 @@
   - Policy update listeners - autorun tests on policy updates
 
 - **Single controlpane for multiple compliance frameworks**
-  - (NIST, ISO, HIPAA, etc.)
+  - (NIST, ISO, HIPAA, GDPR, etc.)
 
 - **Audit Trail and reporting**
   - Documentation for different compliance frameworks
 
 - **Monitoring and Alerting**
-  - for Explainability and compliance
+  - for Transparency, Explainability and Human Oversight
 
 - **Training and Documentation**
   - autogeneration for employee training
