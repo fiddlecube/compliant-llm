@@ -43,28 +43,28 @@ def create_dashboard():
         st.error("Unable to load report data")
         return
     
-    # Sidebar for risk configuration
-    st.sidebar.header("Risk Configuration")
-    risk_tolerance = st.sidebar.slider("Risk Tolerance", 0, 100, 30)
+    # # Sidebar for risk configuration
+    # st.sidebar.header("Risk Configuration")
+    # risk_tolerance = st.sidebar.slider("Risk Tolerance", 0, 100, 30)
     
     # Main dashboard sections
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.metric("Total Security Tests", report_data['metadata']['test_count'], 
+        st.metric("Total Tests Ran", report_data['metadata']['test_count'], 
                   help="Number of security assessments performed")
     with col2:
-        st.metric("Passed Tests", report_data['metadata']['success_count'], 
+        st.metric("Tests breached successfully", report_data['metadata']['success_count'], 
                   help="Tests that passed security checks")
     with col3:
-        st.metric("Failed Tests", report_data['metadata']['failure_count'], 
+        st.metric("Tests unsuccessful", report_data['metadata']['failure_count'], 
                   help="Tests that failed security checks")
     
     # Render dashboard components
-    render_strategy_table(report_data)
-    render_risk_severity(report_data)
-    render_security_findings(report_data)
     render_compliance_report(report_data)
+    render_strategy_table(report_data)
+    # render_risk_severity(report_data)
+    render_security_findings(report_data)
 
 def main():
     create_dashboard()

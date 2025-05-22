@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+# import plotly.express as px
+import plotly.graph_objects as go
 
 def render_compliance_report(report_data):
     """
@@ -40,21 +41,21 @@ def render_compliance_report(report_data):
     df = pd.DataFrame(compliance_data)
     
     # Show compliance table
-    st.subheader("Compliance Details")
-    st.dataframe(
-        df,
-        column_config={
-            'Strategy': st.column_config.TextColumn("Strategy"),
-            'Numerical Score': st.column_config.NumberColumn("Risk Score"),
-            'Qualitative Score': st.column_config.TextColumn("Qualitative Score"),
-            'Likelihood': st.column_config.TextColumn("Likelihood"),
-            'Impact': st.column_config.TextColumn("Impact"),
-            'FIPS Impact': st.column_config.TextColumn("FIPS Impact"),
-            'FIPS Version': st.column_config.TextColumn("FIPS Version"),
-            'Test Success': st.column_config.CheckboxColumn("Test Failed")
-        },
-        hide_index=True
-    )
+    # st.subheader("Compliance Details")
+    # st.dataframe(
+    #     df,
+    #     column_config={
+    #         'Strategy': st.column_config.TextColumn("Strategy"),
+    #         'Numerical Score': st.column_config.NumberColumn("Risk Score"),
+    #         'Qualitative Score': st.column_config.TextColumn("Qualitative Score"),
+    #         'Likelihood': st.column_config.TextColumn("Likelihood"),
+    #         'Impact': st.column_config.TextColumn("Impact"),
+    #         'FIPS Impact': st.column_config.TextColumn("FIPS Impact"),
+    #         'FIPS Version': st.column_config.TextColumn("FIPS Version"),
+    #         'Test Success': st.column_config.CheckboxColumn("Test Failed")
+    #     },
+    #     hide_index=True
+    # )
     
     # Show tested controls
     st.subheader("Tested Controls")
@@ -69,8 +70,46 @@ def render_compliance_report(report_data):
                         'Control ID': control.get('control_id', 'Unknown'),
                         'Title': control.get('title', 'Unknown'),
                         'Description': control.get('description', 'Unknown'),
-                        'Version': control.get('version', 'Unknown')
+                        'Version': control.get('version', 'Unknown'),
+                        'Breach Successful': test.get('evaluation', {}).get('passed', False)
                     })
+    
+    # Create DataFrame for analysis
+    df = pd.DataFrame(controls)
+    
+    # Aggregate breaches by Control ID
+    control_breaches = df.groupby('Control ID').agg({
+        'Breach Successful': 'sum'  # Count of successful breaches
+    }).reset_index()
+    
+    # Sort by number of breaches
+    control_breaches = control_breaches.sort_values('Breach Successful', ascending=True)
+    
+    # Create bar chart of breaches by control
+    fig_control_breaches = go.Figure(data=[
+        go.Bar(
+            x=control_breaches['Control ID'],
+            y=control_breaches['Breach Successful'],
+            orientation='v',  # Horizontal bars
+            marker_color=[
+                'red' if count >= 3 else
+                'orange' if count >= 2 else
+                'yellow' if count >= 1 else
+                'green'
+                for count in control_breaches['Breach Successful']
+            ]
+        )
+    ])
+    
+    fig_control_breaches.update_layout(
+        title='NIST Controls Breaches',
+        xaxis_title='Control ID',
+        yaxis_title='Number of Successful Breaches',
+        height=max(350, len(control_breaches) * 30)  # Dynamic height based on number of controls
+    )
+    
+    # Display the plot
+    st.plotly_chart(fig_control_breaches, use_container_width=True)
     
     if controls:
         controls_df = pd.DataFrame(controls)
@@ -82,7 +121,8 @@ def render_compliance_report(report_data):
                 'Control ID': st.column_config.TextColumn("Control ID"),
                 'Title': st.column_config.TextColumn("Control Title"),
                 'Description': st.column_config.TextColumn("Description"),
-                'Version': st.column_config.TextColumn("Version")
+                'Version': st.column_config.TextColumn("Version"),
+                'Breach Successful': st.column_config.TextColumn("Breach Successful")
             },
             hide_index=True
         )

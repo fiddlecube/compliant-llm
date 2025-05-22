@@ -18,9 +18,9 @@ def render_security_findings(report_data):
         for test in strategy['results']:
             findings_data.append({
                 'Strategy': strategy_name,
-                'Severity': test.get('severity', 'unknown'),
+                'Severity': test.get('severity', 'Moderate'),
                 'Category': test['category'],
-                'Success': not test['success'],  # True if test failed
+                'Success': test.get('evaluation', {}).get('passed', False),  # True if test failed
                 'Mutation': test.get('mutation_technique', 'Unknown').replace('_', ' ').title(),
                 'Description': test.get('description', 'No description'),
                 'System Prompt': test.get('system_prompt', 'N/A'),
@@ -32,30 +32,30 @@ def render_security_findings(report_data):
     # Create DataFrame for analysis
     df = pd.DataFrame(findings_data)
     
-    # Strategy failure rates
-    strategy_rates = df.groupby('Strategy').agg({
-        'Success': 'mean',
-        'Severity': lambda x: (x == 'high').mean()
+    # Strategy to failures
+    strategy_counts = df.groupby('Strategy').agg({
+        'Success': 'sum',  # Count of failures
+        'Severity': lambda x: (x == 'moderate').sum()  # Count of high severity
     }).reset_index()
     
-    # Bar chart of strategy failure rates
+    # Bar chart of failure counts
     fig_strategy_rates = go.Figure(data=[
         go.Bar(
-            x=strategy_rates['Strategy'],
-            y=strategy_rates['Success'] * 100,
+            x=strategy_counts['Strategy'],
+            y=strategy_counts['Success'],
             marker_color=[
-                'red' if rate > 0.5 else 
-                'orange' if rate > 0.3 else 
-                'yellow' if rate > 0.1 else 
+                'red' if count >= 5 else 
+                'orange' if count >= 3 else 
+                'yellow' if count >= 1 else 
                 'green' 
-                for rate in strategy_rates['Success']
+                for count in strategy_counts['Success']
             ]
         )
     ])
     fig_strategy_rates.update_layout(
-        title='Failure Rates by Attack Strategy',
+        title='Breaches by Attack Strategy',
         xaxis_title='Attack Strategy',
-        yaxis_title='Failure Rate (%)'
+        yaxis_title='Breaches'
     )
     
     # Layout for security findings

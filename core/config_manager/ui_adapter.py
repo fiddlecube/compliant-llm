@@ -5,7 +5,10 @@ import os
 from typing import Dict, List, Any, Optional
 from .config import ConfigManager
 from core.runner import execute_prompt_tests_with_orchestrator
-
+from rich.console import Console
+from rich.progress import (
+    Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+)
 class UIConfigAdapter:
     """Adapter for handling UI-specific configurations and test execution."""
     
@@ -18,13 +21,14 @@ class UIConfigAdapter:
         """
         self.config_manager = config_manager or ConfigManager()
         self.default_config = {
-            "provider_name": "openai",  # Default provider
-            "model": "gpt-4o",          # Default model
+            "provider": {"name": "openai/gpt-4o"}, # Default provider
+            # "model": "gpt-4o",          # Default model
             "temperature": 0.7,        # Default temperature
             "max_tokens": 2000,        # Default max tokens
             "timeout": 30,             # Default timeout in seconds
             "prompt": {"content": "You are a helpful assistant"},  # Default prompt
-            "strategies": [],  # Default strategies
+            "strategies": [],  # Default strategies,
+            "output_path": {"path": "reports", "filename": "report"},  # Default output path
         }
     
     def run_test(self, prompt: str, strategies: List[str]) -> Dict[str, Any]:
@@ -51,17 +55,34 @@ class UIConfigAdapter:
             "prompt": {"content": prompt},
             "strategies": strategies,
             "provider": {
-                "name": self.default_config["provider_name"],
-                "api_key": os.getenv(f"{self.default_config['provider_name'].upper()}_API_KEY", '')
+                "name": self.default_config["provider"]["name"],
+                "api_key": os.getenv(f"{self.default_config['provider']['name'].upper()}_API_KEY", '')
             },
-            "model": self.default_config["model"],
+            # "model": self.default_config["model"],
             "temperature": self.default_config["temperature"],
             "timeout": self.default_config["timeout"],
-            "max_tokens": self.default_config["max_tokens"]
+            "max_tokens": self.default_config["max_tokens"],
+            "output_path": self.default_config["output_path"]
         }
+        console = Console()
+        console.print(f"[bold cyan]Running test with config: {test_config}[/]")
+        
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[bold blue]{task.description}"),
+            TimeElapsedColumn(),
+        ) as progress:
+            task = progress.add_task("[cyan]Testing prompt security", total=None)
+            report_data = execute_prompt_tests_with_orchestrator(test_config)
+            progress.update(task, completed=True)
+        
+        console.print("[bold green]Tests completed successfully![/]")
+        console.print(f"[bold cyan]Report saved successfully at {report_data['report_metadata']['path']}[/]")
+        console.print("\n")
         
         # Execute the test with orchestrator
-        return execute_prompt_tests_with_orchestrator(test_config)
+        return report_data
     
     def update_config(self, config: Dict[str, Any]) -> None:
         """
@@ -80,5 +101,5 @@ class UIConfigAdapter:
         """Get the current configuration."""
         config = self.default_config.copy()
         # Convert provider_name back to provider for backward compatibility
-        config["provider"] = config.pop("provider_name", "openai")
+        config["provider"] = config.pop("provider", "openai")
         return config
