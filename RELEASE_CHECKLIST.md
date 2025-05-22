@@ -5,6 +5,7 @@ This checklist helps ensure a smooth release process for new versions of the Com
 ## Before Release
 
 ### Code Preparation
+
 - [ ] Update version number in `pyproject.toml`
 - [ ] Update `CHANGELOG.md` with all notable changes
 - [ ] Ensure all tests pass locally: `pytest`
@@ -13,25 +14,32 @@ This checklist helps ensure a smooth release process for new versions of the Com
 - [ ] Make sure all CI checks pass on the main branch
 
 ### Package Testing
+
 - [ ] Build the package locally:
+
   ```bash
   uv pip install build
   python -m build
   ```
+
 - [ ] Test installation from local build:
+
   ```bash
   uv pip install dist/compliant-llm-X.Y.Z-py3-none-any.whl
   ```
+
 - [ ] Verify the installed package works as expected
 
 ## Creating the Release
 
 ### Git Operations
+
 - [ ] Commit all changes: `git commit -m "Prepare release vX.Y.Z"`
 - [ ] Tag the release: `git tag -a vX.Y.Z -m "Release vX.Y.Z"`
 - [ ] Push changes and tag: `git push origin main && git push origin vX.Y.Z`
 
 ### GitHub Release
+
 - [ ] Go to GitHub Releases page
 - [ ] Create a new release using the tag
 - [ ] Copy relevant section from CHANGELOG.md to the release notes
@@ -39,10 +47,12 @@ This checklist helps ensure a smooth release process for new versions of the Com
 - [ ] Publish release (this will trigger the GitHub Actions workflow)
 
 ### Verify Publication
+
 - [ ] Check GitHub Actions workflow completed successfully
 - [ ] Verify package is available on TestPyPI (for pre-releases)
 - [ ] Verify package is available on PyPI (for full releases)
 - [ ] Test installation from PyPI:
+
   ```bash
   uv pip install compliant-llm==X.Y.Z
   ```
