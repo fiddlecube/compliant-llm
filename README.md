@@ -10,9 +10,8 @@ For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tr
   - 8+ attack strategies, and 100+ attack types across each strategy
 - 📝 Support for advanced configuration via YAML
 - 📊 Interactive CLI with rich output
-- 📈 Visual dashboard for result analysis
-- 🤖 Support for multiple LLM providers (via LiteLLM)
-- ⚡ Parallel testing for faster execution
+- 📈 UI for visual analysis, running tests and hardening prompts
+- 🤖 LLM agnostic (via LiteLLM)
 - 📄 Detailed reporting and analysis
 
 ## ⚙️ Installation

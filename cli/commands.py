@@ -178,7 +178,6 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
 
         # Ensure we have a prompt if not provided in config or CLI
         config_dict = cli_adapter.get_runner_config()
-        
         # Display configuration as a table
         console.print("\nRunning tests with the following configuration:")
         console.print(dict_to_cli_table(config_dict))
@@ -201,7 +200,6 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
 
         # Get the configuration for the runner
         runner_config = cli_adapter.get_runner_config()
-
         if nist_compliance:
             runner_config['nist_compliance'] = True
 
@@ -211,17 +209,6 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
     except Exception as e:
         click.echo(f"Error processing configuration: {e}", err=True)
         sys.exit(1)
-
-    # Generate timestamp for report file
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    
-    # Create output directory if it doesn't exist
-    output_dir = "reports"
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # Generate unique report filename
-    report_filename = f"report_{timestamp}.json"
-    report_path = os.path.join(output_dir, report_filename)
     
     # Run the tests with a progress indicator
     console.print("\nRunning tests...")
@@ -234,12 +221,8 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         report_data = execute_prompt_tests(config_dict=runner_config)
         progress.update(task, completed=True)
     
-    # Save the report
-    with open(report_path, 'w') as f:
-        json.dump(report_data, f, indent=2)
-    
     console.print("[bold green]Tests completed successfully![/]")
-    console.print(f"[bold cyan]Report saved to: {report_path}[/]")
+    console.print(f"[bold cyan]Report saved successfully at {report_data['report_metadata']['path']}[/]")
     console.print("\n")
 
     # Check if data has the new schema with metadata and tests
@@ -585,7 +568,7 @@ def rerun(prompt, report_file):
             progress.update(task, completed=True)
 
         console.print("[bold green]Rerun completed successfully![/]")
-        console.print(f"[bold cyan]Report saved to: {output}[/]")
+        console.print(f"[bold cyan]Report saved to: {report_data['report_metadata']['path']}[/]")
         console.print("\n")
         
         # Display summary
