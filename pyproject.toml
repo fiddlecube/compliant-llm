@@ -22,6 +22,8 @@ dependencies = [
     "pytest",
     "aiofiles",
     "plotly",
+    "psutil",
+    "markdown"
 ]
 
 [project.scripts]

@@ -1,12 +1,12 @@
 import streamlit as st
 import subprocess
-import json
-import os
 import sys
 from pathlib import Path
-import webbrowser
-import time
 from datetime import datetime
+import psutil
+import random
+from typing import Set
+import json
 
 # Add project root to Python path to access core modules
 project_root = Path(__file__).parent.parent
@@ -32,31 +32,92 @@ def get_reports():
                 continue
     return sorted(reports, key=lambda x: x["modified"], reverse=True)
 
-# Function to open dashboard with specific report
+# Set of ports we're currently using
+used_ports: Set[int] = set()
+
+# Pool of ports we can use (8503-8512)
+PORT_POOL = list(range(8503, 8513))
+
+def get_available_port() -> int:
+    """Get an available port from our pool"""
+    available_ports = set(PORT_POOL) - used_ports
+    if not available_ports:
+        # If no ports available, clean up oldest process
+        oldest_pid = None
+        oldest_time = float('inf')
+        for proc in psutil.process_iter(['pid', 'name', 'cmdline', 'create_time']):
+            try:
+                if proc.info['cmdline'] and any(arg for arg in proc.info['cmdline'] if 'streamlit' in arg):
+                    if proc.info['create_time'] < oldest_time:
+                        oldest_time = proc.info['create_time']
+                        oldest_pid = proc.info['pid']
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
+        
+        if oldest_pid:
+            try:
+                psutil.Process(oldest_pid).kill()
+                print(f"Killed oldest process {oldest_pid} to free up port")
+            except psutil.NoSuchProcess:
+                pass
+            
+        # Try again after cleanup
+        available_ports = set(PORT_POOL) - used_ports
+        
+    if not available_ports:
+        raise RuntimeError("No ports available in pool")
+        
+    port = random.choice(list(available_ports))
+    used_ports.add(port)
+    return port
+
+def release_port(port: int) -> None:
+    """Release a port back to the pool"""
+    used_ports.discard(port)
+
+def kill_process_on_port(port):
+    """Kill any process running on the specified port"""
+    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+        try:
+            if proc.info['cmdline']:
+                for arg in proc.info['cmdline']:
+                    if f"--server.port={port}" in arg:
+                        try:
+                            proc.kill()
+                            print(f"Killed process {proc.info['pid']} on port {port}")
+                            release_port(port)
+                        except psutil.NoSuchProcess:
+                            pass
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            continue
+
 def open_dashboard_with_report(report_path):
     dashboard_path = project_root / "ui" / "app.py"
-    subprocess.Popen([
+    
+    # Get an available port from our pool
+    port = get_available_port()
+    
+    # Start new Streamlit process
+    process = subprocess.Popen([
         sys.executable,
         "-m",
         "streamlit",
         "run",
         str(dashboard_path),
         "--server.port",
-        "8502",  # Use different port to avoid conflict
-        "--server.baseUrlPath",
-        "/report",
+        str(port),
         "--",  # Pass additional arguments to dashboard
         "--report",
         report_path
     ])
+    
+    # Show message to user
+    st.success(f"Opening report viewer on port {port}...")
+    
+    # Return the process object so we can track it
+    return process
 
-# Set page configuration
-st.set_page_config(
-    page_title="Compliant LLM UI",
-    page_icon="",
-    layout="wide"
-)
-
+# Function to get list of available strategies from the README
 def get_available_strategies():
     """Get list of available strategies from the README"""
     strategies = [
@@ -71,39 +132,45 @@ def get_available_strategies():
     ]
     return strategies
 
+from core.config_manager.ui_adapter import UIConfigAdapter
+
 def run_test(prompt, selected_strategies):
     """Run the test command with selected parameters"""
     try:
-        # Get the absolute path to the main.py
-        main_path = project_root / "cli" / "main.py"
+        # Initialize UI adapter
+        adapter = UIConfigAdapter()
         
-        # Format the command
-        command = [
-            sys.executable,
-            "-m",
-            "cli.main",
-            "test",
-            "--prompt",
-            f"\"{prompt}\"",
-            "--strategy",
-            ",".join(selected_strategies)
-        ]
+        # Run the test
+        results = adapter.run_test(prompt, selected_strategies)
         
-        # Run the command and capture output
-        result = subprocess.run(command, capture_output=True, text=True)
-        
-        return result.stdout, result.stderr
+        # Convert results to string format
+        return str(results), ""
     except Exception as e:
         return "", str(e)
 
 def create_app_ui():
     """Create and display the main UI components"""
     # Main UI
-    st.title(" Compliant LLM UI")
+    st.title("Compliant LLM UI")
+    st.write("Test and analyze your AI prompts for security vulnerabilities")
 
     # Sidebar with report list
     with st.sidebar:
+
+        # Add documentation link
+        if st.button("Open Documentation"):
+            try:
+                # Get absolute path to docs.py
+                docs_path = str(Path(__file__).parent / "docs.py")
+                
+                # Run the docs.py file
+                subprocess.Popen(["streamlit", "run", docs_path])
+                st.success("Opening documentation...")
+            except Exception as e:
+                st.error(f"Error opening documentation: {str(e)}")
+
         st.header("Test Reports")
+        
         reports = get_reports()
         
         if not reports:
@@ -114,11 +181,13 @@ def create_app_ui():
                 if st.button(f"{report['name']} (Last modified: {report['modified']})"):
                     open_dashboard_with_report(report['path'])
 
-    # Prompt input section
+
+
+    # Main content area
     st.header("Run New Test")
 
     # Prompt input
-    with st.form("test_form"):
+    with st.form("test_form", clear_on_submit=True):
         col1, col2 = st.columns([2, 1])
         
         with col1:
@@ -155,18 +224,46 @@ def create_app_ui():
         st.write("---")
         
         if stdout:
-            st.success("Test Output:")
-            st.code(stdout, language="bash")
+            try:
+                # Try to parse the output as JSON
+                json_output = json.loads(stdout)
+                
+                # Create a container for the results
+                with st.container():
+                    st.success("Test Results")
+                    
+                    # Add some padding
+                    st.markdown("""
+                    <style>
+                        .json-container {
+                            background-color: #f8f9fa;
+                            padding: 20px;
+                            border-radius: 8px;
+                            margin-top: 10px;
+                        }
+                    </style>
+                    """, unsafe_allow_html=True)
+                    
+                    # Display JSON in a styled container
+                    st.markdown("""
+                    <div class="json-container">
+                    """, unsafe_allow_html=True)
+                    
+                    # Display JSON with proper indentation
+                    st.json(json.dumps(json_output, indent=2))
+                    
+                    st.markdown("""
+                    </div>
+                    """, unsafe_allow_html=True)
+            except json.JSONDecodeError:
+                # If not JSON, display as regular text
+                st.success("Test Output:")
+                st.code(stdout, language="text")
         
         if stderr:
             st.error("Error Output:")
             st.code(stderr, language="bash")
 
-# Add documentation link
-st.sidebar.markdown("""
-# Documentation
-- [Full Documentation](./docs)
-""")
 
 def main():
     """Main entry point for the app"""

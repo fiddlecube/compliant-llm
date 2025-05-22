@@ -7,3 +7,5 @@ python-dotenv
 pytest
 aiofiles
 plotly
+psutil
+markdown
