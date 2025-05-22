@@ -1,0 +1,18 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: add-init-files
+        name: Add __init__.py files
+        entry: python scripts/add_init_files.py
+        language: system
+        files: '\.py$'
+        pass_filenames: false
+        always_run: true
+      - id: check-init-files
+        name: Check for missing __init__.py files
+        entry: python scripts/check_init_files.py
+        language: system
+        files: '\.py$'
+        pass_filenames: false
+        always_run: true
