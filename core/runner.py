@@ -26,15 +26,6 @@ from core.strategies.attack_strategies.jailbreak.base import JailbreakStrategy
 from core.strategies.attack_strategies.owasp_strategy import OWASPPromptSecurityStrategy
 from core.providers.litellm_provider import LiteLLMProvider
 
-## Evaluators
-from core.evaluators.base import BaseEvaluator
-from core.evaluators.evals.owasp_evaluator import OWASPComplianceEvaluator
-from core.evaluators.evals.advanced_evaluators import (
-    MultiSignalEvaluator,
-    SystemPromptComplianceEvaluator,
-    UserPromptContextEvaluator
-)
-
 
 from core.config_manager.cli_adapter import CLIConfigAdapter
 from core.reporter import save_report
