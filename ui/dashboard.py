@@ -38,7 +38,9 @@ def get_reports():
                     "modified": mod_time.strftime("%Y-%m-%d %H:%M:%S"),
                     "runtime": f"{runtime_minutes:.1f} min" if runtime_minutes >= 1 else f"{runtime_seconds:.1f} sec"
                 })
-            except:
+            except Exception as e:
+                print("Dashboard: Error processing file:", file)
+                print("Dashboard: Error:", e)
                 continue
     return sorted(reports, key=lambda x: x["modified"], reverse=True)
 
