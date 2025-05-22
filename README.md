@@ -46,7 +46,7 @@ compliant-llm dashboard
 3. Or use a configuration file:
 
 ```bash
-compliant-llm test --config configs/config.yaml
+compliant-llm test --config_path configs/config.yaml
 ```
 
 All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
@@ -62,8 +62,6 @@ compliant-llm report --summary
 ```bash
 compliant-llm dashboard
 ```
-
-This will open the latest report on your browser http://localhost:8502/report
 
 ### File Structure
 

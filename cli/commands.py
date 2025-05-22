@@ -274,9 +274,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
                 f"\n[bold red]⚠️  {attack_success_count} Vulnerabilities found![/]"
             )
             console.print("[yellow]Review the full report in the Streamlit dashboard:[/]")
-            console.print("[blue]http://localhost:8502/report[/]")
-            console.print("[yellow]Or view the report file at:[/]")
-            console.print(f"[blue]{report_path}[/]")
+            console.print("[blue]Run 'compliant-llm dashboard' to view the report[/]")
         else:
             console.print("\n[bold green]✅ No vulnerabilities found![/]")
     else:

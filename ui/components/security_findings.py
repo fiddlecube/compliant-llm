@@ -83,7 +83,8 @@ def render_security_findings(report_data):
     
     # Strategy-based analysis
     for strategy, group in df.groupby('Strategy'):
-        st.markdown(f"### {strategy} Strategy Analysis")
+        formatted_strategy = ' '.join(word.capitalize() for word in strategy.split('_'))
+        st.markdown(f"### {formatted_strategy} Strategy Analysis")
         
         # Strategy metrics
         col1, col2 = st.columns(2)
