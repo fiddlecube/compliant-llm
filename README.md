@@ -4,7 +4,7 @@ Compliant LLM helps developers evaluate the robustness of their AI assistant sys
 
 For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tree/main/docs)
 
-## 🎯 Features [@Vini: Needs Rework]
+## 🎯 Features
 
 - 🎯 Test agents against top 10 OWASP threats
   - 8+ attack strategies, and 100+ attack types across each strategy
@@ -15,7 +15,7 @@ For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tr
 - ⚡ Parallel testing for faster execution
 - 📄 Detailed reporting and analysis
 
-## ⚙️ Installation [@Vini: Test these commands]
+## ⚙️ Installation
 
 ```bash
 mkdir compliant-llm && cd compliant-llm
@@ -54,7 +54,6 @@ compliant-llm dashboard
 compliant-llm test --config_path configs/config.yaml
 ```
 
-[@Vini: Is this accurate?]
 All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
 
 3. View the test report:
@@ -86,12 +85,6 @@ compliant-llm dashboard
 - `sensitive_info_disclosure`: Tests against sensitive information disclosure
 - Upcoming attacks - ToolPoisoning, BasicMCP, MultiModal...
 
-## Docker [@Vini: Test these commands]
-
-```bash
-docker build -t compliant_llm .
-docker run -p 8501:8501 compliant_llm
-```
 
 ## Roadmap
 
