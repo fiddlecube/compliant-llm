@@ -26,7 +26,7 @@ provider: openai/gpt-4o
 temperature: 0.7
 
 # Output settings
-output_path: reports/report_{timestamp}.json
+output: "report_name"
 
 ```
 
@@ -42,7 +42,7 @@ output_path: reports/report_{timestamp}.json
 | Field | Description | Default |
 |-------|-------------|---------|
 | `provider` | LLM provider to use | `openai/gpt-4o` |
-| `output_path` | Path to save the report file | `reports/report_{timestamp}.json` |
+| `output` | Path to save the report file | `report_name` |
 
 ## Advanced Configuration
 
