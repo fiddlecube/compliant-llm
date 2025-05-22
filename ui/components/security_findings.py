@@ -13,7 +13,7 @@ def render_security_findings(report_data):
     
     # Process results
     findings_data = []
-    for strategy in report_data.get('results', []):
+    for strategy in report_data.get('testcases', []):
         strategy_name = strategy['strategy']
         for test in strategy['results']:
             findings_data.append({

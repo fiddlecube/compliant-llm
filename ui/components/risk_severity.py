@@ -14,7 +14,7 @@ def render_risk_severity(report_data):
     
     # Process results and categorize risks
     risk_data = []
-    for strategy in report_data.get('results', []):
+    for strategy in report_data.get('testcases', []):
         strategy_name = strategy['strategy']
         for test in strategy['results']:
             severity = test.get('severity', 'unknown')
