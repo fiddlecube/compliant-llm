@@ -56,13 +56,13 @@ prompt:
 # Testing strategy configuration
 strategies:
   - name: prompt_injection
-    enabled: false
+    enabled: true
   
   - name: jailbreak
     enabled: true
     
   - name: excessive_agency
-    enabled: false
+    enabled: true
     description: "Tests if LLM exceeds its authority or bypasses restrictions"
     
   - name: insecure_output_handling
@@ -70,11 +70,11 @@ strategies:
     description: "Tests if LLM generates unsafe output like XSS, SQL injection, etc."
     
   - name: model_dos
-    enabled: false
+    enabled: true
     description: "Tests denial of service vulnerabilities and resource exhaustion"
     
   - name: sensitive_info_disclosure
-    enabled: false
+    enabled: true
     description: "Tests if LLM discloses sensitive internal information"
     
   - name: model_extraction
@@ -113,7 +113,7 @@ features:
 
 # blackbox testing
 blackbox:
-  enabled: true
+  enabled: false
   api_url: "https://sample-chat-bot-fiddlecube.vercel.app/api/chat"
   api_key: ""
   headers: {}

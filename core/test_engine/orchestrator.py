@@ -252,7 +252,6 @@ class AttackOrchestrator:
             attack_prompts = await strategy_class['obj'].get_attack_prompts(self.config, "")
             
             for attack_data in attack_prompts:
-                console.print(f"[green] Running attack: {attack_data.get('attack_instruction', '')}[/green]")
                 payload = {
                     "messages": [
                         {"role": "user", "content": attack_data.get('attack_instruction', '')}
