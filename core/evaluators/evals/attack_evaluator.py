@@ -88,6 +88,7 @@ class JailbreakEvaluator(BaseAttackEvaluator):
             Dictionary containing evaluation results
         """
         response_text = await self._extract_response_text(llm_response)
+        print("response_text::", response_text)
         response_lower = response_text.lower()
 
         # Check if any compliance indicators are present and no strong refusal

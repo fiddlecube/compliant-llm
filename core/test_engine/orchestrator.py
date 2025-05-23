@@ -251,10 +251,11 @@ class AttackOrchestrator:
             console.print(f"[green] Running strategy: {strategy_class['name']}[/green]")
             attack_prompts = await strategy_class['obj'].get_attack_prompts(self.config, "")
             
-            for prompt in attack_prompts:
+            for attack_data in attack_prompts:
+                console.print(f"[green] Running attack: {attack_data.get('attack_instruction', '')}[/green]")
                 payload = {
                     "messages": [
-                        {"role": "user", "content": prompt.get('attack_instruction', '')}
+                        {"role": "user", "content": attack_data.get('attack_instruction', '')}
                     ]
                 }
                 
@@ -278,21 +279,20 @@ class AttackOrchestrator:
                 # this gives me strategy results and then i need to evaluate here differently
                 evaluation = await strategy.evaluate(
                     system_prompt="",  # Empty since we're API testing
-                    user_prompt=prompt,
+                    user_prompt=attack_data.get('attack_instruction', ''),
                     response=api_response
                 )
-                print("Evaluation: ", evaluation)
                 
                 result = {
                 'strategy': strategy_class['name'],
                 'system_prompt': "",
-                'attack_prompt': prompt,
-                'instruction': "",
-                'category': "",
+                'attack_prompt': attack_data.get('attack_instruction', ''),
+                'instruction': attack_data.get('instruction', ''),
+                'category': attack_data.get('category', ''),
                 'response': api_response,
                 'evaluation': evaluation,
                 'success': evaluation.get('passed', False),
-                'mutation_technique': "",
+                'mutation_technique': attack_data.get('mutation_technique', ''),
                 }
                 results.append(result)
                 final_results.append({
@@ -489,8 +489,6 @@ class AttackOrchestrator:
 
             strategy_results = result.get("results", [])
             runtime_in_seconds = result.get("runtime_in_seconds", 0)
-
-            print("Strategy Results", len(strategy_results))
             
             # Count tests for this strategy
             test_count = len(strategy_results)
