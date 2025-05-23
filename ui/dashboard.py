@@ -7,14 +7,18 @@ import psutil
 import random
 from typing import Set
 import json
+import os
 from core.config_manager.ui_adapter import UIConfigAdapter
 
-# Add project root to Python path to access core modules
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+from rich.console import Console
+console = Console()
 
-# Get reports directory
-reports_dir = project_root / "reports"
+# Get user's home directory for storing reports
+user_home = Path.home()
+reports_dir = user_home / ".compliant-llm" / "reports"
+
+# Create reports directory if it doesn't exist
+reports_dir.mkdir(parents=True, exist_ok=True)
 
 # Function to get list of reports with timestamps
 def get_reports():
@@ -39,8 +43,8 @@ def get_reports():
                     "runtime": f"{runtime_minutes:.1f} min" if runtime_minutes >= 1 else f"{runtime_seconds:.1f} sec"
                 })
             except Exception as e:
-                print("Dashboard: Error processing file:", file)
-                print("Dashboard: Error:", e)
+                console.print(f"Dashboard: Error processing file: {file}")
+                console.print(f"Dashboard: Error: {e}")
                 continue
     return sorted(reports, key=lambda x: x["modified"], reverse=True)
 
@@ -104,7 +108,9 @@ def kill_process_on_port(port):
             continue
 
 def open_dashboard_with_report(report_path):
-    dashboard_path = project_root / "ui" / "app.py"
+    # Get the directory where the current script is installed
+    current_dir = Path(__file__).parent
+    dashboard_path = current_dir / "app.py"
     
     # Get an available port from our pool
     port = get_available_port()
