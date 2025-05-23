@@ -1,6 +1,10 @@
 # 🛡️ Compliant LLM Documentation
 
-Compliant LLM is your comprehensive toolkit for securing your AI systems. Whether you're building chatbots, AI agents, or MCP servers, our suite of security testing tools helps you identify and mitigate vulnerabilities in your LLM applications.
+Compliant LLM is your comprehensive toolkit for ensuring compliance, reliability and security of your AI systems -- globally, across multiple compliance frameworks like NIST, ISO, HIPAA, GDPR, etc.
+
+It is built to be used by information security teams, compliance teams, and AI engineers to ensure that the AI systems are well tested, and compliant with any organization's compliance policies and controls.
+
+It supports multiple LLM providers, and can be used to test prompts, agents, MCP servers and GenAI models.
 
 ## 🎯 Key Features
 
@@ -8,7 +12,7 @@ Compliant LLM is your comprehensive toolkit for securing your AI systems. Whethe
 - 📊 **Compliance Analysis**: Ensure your systems meet industry standards and best practices
 - 🤖 **Provider Support**: Works with multiple LLM providers via LiteLLM
 - 📈 **Visual Dashboard**: Interactive UI for analyzing test results
-- ⚡ **Parallel Testing**: Speed up your security assessments
+- ⚡ **End to End Testing**: Test your AI systems end to end
 - 📄 **Detailed Reporting**: Comprehensive reports with actionable insights
 
 ## 📚 Documentation Contents

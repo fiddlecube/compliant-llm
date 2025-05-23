@@ -1,18 +1,23 @@
 # 🛡️ Compliant LLM
 
-Compliant LLM helps developers evaluate the robustness of their AI assistant system prompts/end points by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more. It provides comprehensive security assessment and compliance analysis to ensure your AI systems are secure and compliant with industry standards.
+
+Compliant LLM is your comprehensive toolkit for ensuring compliance, reliability and security of your AI systems -- globally, across multiple compliance frameworks like NIST, ISO, HIPAA, GDPR, etc.
+
+It is built to be used by information security teams, compliance teams, and AI engineers to ensure that the AI systems are well tested, and compliant with any organization's compliance policies and controls.
+
+It supports multiple LLM providers, and can be used to test prompts, agents, MCP servers and GenAI models.
 
 For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tree/main/docs)
 
-## 🎯 Features
 
-- 🎯 Test agents against top 10 OWASP threats
-  - 8+ attack strategies, and 100+ attack types across each strategy
-- 📝 Support for advanced configuration via YAML
-- 📊 Interactive CLI with rich output
-- 📈 UI for visual analysis, running tests and hardening prompts
-- 🤖 LLM agnostic (via LiteLLM)
-- 📄 Detailed reporting and analysis
+## 🎯 Key Features
+
+- 🎯 **Security Testing**: Test against 8+ attack strategies including prompt injection, jailbreaking, and context manipulation
+- 📊 **Compliance Analysis**: Ensure your systems meet industry standards and best practices
+- 🤖 **Provider Support**: Works with multiple LLM providers via LiteLLM
+- 📈 **Visual Dashboard**: Interactive UI for analyzing test results
+- ⚡ **End to End Testing**: Test your AI systems end to end
+- 📄 **Detailed Reporting**: Comprehensive reports with actionable insights
 
 ## ⚙️ Installation
 
@@ -52,13 +57,7 @@ compliant-llm test --config_path configs/config.yaml
 
 All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
 
-3. View the test report:
-
-```bash
-compliant-llm report --summary
-```
-
-4. View the latest test report in UI:
+3. View the latest test report in UI:
 
 ```bash
 compliant-llm dashboard
