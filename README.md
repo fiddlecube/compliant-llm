@@ -1,10 +1,17 @@
-# 🛡️ Compliant LLM
+# 🛡️ Compliant LLM - Automated GRC for AI Agents
 
-Compliant LLM helps developers evaluate the robustness of their AI assistant system prompts/end points by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more. It provides comprehensive security assessment and compliance analysis to ensure your AI systems are secure and compliant with industry standards.
+Automate security, risk, and compliance for AI Agents.
+
+- Test against adversarial attacks
+- Generate a comprehensive security analysis
+- Automate compliance reports
+- Implement NIST, OWASP, ISO, and custom policy frameworks
 
 For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tree/main/docs)
 
 ## 🎯 Features
+
+Compliant LLM helps developers evaluate the robustness of their AI assistant system prompts/endpoints by testing them against common attack patterns such as prompt injection, jailbreaking, adversarial inputs, and more. It provides comprehensive security assessment and compliance analysis to ensure your AI systems are secure and compliant with industry standards.
 
 - 🎯 Test agents against top 10 OWASP threats
   - 8+ attack strategies, and 100+ attack types across each strategy
@@ -23,11 +30,9 @@ pip install compliant-llm
 ## Set up OPENAI, ANTHROPIC API keys
 
 ```bash
-touch .env
-# write the following in .env
-OPENAI_API_KEY=your-api-key-here
-ANTHROPIC_API_KEY=your-api-key-here
-GOOGLE_API_KEY=your-api-key-here
+export OPENAI_API_KEY=your-api-key-here
+export ANTHROPIC_API_KEY=your-api-key-here
+export GOOGLE_API_KEY=your-api-key-here
 ```
 
 ## 🚀 Quick Start
@@ -88,8 +93,8 @@ compliant-llm dashboard
 - [ ] Compliant MCP Servers
 - [ ] Multimodal Testing and Redteaming
 - [ ] CI/CD
-- [ ] Support different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
-- [ ] Control Pane for different controls
+- [ ] Support different Compliance Frameworks - HIPAA, PCI-DSS, GDPR, EU AI Act, etc.
+- [ ] Control Panel for different controls
 - [ ] Internal audits and documentation
 
 ## 🤝 Contributors
