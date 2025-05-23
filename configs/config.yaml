@@ -66,7 +66,7 @@ strategies:
     description: "Tests if LLM exceeds its authority or bypasses restrictions"
     
   - name: insecure_output_handling
-    enabled: false
+    enabled: true
     description: "Tests if LLM generates unsafe output like XSS, SQL injection, etc."
     
   - name: model_dos
@@ -74,7 +74,7 @@ strategies:
     description: "Tests denial of service vulnerabilities and resource exhaustion"
     
   - name: sensitive_info_disclosure
-    enabled: true
+    enabled: false
     description: "Tests if LLM discloses sensitive internal information"
     
   - name: model_extraction
@@ -113,7 +113,7 @@ features:
 
 # blackbox testing
 blackbox:
-  enabled: false
+  enabled: true
   api_url: "https://sample-chat-bot-fiddlecube.vercel.app/api/chat"
   api_key: ""
   headers: {}

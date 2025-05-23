@@ -150,7 +150,6 @@ class AttackOrchestrator:
         
         # Initialize API testing configuration from config.yaml
         blackbox_config = config.get('blackbox', {})
-        print("Blackbox Config", blackbox_config)
         self.api_enabled = blackbox_config.get('enabled', False)
         
         if self.api_enabled:
@@ -277,9 +276,9 @@ class AttackOrchestrator:
 
                 # this gives me strategy results and then i need to evaluate here differently
                 evaluation = await strategy.evaluate(
-                    system_prompt="",  # Empty since we're API testing
-                    user_prompt=attack_data.get('attack_instruction', ''),
-                    response=api_response
+                    "",  # Empty since we're API testing
+                    attack_data.get('attack_instruction', ''),
+                    api_response
                 )
                 
                 result = {
