@@ -10,8 +10,13 @@
   - Custom policy testing and evidence collection (wikis, docs, pdfs, etc.)
   - Policy update listeners - autorun tests on policy updates
 
+  ![Custom Policy Integration](images/custom_policy_integrations.png)
+
+
 - **Single controlpane for multiple compliance frameworks**
   - (NIST, ISO, HIPAA, GDPR, etc.)
+  
+  ![Control level Tests](images/control_tests.png)
 
 - **Audit Trail and reporting**
   - Documentation for different compliance frameworks
