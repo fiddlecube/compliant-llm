@@ -342,7 +342,6 @@ class AttackOrchestrator:
         # Run API tests if enabled
         api_results = []
         if self.api_enabled:
-            strategy_start_time = datetime.now()
             api_results = await self.run_api_tests(strategies)
             
             
@@ -350,9 +349,7 @@ class AttackOrchestrator:
         self.results = strategy_results
         if self.api_enabled:
             self.results = api_results
-            print("Results::", self.results)
-         
-        
+    
         return self.results
 
     async def rerun_attack(self, config_dict: Dict[str, Any], file_path: str) -> Dict[str, Any]:
@@ -487,7 +484,6 @@ class AttackOrchestrator:
         strategies_arr = set([s.get('name') for s in self.strategies])
 
         # Calculate per-strategy statistics
-        print("Results::", self.results)
         for result in self.results:
             strategy_name = result.get("strategy", "unknown")
 

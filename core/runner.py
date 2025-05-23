@@ -35,7 +35,6 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     
     start_time = datetime.now()
     # Use the provided configuration directly
-    print("Config Dict", config_dict)
     config = config_dict
     
     # Extract provider configuration with sensible defaults
