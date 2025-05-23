@@ -97,8 +97,8 @@ class JailbreakStrategy(BaseAttackStrategy):
             return JailbreakStrategy._cached_attack_data[cache_key]
         
         for entry in sampled_entries:
+
             original_prompt = entry['original_prompt']
-            
             if 'mutations' in entry and entry['mutations']:
                 # Get the mutation object (which has technique and obfuscated_prompt)
                 mutation = random.choice(entry['mutations'])
