@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+from pathlib import Path
 from ui.components.compliance_report import render_compliance_report
 from utils.report_loader import load_report
 from components.risk_severity import render_risk_severity
@@ -17,7 +18,9 @@ def create_dashboard():
     st.title("🛡️ AI Security Risk Assessment")
     
     # Default report path
-    report_dir = "reports"
+
+    user_home = Path.home()
+    report_dir = user_home / ".compliant-llm" / "reports"
     
     if os.path.exists(report_dir):
             # Find all report files with timestamp format
