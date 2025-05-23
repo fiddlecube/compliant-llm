@@ -10,6 +10,9 @@ import jinja2
 from typing import Dict, List, Any, Optional
 
 from datetime import datetime
+from pathlib import Path
+
+DEFAULT_REPORTS_DIR = Path.home() / '.compliant-llm' / 'reports'
 
 
 class ConfigManager:
@@ -301,7 +304,7 @@ class ConfigManager:
         """
 
         if not self.config:
-            return {'path': 'reports', 'file': 'report'}  # Default
+            return {'path': str(DEFAULT_REPORTS_DIR), 'filename': 'report'}  # Default
         
         # Extract output path
         if 'output' in self.config:
@@ -314,7 +317,7 @@ class ConfigManager:
             
             return {'path': path, 'filename': filename}
         
-        return {'path': './', 'filename': 'report'}  # Default
+        return {'path': str(DEFAULT_REPORTS_DIR), 'filename': 'report'}  # Default
     
     def get_runner_config(self) -> Dict[str, Any]:
         """

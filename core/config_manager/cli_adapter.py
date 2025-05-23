@@ -9,7 +9,7 @@ It converts CLI arguments to a format that can be processed by the ConfigManager
 import os
 from typing import Dict, Any, Optional
 
-from .config import ConfigManager, find_config_file
+from .config import ConfigManager, find_config_file, DEFAULT_REPORTS_DIR
 
 
 class CLIConfigAdapter:
@@ -96,7 +96,7 @@ class CLIConfigAdapter:
                 config_dict['provider'] = provider
         
         # Set output path
-        config_dict['output'] = {"path": "reports", "filename": output or "report"}
+        config_dict['output'] = {"path": str(DEFAULT_REPORTS_DIR), "filename": output or "report"}
             
         # Set timeout if provided
         if timeout:

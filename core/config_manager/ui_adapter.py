@@ -3,7 +3,7 @@ UI-specific configuration adapter for Compliant LLM.
 """
 import os
 from typing import Dict, List, Any, Optional
-from .config import ConfigManager
+from .config import ConfigManager, DEFAULT_REPORTS_DIR
 from core.runner import execute_prompt_tests_with_orchestrator
 from rich.console import Console
 from rich.progress import (
@@ -28,7 +28,7 @@ class UIConfigAdapter:
             "timeout": 30,             # Default timeout in seconds
             "prompt": {"content": "You are a helpful assistant"},  # Default prompt
             "strategies": [],  # Default strategies,
-            "output_path": {"path": "reports", "filename": "report"},  # Default output path
+            "output_path": {"path": str(DEFAULT_REPORTS_DIR), "filename": "report"},  # Default output path
         }
     
     def run_test(self, prompt: str, strategies: List[str]) -> Dict[str, Any]:
