@@ -88,49 +88,6 @@ def dict_to_cli_table(
     return table
 
 
-# Constants
-CONFIG_DIRS = [
-    # Package configs
-    os.path.join(os.path.dirname(os.path.dirname(__file__)), "configs"),
-    # User configs
-    os.path.expanduser(os.path.join("~", ".config", "compliant-llm")),
-    # Project configs (current directory)
-    os.path.join(os.getcwd(), ".compliant-llm")
-]
-
-
-def find_config_file(config_name: str) -> Optional[str]:
-    """Find a config file across various possible locations."""
-    # If it's an absolute path or exists in current directory
-    if os.path.isabs(config_name) or os.path.exists(config_name):
-        return config_name
-    
-    # Check standard config locations
-    for config_dir in CONFIG_DIRS:
-        config_path = os.path.join(config_dir, config_name)
-        if os.path.exists(config_path):
-            return config_path
-        
-        # Try with .yaml extension if not provided
-        if not config_name.endswith(('.yaml', '.yml')):
-            yaml_path = f"{config_path}.yaml"
-            if os.path.exists(yaml_path):
-                return yaml_path
-    
-    return None
-
-
-def load_config(config_path: str) -> Dict[str, Any]:
-    """Load and parse a YAML config file."""
-    try:
-        with open(config_path, 'r') as f:
-            config = yaml.safe_load(f)
-        return config
-    except Exception as e:
-        click.echo(f"Error loading config file: {e}", err=True)
-        sys.exit(1)
-
-
 @click.group()
 @click.version_option(
     importlib.metadata.version('compliant-llm'),
@@ -148,14 +105,13 @@ def cli():
 @click.option('--prompt', '-p', help='System prompt to test')
 @click.option('--strategy', '-s', default=None, help='Test strategy to use (comma-separated for multiple)')
 @click.option('--provider', help='LLM provider name (e.g., openai/gpt-4o)')
-@click.option('--output', '-o', help='Output file path for results')
+@click.option('--output', '-o', help='Output file name for results (default: `report`)')
 @click.option('--report', '-r', is_flag=True, help='Show detailed report after testing')
 @click.option('--parallel/--no-parallel', default=None, help='Run tests in parallel')
 @click.option('--verbose', '-v', is_flag=True, help='Show verbose output')
 @click.option('--timeout', type=int, default=None, help='Timeout in seconds for LLM requests')
-@click.option('--save', help='DEPRECATED: Use --output instead')
 @click.option('--nist-compliance', '-n', help='Enable NIST compliance assessment', is_flag=True)
-def test(config_path, prompt, strategy, provider, output, report, parallel, verbose, timeout, save, nist_compliance):
+def test(config_path, prompt, strategy, provider, output, report, parallel, verbose, timeout, nist_compliance):
     """Run tests on your system prompts."""
     # Create a rich console for showing output
     console = Console()
@@ -171,7 +127,6 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
             strategy=strategy,
             provider=provider,
             output=output,
-            save=save,
             parallel=parallel,
             timeout=timeout
         )
