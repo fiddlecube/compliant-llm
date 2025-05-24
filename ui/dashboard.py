@@ -22,7 +22,7 @@ used_ports: Set[int] = set()
 # Ensure reports directory exists
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-@st.cache_data(show_spinner=False)
+# @st.cache_data(show_spinner=False)
 def get_reports():
     reports = []
     if REPORTS_DIR.exists():
@@ -96,12 +96,14 @@ def kill_process_on_port(port):
 def open_dashboard_with_report(report_path):
     dashboard_path = BASE_DIR / "app.py"
     port = get_available_port()
+    # Kill any existing process already using this port
+    kill_process_on_port(port)
+    st.success(f"🔗 Opening latest report: {report_path}")
     subprocess.Popen([
         sys.executable, "-m", "streamlit", "run",
         str(dashboard_path), "--server.port", str(port), "--",
         "--report", report_path
     ])
-    st.success(f"Opening report viewer on port {port}...")
 
 def get_available_strategies():
     return [
@@ -145,7 +147,14 @@ def create_app_ui():
                 if st.button(
                     f"Report {i+1}. (Runtime: {report['runtime']}, Run at: {formatted_time})",
                     key=f"report_{report['name']}"):
-                    open_dashboard_with_report(report['path'])
+                    selected_report_path = report['path']
+                    st.session_state['selected_report'] = selected_report_path
+                    st.rerun()
+
+    # Check if a report was selected
+    if 'selected_report' in st.session_state:
+        open_dashboard_with_report(st.session_state['selected_report'])
+        del st.session_state['selected_report']  # Clear after opening
 
     st.header("Run New Test")
     with st.form("test_form", clear_on_submit=True):
@@ -188,7 +197,6 @@ def create_app_ui():
 
         if reports:
             latest_report = reports[0]
-            st.success(f"🔗 Opening latest report: `{latest_report['name']}`")
             open_dashboard_with_report(latest_report["path"])
 
 def main():
