@@ -282,6 +282,12 @@ def create_app_ui():
         if stderr:
             st.error("❌ Error Output:")
             st.code(stderr, language="bash")
+        
+        # Show latest report if available
+        if reports:
+            latest_report = reports[0]  # Reports are already sorted by modified time
+            st.success(f"🔗 Opening latest report: `{latest_report['name']}`")
+            open_dashboard_with_report(latest_report["path"])
 
 
 
