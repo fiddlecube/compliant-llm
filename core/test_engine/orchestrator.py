@@ -51,79 +51,60 @@ STRATEGY_MAP = {
 }
 class AttackOrchestrator:
     """Orchestrates attack strategies against LLM providers and APIs"""
-    
-    def _init_strategies(self):
-        """Initialize attack strategies from config"""
-        self.strategies = []
-        strategy_config = self.config.get('strategies', [])
-        
-        for strategy in strategy_config:
-            name = strategy.get('name', '').lower()
-            if name and strategy.get('enabled', False):
-                strategy_class = STRATEGY_MAP.get(name)
-                if strategy_class:
-                    self.strategies.append(strategy_class())
-                    console.print(f"[green] Enabled strategy: {name}[/green]")
-                else:
-                    console.print(f"[yellow] Warning: Unknown strategy: {name}[/yellow]")
-        
-        if not self.strategies:
-            console.print("[yellow] No strategies enabled in config[/yellow]")
-            # Add default strategies if none are enabled
-            self.strategies = [
-                PromptInjectionStrategy(),
-                JailbreakStrategy()
-            ]
-            console.print("[yellow] Using default strategies[/yellow]")
 
-    def __init__(self, 
-        strategies: List[BaseAttackStrategy], 
-        provider: LLMProvider, 
-        config: Dict[str, Any]):
-        """
-        Initialize the orchestrator
-        
-        Args:
-            strategies: List of attack strategies
-            provider: LLM provider
-            config: Configuration dictionary
-        """
-        self.strategies = strategies
+    def __init__(
+        self,
+        strategies: List[BaseAttackStrategy],
+        provider: LLMProvider,
+        config: Dict[str, Any]
+    ):
+        self.strategies = strategies or []
         self.provider = provider
         self.config = config
         self.results: List[Dict[str, Any]] = []
         self.compliance_orchestrator = ComplianceOrchestrator(config)
-        
-        # Initialize API testing configuration from config.yaml
-        blackbox_config = config.get('blackbox', {})
-        self.api_enabled = blackbox_config.get('enabled', False)
-        
-        if self.api_enabled:
-            # Get API configuration
-            self.api_url = blackbox_config.get('api_url')
-            self.api_key = blackbox_config.get('api_key')
-            self.api_headers = blackbox_config.get('headers', {})
-            
-            # Add API key to headers if provided
-            if self.api_key:
-                self.api_headers['Authorization'] = f"Bearer {self.api_key}"
-            
-            # Get payloads and process them
-            self.api_payloads = []
-            for payload in blackbox_config.get('payload', []):
-                # Create a proper payload structure
-                processed_payload = {}
-                if 'messages' in payload:
-                    processed_payload['messages'] = payload['messages']
-                if 'prompt' in payload:
-                    processed_payload['prompt'] = payload['prompt']
-                if 'role' in payload:
-                    processed_payload['role'] = payload['role']
-                
-                # Add the payload if it has any content
-                if processed_payload:
-                    self.api_payloads.append(processed_payload)
+        self.api_enabled = False
+        self.api_url = None
+        self.api_key = None
+        self.api_headers: Dict[str, str] = {}
+        self.api_payloads: List[Dict[str, Any]] = []
 
+        self._init_api_config()
+
+        if not self.strategies:
+            self.strategies = self._default_strategies()
+            console.print("[yellow]No strategies provided, using defaults[/yellow]")
+
+    def _init_api_config(self):
+        blackbox_config = self.config.get('blackbox', {})
+        self.api_enabled = blackbox_config.get('enabled', False)
+
+        if not self.api_enabled:
+            return
+
+        self.api_url = blackbox_config.get('api_url')
+        self.api_key = blackbox_config.get('api_key')
+        self.api_headers = blackbox_config.get('headers', {})
+
+        if self.api_key:
+            self.api_headers['Authorization'] = f"Bearer {self.api_key}"
+
+        self.api_payloads = self._load_payloads(blackbox_config.get('payload', []))
+        
+
+    def _load_payloads(self, raw_payloads: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        return [
+            {
+                **({"messages": p["messages"]} if "messages" in p else {}),
+                **({"prompt": p["prompt"]} if "prompt" in p else {}),
+                **({"role": p["role"]} if "role" in p else {}),
+            }
+            for p in raw_payloads if p
+        ]
+
+    def _default_strategies(self) -> List[BaseAttackStrategy]:
+        return [PromptInjectionStrategy(), JailbreakStrategy()]
+    
     @classmethod
     def _create_strategies_from_config(
         cls, 
