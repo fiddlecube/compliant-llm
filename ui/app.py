@@ -1,12 +1,20 @@
 import streamlit as st
 import json
 import os
+import sys
 from pathlib import Path
 from ui.components.compliance_report import render_compliance_report
 from utils.report_loader import load_report
 from components.risk_severity import render_risk_severity
 from components.security_findings import render_security_findings
 from components.strategy_table import render_strategy_table
+
+def get_report_path_from_args():
+    if "--report" in sys.argv:
+        report_index = sys.argv.index("--report") + 1
+        if report_index < len(sys.argv):
+            return sys.argv[report_index]
+    return None
 
 def create_dashboard():
     st.set_page_config(
@@ -16,13 +24,18 @@ def create_dashboard():
     )
     
     st.title("🛡️ AI Security Risk Assessment")
-    
-    # Default report path
 
-    user_home = Path.home()
-    report_dir = user_home / ".compliant-llm" / "reports"
-    
-    if os.path.exists(report_dir):
+    # Determine which report to load
+    report_path = get_report_path_from_args()
+
+    if report_path and os.path.exists(report_path):
+        default_report_path = report_path
+    else:
+        # Default report path
+        user_home = Path.home()
+        report_dir = user_home / ".compliant-llm" / "reports"
+        
+        if os.path.exists(report_dir):
             # Find all report files with timestamp format
             report_files = [f for f in os.listdir(report_dir) 
                           if f.startswith("report_") and 
@@ -34,8 +47,7 @@ def create_dashboard():
                 default_report_path = os.path.join(report_dir, latest_file)
             else:
                 default_report_path = None
-    
-    # Determine which report to load
+
     try:
         report_data = load_report(default_report_path)
     except:
