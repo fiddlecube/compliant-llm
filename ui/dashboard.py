@@ -8,6 +8,7 @@ import random
 from typing import Set
 import json
 import os
+import socket
 from core.config_manager.ui_adapter import UIConfigAdapter
 from rich.console import Console
 
@@ -22,7 +23,46 @@ used_ports: Set[int] = set()
 # Ensure reports directory exists
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-# @st.cache_data(show_spinner=False)
+def is_port_in_use(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(("localhost", port)) == 0
+
+def kill_process_on_port(port):
+    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+        try:
+            if proc.info['cmdline'] and any(f"--server.port={port}" in arg for arg in proc.info['cmdline']):
+                print(f"Killing process {proc.info['pid']} using port {port}")
+                proc.kill()
+                release_port(port)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
+            print(f"Could not kill process on port {port}: {e}")
+
+def get_available_port() -> int:
+    for port in PORT_POOL:
+        if not is_port_in_use(port):
+            used_ports.add(port)
+            return port
+
+    # Try to free one
+    for proc in psutil.process_iter(['pid', 'name', 'cmdline', 'create_time']):
+        try:
+            if proc.info['cmdline'] and any('streamlit' in arg for arg in proc.info['cmdline']):
+                print(f"Killing oldest streamlit process: PID {proc.info['pid']}")
+                proc.kill()
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            continue
+
+    # Retry after cleanup
+    for port in PORT_POOL:
+        if not is_port_in_use(port):
+            used_ports.add(port)
+            return port
+
+    raise RuntimeError("No ports available in pool")
+
+def release_port(port: int) -> None:
+    used_ports.discard(port)
+
 def get_reports():
     reports = []
     if REPORTS_DIR.exists():
@@ -52,52 +92,10 @@ def get_reports():
                 console.print(f"Dashboard: Error processing file: {file}\n{e}")
     return sorted(reports, key=lambda x: x["timestamp"], reverse=True)
 
-def get_available_port() -> int:
-    available_ports = set(PORT_POOL) - used_ports
-    if not available_ports:
-        oldest_pid = None
-        oldest_time = float('inf')
-        for proc in psutil.process_iter(['pid', 'name', 'cmdline', 'create_time']):
-            try:
-                if proc.info['cmdline'] and any('streamlit' in arg for arg in proc.info['cmdline']):
-                    if proc.info['create_time'] < oldest_time:
-                        oldest_time = proc.info['create_time']
-                        oldest_pid = proc.info['pid']
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                continue
-
-        if oldest_pid:
-            try:
-                psutil.Process(oldest_pid).kill()
-                print(f"Killed oldest process {oldest_pid} to free up port")
-            except psutil.NoSuchProcess:
-                pass
-        available_ports = set(PORT_POOL) - used_ports
-
-    if not available_ports:
-        raise RuntimeError("No ports available in pool")
-
-    port = random.choice(list(available_ports))
-    used_ports.add(port)
-    return port
-
-def release_port(port: int) -> None:
-    used_ports.discard(port)
-
-def kill_process_on_port(port):
-    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-        try:
-            if proc.info['cmdline'] and any(f"--server.port={port}" in arg for arg in proc.info['cmdline']):
-                proc.kill()
-                release_port(port)
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            continue
-
 def open_dashboard_with_report(report_path):
     dashboard_path = BASE_DIR / "app.py"
     port = get_available_port()
-    # Kill any existing process already using this port
-    kill_process_on_port(port)
+    kill_process_on_port(port)  # Extra safety
     st.success(f"🔗 Opening latest report: {report_path}")
     subprocess.Popen([
         sys.executable, "-m", "streamlit", "run",
@@ -151,10 +149,9 @@ def create_app_ui():
                     st.session_state['selected_report'] = selected_report_path
                     st.rerun()
 
-    # Check if a report was selected
     if 'selected_report' in st.session_state:
         open_dashboard_with_report(st.session_state['selected_report'])
-        del st.session_state['selected_report']  # Clear after opening
+        del st.session_state['selected_report']
 
     st.header("Run New Test")
     with st.form("test_form", clear_on_submit=True):
