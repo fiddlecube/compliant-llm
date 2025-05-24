@@ -11,7 +11,6 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 from ..strategies.base import BaseAttackStrategy
 from ..providers.base import LLMProvider
-from ..evaluators.base import BaseEvaluator
 from rich.console import Console
 from core.strategies.attack_strategies.strategy import (
     # JailbreakStrategy, 
