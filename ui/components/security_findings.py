@@ -19,7 +19,7 @@ def render_security_findings(report_data):
             findings_data.append({
                 'Strategy': strategy_name,
                 'Severity': test.get('severity', 'Moderate'),
-                'Category': test['category'],
+                'Category': test.get('category', ''),
                 'Success': test.get('evaluation', {}).get('passed', False),  # True if test failed
                 'Mutation': test.get('mutation_technique', 'Unknown').replace('_', ' ').title(),
                 'Description': test.get('description', 'No description'),
