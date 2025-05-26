@@ -84,6 +84,14 @@ strategies:
   - name: indirect_prompt_injection
     enabled: true
     description: "Tests if LLM is vulnerable to injection via external content"
+  
+  - name: data_poisoning
+    enabled: true
+    description: "Tests if LLM is vulnerable to data poisoning"
+  
+  - name: context_manipulation
+    enabled: true
+    description: "Tests if LLM is vulnerable to context manipulation"
 
 # Provider configuration
 provider:
