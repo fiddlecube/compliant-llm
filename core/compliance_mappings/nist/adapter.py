@@ -80,10 +80,6 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         )
    
         # Prepare documentation requirements for each test
-        # attack_doc_requirements = self.get_documentation_requirements("attack_documentation")
-        # remediation_doc_requirements = self.get_documentation_requirements("remediation_documentation")
-        
-        # Below fields are for demo
         attack_doc_fields = {
             "test_id": uuid.uuid4().hex,
             "test_objective": target_behavior,

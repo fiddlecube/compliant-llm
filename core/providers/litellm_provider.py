@@ -22,9 +22,6 @@ def clean_json_response(response: str) -> str:
     Returns:
         Cleaned JSON string
     """
-    if response is None:
-        return response
-
     # Handle markdown code blocks with JSON content
     # First try to extract content between ```json and ``` markers
     json_block_match = re.search(
@@ -44,15 +41,54 @@ def clean_json_response(response: str) -> str:
     response = re.sub(r"^```json\s*", "", response)
     response = re.sub(r"\s*```$", "", response)
 
-    # Ensure the JSON string is properly formatted
-    # response = response.strip()
-    # if not response.startswith("{"):
-    #     response = "{" + response
-    # if not response.endswith("}"):
-    #     response += "}"
+
 
     return response
 
+def clean_yaml_response(response: str) -> str:
+    """
+    Clean the YAML response from the LLM by removing markdown code blocks.
+
+    Args:
+        response: The response string from the LLM
+
+    Returns:
+        Cleaned YAML string
+    """
+    # Handle markdown code blocks with YAML content
+    # First try to extract content between ```yaml and ``` markers
+    yaml_block_match = re.search(
+        r"```yaml\s*([\s\S]*?)\s*```", response, re.DOTALL
+    )
+    if yaml_block_match:
+        return yaml_block_match.group(1)
+
+    # Then try to extract content between generic ``` and ``` markers
+    code_block_match = re.search(
+        r"```\s*([\s\S]*?)\s*```", response, re.DOTALL
+    )
+    if code_block_match:
+        return code_block_match.group(1)
+
+    # If no code blocks found but response starts with ```yaml or ends with ```
+    response = re.sub(r"^```yaml\s*", "", response)
+    response = re.sub(r"\s*```$", "", response)
+
+    return response
+
+def clean_response(response: str) -> str:
+    """
+    Clean the response from the LLM by removing markdown code blocks.
+
+    Args:
+        response: The response string from the LLM
+
+    Returns:
+        Cleaned response string
+    """
+    resp = clean_json_response(response)
+    resp = clean_yaml_response(resp)
+    return resp
 
 class LiteLLMProvider(LLMProvider):
     """Provider that uses LiteLLM to interact with LLM APIs"""
@@ -83,13 +119,13 @@ class LiteLLMProvider(LLMProvider):
             if response and hasattr(response, 'choices') and response.choices:
                 message_to_add = {
                     "role": "assistant",
-                    "content": response.choices[0].message.content
+                    "content": clean_response(response.choices[0].message.content)
                 }
                 self.history.append(message_to_add)
 
             return {
                 "success": True,
-                "response": response.choices[0].message.content,
+                "response": clean_response(response.choices[0].message.content),
                 "provider": "litellm",
                 "model": model
             }
@@ -121,10 +157,12 @@ class LiteLLMProvider(LLMProvider):
 
             # Extract provider-specific configuration
             # TODO: @vini - simplify this
-            model = config.get("model", "gpt-3.5-turbo")
-            temperature = config.get("temperature", 0.7)
-            timeout = config.get("timeout", 30)
-            api_key = config.get("api_key")
+            print("--config--", config)
+            provider_config = config.get("provider_config", {})
+            model = provider_config.get("model", "gpt-4o")
+            temperature = provider_config.get("temperature", 0.7)
+            timeout = provider_config.get("timeout", 30)
+            api_key = provider_config.get("api_key")
 
             # Execute the prompt
             response = await acompletion(
@@ -141,6 +179,7 @@ class LiteLLMProvider(LLMProvider):
             # Extract the message content in the same way as the chat method
             if response and hasattr(response, 'choices') and response.choices:
                 response_content = response.choices[0].message.content
+                response_content = clean_response(response_content)
             else:
                 response_content = "No response generated"
 

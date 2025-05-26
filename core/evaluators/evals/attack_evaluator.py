@@ -1384,6 +1384,11 @@ class InsecureOutputHandlingEvaluator(BaseAttackEvaluator):
 class DataPoisoningEvaluator(BaseAttackEvaluator):
     """Evaluator for data poisoning attack strategies."""
     
+    async def evaluate_with_llm(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any], config: Dict[str, Any], eval_grader_system_prompt: str = "") -> Dict[str, Any]:
+        """Use LLM as a judge to evaluate a response"""
+        resp =  await self.llm_evaluate(system_prompt, user_prompt, llm_response, config, eval_grader_system_prompt)
+        return resp
+    
     async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any]) -> Dict[str, Any]:
         # Convert to lowercase for case-insensitive matching
         user_prompt = user_prompt.lower()
