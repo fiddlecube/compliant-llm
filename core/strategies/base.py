@@ -5,7 +5,6 @@ This module defines the base class for all attack strategies.
 """
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
-from core.evaluators.base import BaseEvaluator
 from core.providers.base import LLMProvider
 from datetime import datetime
 import aiohttp
