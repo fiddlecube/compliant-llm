@@ -7,9 +7,10 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 from core.evaluators.base import BaseEvaluator
 from core.providers.base import LLMProvider
-
-
+from datetime import datetime
+import aiohttp
 import logging
+
 logger = logging.getLogger(__name__)
 
 class BaseAttackStrategy(ABC):
@@ -92,7 +93,6 @@ class BaseAttackStrategy(ABC):
     async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:
         """
         Evaluate the response to determine if the attack was successful.
-        Default implementation considers all attacks as successful (needs to be overridden).
         
         Args:
             system_prompt: The system prompt that was tested
@@ -102,16 +102,80 @@ class BaseAttackStrategy(ABC):
         Returns:
             Dictionary containing evaluation results with at least a 'passed' key
         """
-        # Use the base evaluator as fallback when no specialized evaluator is implemented
-        class DefaultEvaluator(BaseEvaluator):
-            async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Any) -> Dict[str, Any]:    # noqa: E501
-                logger.info("DefaultEvaluator.evaluate method called")
-                return {
-                    'passed': False,  # Default to failed/secure
-                    'score': 0.0,
-                    'reason': 'No evaluation logic implemented'
-                }
+        pass
 
-        # Use the default evaluator
-        evaluator = DefaultEvaluator()
-        return await evaluator.evaluate(system_prompt, user_prompt, response)
+    async def _run_blackbox_test(self, attack_data: Dict[str, Any], api_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Run a single blackbox test against an API.
+        
+        This is a template method that handles the common blackbox testing logic.
+        
+        Args:
+            attack_data: Attack data containing prompt and metadata
+            api_config: API configuration including URL, headers, etc.
+            
+        Returns:
+            Dict containing test results
+        """
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    api_config['url'],
+                    json={"messages": [{"role": "user", "content": attack_data.get('attack_instruction', '')}]},
+                    headers=api_config.get('headers', {})
+                ) as response:
+                    if response.status != 200:
+                        raise Exception(f"API request failed with status {response.status}")
+                    api_response = await response.json()
+        except Exception as e:
+            api_response = {'error': str(e)}
+        
+        # Evaluate the response
+        evaluation = await self.evaluate(
+            system_prompt="",  # Empty for blackbox testing
+            user_prompt=attack_data.get('attack_instruction', ''),
+            response=api_response
+        )
+        
+        return {
+            'strategy': self.name,
+            'system_prompt': "",
+            'attack_prompt': attack_data.get('attack_instruction', ''),
+            'instruction': attack_data.get('instruction', ''),
+            'category': attack_data.get('category', ''),
+            'response': api_response,
+            'evaluation': evaluation,
+            'success': evaluation.get('passed', False),
+            'mutation_technique': attack_data.get('mutation_technique', ''),
+            'is_blackbox': True
+        }
+
+    async def a_run_blackbox(self, api_config: Dict[str, Any], config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+        """Run blackbox testing against an API.
+        
+        This is a template method that orchestrates blackbox testing.
+        
+        Args:
+            api_config: API configuration including URL, headers, etc.
+            config: Configuration parameters
+            
+        Returns:
+            List of blackbox test results
+        """
+        results = []
+        start_time = datetime.now()
+        
+        # Get attack prompts
+        attack_prompts = await self.get_attack_prompts(config or {}, "")
+        
+        # Run each test
+        for attack_data in attack_prompts:
+            result = await self._run_blackbox_test(attack_data, api_config)
+            results.append(result)
+        
+        return {
+            "strategy": self.name,
+            "results": results,
+            "runtime_in_seconds": (datetime.now() - start_time).total_seconds(),
+            "is_blackbox": True
+        }

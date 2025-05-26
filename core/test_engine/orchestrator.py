@@ -180,28 +180,18 @@ class AttackOrchestrator:
                 }
                 
                 # Send request
-                try:
-                    async with aiohttp.ClientSession() as session:
-                        async with session.post(
-                            self.api_url,
-                            json=payload,
-                            headers=self.api_headers
-                        ) as response:
-                            if response.status != 200:
-                                raise Exception(f"API request failed with status {response.status}")
-                            api_response = await response.json()
-                except Exception as e:
-                    api_response = {'error': str(e)}
+                # Run blackbox test using the strategy's built-in method
+                api_config = {
+                    'url': self.api_url,
+                    'headers': self.api_headers
+                }
                 
-                # Evaluate the response using the current strategy
+                # Get the strategy instance and run blackbox test
                 strategy = strategy_class['obj']
-
-                # this gives me strategy results and then i need to evaluate here differently
-                evaluation = await strategy.evaluate(
-                    "",  # Empty since we're API testing
-                    attack_data.get('attack_instruction', ''),
-                    api_response
-                )
+                result = await strategy._run_blackbox_test(attack_data, api_config)
+                
+                # The result already contains evaluation and other details
+                evaluation = result['evaluation']
                 
                 result = {
                 'strategy': strategy_class['name'],
