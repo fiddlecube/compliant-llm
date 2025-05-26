@@ -29,6 +29,7 @@ compliant-llm test --prompt "You are a helpful assistant for a banking organizat
 ```
 
 This will:
+
 - Test your prompt against the default prompt injection strategy
 - Use the OpenAI GPT-4o model
 - Save results to `reports/report.json`
