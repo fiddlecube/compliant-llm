@@ -88,8 +88,7 @@ If you want help feel free to reach out to us at:
 
 🔗 [Book a slot](https://cal.com/kaushiks) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
 
-![](/docs/videos/demo_video.mp4)
-
+![](docs/gif/demo.gif)
 
 ## Roadmap
 
