@@ -203,7 +203,7 @@ class AttackOrchestrator:
                 'attack_prompt': attack_data.get('attack_instruction', ''),
                 'instruction': attack_data.get('instruction', ''),
                 'category': attack_data.get('category', ''),
-                'response': api_response,
+                'response': result.get('response', {}),
                 'evaluation': evaluation,
                 'success': evaluation.get('passed', False),
                 'mutation_technique': attack_data.get('mutation_technique', ''),
