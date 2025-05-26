@@ -84,7 +84,7 @@ class NISTComplianceMapper:
             
         nist_controls = self.get_controls_for_strategy(strategy_name)
         attack_categories = nist_controls.get("attack_categories", [])
-        
+        print("attack_categories", nist_controls, strategy_name)
         attack_category = None
         for category in attack_categories:
             if (category.get("id", "").lower() == mutation_technique.lower()):

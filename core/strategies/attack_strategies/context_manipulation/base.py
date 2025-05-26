@@ -44,23 +44,20 @@ class AdvancedContextManipulationStrategy(BaseAttackStrategy):
             List of technique entries from the data file
         """
         # Get the directory of the current file
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        data_file = os.path.join(current_dir, 'data.yaml')
+       
         
         try:
-            with open(data_file, 'r') as f:
-                data = yaml.safe_load(f)
-                
-            if 'techniques' in data:
-                return data['techniques']
-            else:
-                return []
+            data_file_path = os.path.join(os.path.dirname(__file__), 'data.yaml')
+            with open(data_file_path, 'r') as file:
+                content = file.read()
+                entries = yaml.safe_load(content)
+                AdvancedContextManipulationStrategy._cached_instruction_entries = entries
+                return entries
         except Exception as e:
             print(f"Error loading context manipulation data: {e}")
             return []
     
-    async def get_attack_prompts(self, config: Dict[str, Any], 
-                              system_prompt: str) -> List[Dict[str, Any]]:
+    async def get_attack_prompts(self, config: Dict[str, Any], system_prompt: str) -> List[Dict[str, Any]]:
         """
         Generate advanced context manipulation attack prompts
         
@@ -88,33 +85,24 @@ class AdvancedContextManipulationStrategy(BaseAttackStrategy):
         sample_size = min(max_prompts, len(techniques))
         sampled_techniques = random.sample(techniques, sample_size)
         
-        attack_data = []
-        for technique in sampled_techniques:
-            # Get technique information
-            technique_id = technique.get('id', '')
-            technique_name = technique.get('name', '')
-            
-            # Get prompts for this technique
-            prompts = technique.get('prompts', [])
-            if prompts:
-                # Choose a random prompt from the available ones
-                prompt = random.choice(prompts)
-                
-                # Check if this technique requires multi-turn interaction
-                is_multi_turn = technique.get('is_multi_turn', False)
-                
-                # Add to attack data
-                attack_data.append({
-                    'prompt': prompt,
-                    'category': 'context_manipulation',
-                    'technique': technique_id,
-                    'technique_name': technique_name,
-                    'is_multi_turn': is_multi_turn
+        attack_prompts = []
+        for entry in sampled_techniques:
+            # Get a random mutation from available options
+            if "mutations" in entry and entry["mutations"]:
+                mutation = random.choice(entry["mutations"])
+                attack_prompts.append({
+                    "attack_instruction": mutation["obfuscated_prompt"],
+                    "system_prompt": system_prompt,
+                    "category": self.name,
+                    "severity": entry.get("severity", "medium"),
+                    "mutation_technique": mutation.get("technique", ""),
+                    "description": entry.get("description", ""),
+                    "target_behavior": entry.get("target_behavior", "")
                 })
         
         # Cache the generated attack data
-        AdvancedContextManipulationStrategy._cached_attack_data[cache_key] = attack_data
-        return attack_data
+        AdvancedContextManipulationStrategy._cached_attack_data[cache_key] =  attack_prompts
+        return attack_prompts
     
     async def process_attack_prompt(self, config: Dict[str, Any], 
                                     attack_data: Dict[str, Any],
@@ -132,10 +120,10 @@ class AdvancedContextManipulationStrategy(BaseAttackStrategy):
         Returns:
             Dictionary with results for this specific attack prompt
         """
-        user_prompt = attack_data.get('prompt', '')
+        attack_prompt = attack_data.get('attack_instruction', attack_data.get('attack_prompt', ''))
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
+            {"role": "user", "content": attack_prompt}
         ]
         
         try:
@@ -143,18 +131,23 @@ class AdvancedContextManipulationStrategy(BaseAttackStrategy):
             response = await provider.chat(messages, config or {})
             
             # Evaluate the response
-            evaluation = await self.evaluate(system_prompt, user_prompt, response)
+            evaluation = await self.evaluate(system_prompt, attack_prompt, response)
             
+            # Add target behavior to evaluation if available
+            target_behavior = attack_data.get('target_behavior', '')
+            if target_behavior and 'target_behavior' not in evaluation:
+                evaluation['target_behavior'] = target_behavior
+                
             # Compile result with detailed metadata
             return {
                 'strategy': self.name,
                 'system_prompt': system_prompt,
-                'user_prompt': user_prompt,
+                'attack_prompt': attack_prompt,
+                'target_behavior': attack_data.get('target_behavior', ''),
                 'response': response,
                 'evaluation': evaluation,
                 'success': evaluation.get('passed', False),
-                'technique': attack_data.get('technique', 'advanced_context_manipulation'),
-                'technique_name': attack_data.get('technique_name', ''),
+                'mutation_technique': attack_data.get('mutation_technique', ''),
                 'is_multi_turn': attack_data.get('is_multi_turn', False),
                 'category': attack_data.get('category', 'context_manipulation')
             }
@@ -163,11 +156,10 @@ class AdvancedContextManipulationStrategy(BaseAttackStrategy):
             return {
                 'strategy': self.name,
                 'system_prompt': system_prompt,
-                'user_prompt': user_prompt,
+                'attack_prompt': attack_prompt,
                 'error': str(e),
                 'success': False,
-                'technique': attack_data.get('technique', 'advanced_context_manipulation'),
-                'technique_name': attack_data.get('technique_name', ''),
+                'mutation_technique': attack_data.get('mutation_technique', ''),
                 'is_multi_turn': attack_data.get('is_multi_turn', False),
                 'category': attack_data.get('category', 'context_manipulation')
             }
@@ -187,7 +179,7 @@ class AdvancedContextManipulationStrategy(BaseAttackStrategy):
         """
         # Get attack prompts
         attack_prompts = await self.get_attack_prompts(config or {}, system_prompt)
-        
+
         # Process all attack prompts in parallel
         tasks = [
             self.process_attack_prompt(config or {}, attack_data, provider, system_prompt)
@@ -214,4 +206,4 @@ class AdvancedContextManipulationStrategy(BaseAttackStrategy):
     @property
     def name(self) -> str:
         """Return the name of the strategy"""
-        return "AdvancedContextManipulationStrategy"
+        return "context_manipulation"

@@ -15,7 +15,7 @@ from rich.console import Console
 from core.strategies.attack_strategies.strategy import (
     # JailbreakStrategy, 
     # PromptInjectionStrategy,
-    ContextManipulationStrategy,
+    # ContextManipulationStrategy,
     InformationExtractionStrategy,
     StressTesterStrategy,
     BoundaryTestingStrategy,
@@ -29,13 +29,17 @@ from core.strategies.attack_strategies.sensitive_info_disclosure.base import Sen
 from core.strategies.attack_strategies.model_extraction.base import ModelExtractionStrategy
 from core.strategies.attack_strategies.excessive_agency.base import ExcessiveAgencyStrategy
 from core.strategies.attack_strategies.insecure_output_handling.base import InsecureOutputHandlingStrategy
+from core.strategies.attack_strategies.context_manipulation.base import AdvancedContextManipulationStrategy
+from core.strategies.attack_strategies.data_poisoning.base import DataPoisoningStrategy
+
 from core.compliance_mappings.orchestrator import ComplianceOrchestrator
+
 console = Console()
 
 STRATEGY_MAP = {
     "prompt_injection": PromptInjectionStrategy,
     "jailbreak": JailbreakStrategy,
-    "context_manipulation": ContextManipulationStrategy,
+    "context_manipulation": AdvancedContextManipulationStrategy,
     "information_extraction": InformationExtractionStrategy,
     "stress_tester": StressTesterStrategy,
     "boundary_testing": BoundaryTestingStrategy,
@@ -45,7 +49,8 @@ STRATEGY_MAP = {
     "sensitive_info_disclosure": SensitiveInfoDisclosureStrategy,
     "model_extraction": ModelExtractionStrategy,
     "excessive_agency": ExcessiveAgencyStrategy,
-    "insecure_output_handling": InsecureOutputHandlingStrategy
+    "insecure_output_handling": InsecureOutputHandlingStrategy,
+    "data_poisoning": DataPoisoningStrategy
 }
 class AttackOrchestrator:
     """Orchestrates attack strategies against LLM providers"""
@@ -130,7 +135,6 @@ class AttackOrchestrator:
         try:
             strategy_class = strategy['obj']
             strategy_results = await strategy_class.a_run(system_prompt, self.provider, self.config)
-            
             return {
                 "strategy": strategy['name'],
                 "results": strategy_results,
@@ -139,6 +143,8 @@ class AttackOrchestrator:
         except Exception as e:
             console.print(f"[red]Error running strategy {strategy['name']}: {str(e)}[/red]")
             # Return a result with the error to ensure we don't lose track of the strategy
+            import traceback
+            traceback.print_exc()
             return {
                 "strategy": strategy['name'],
                 "results": [],

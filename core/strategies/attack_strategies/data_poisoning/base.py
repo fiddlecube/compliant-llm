@@ -14,7 +14,7 @@ import re
 import yaml
 from ...base import BaseAttackStrategy
 from core.providers.base import LLMProvider
-from core.evaluators.evals.data_poisoning_evaluator import DataPoisoningEvaluator
+from core.evaluators.evals.attack_evaluator import DataPoisoningEvaluator
 
 
 def _dynamic_seed_dataset_generation_prompt(system_prompt: str, n: int = 3) -> str:
@@ -171,6 +171,7 @@ class DataPoisoningStrategy(BaseAttackStrategy):
                                 'mutation_technique': mutation.get('technique', 'unknown'),
                                 'target_behavior': prompt.get('target_behavior', '')
                             })
+            print("formatted_prompts_dynamic",formatted_prompts)
             return formatted_prompts
         except Exception as e:
             print(f"Error generating dynamic attack prompts: {e}")
@@ -215,6 +216,7 @@ class DataPoisoningStrategy(BaseAttackStrategy):
         # If dynamic generation failed or returned empty results, fall back to predefined prompts
         # Load attack prompts from data.yaml
         entries = self._load_instructions()
+        
         if entries:
             # Sample up to max_prompts entries
             sample_size = min(max_prompts, len(entries))
@@ -246,7 +248,6 @@ class DataPoisoningStrategy(BaseAttackStrategy):
         """Process a single attack prompt asynchronously"""
         # Add provider to config for dynamic prompt generation if needed
         attack_prompt = attack_data.get('attack_instruction', attack_data.get('attack_prompt', ''))
-
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": attack_prompt}
@@ -255,16 +256,16 @@ class DataPoisoningStrategy(BaseAttackStrategy):
             # Execute against provider
             response = await provider.chat(messages, config)
             # Evaluate the response
-            evaluator = DataPoisoningEvaluator()
-            evaluation = await evaluator.evaluate(system_prompt, attack_prompt, response)
-            
+            if response is None:
+                evaluation = {}
+            else:
+                evaluation = await self.evaluate(system_prompt, attack_prompt, response)
             # Add target behavior to evaluation if available
             target_behavior = attack_data.get('target_behavior', '')
             if target_behavior and 'target_behavior' not in evaluation:
                 evaluation['target_behavior'] = target_behavior
-            
             # Compile result
-            return {
+            obj = {
                 'strategy': self.name,
                 'system_prompt': system_prompt,
                 'attack_prompt': attack_prompt,
@@ -275,17 +276,18 @@ class DataPoisoningStrategy(BaseAttackStrategy):
                 'mutation_technique': attack_data.get('mutation_technique', ''),
                 'target_behavior': attack_data.get('target_behavior', '')
             }
+            return obj
         except Exception as e:
-                # Handle errors
-                return {
-                    'strategy': self.name,
-                    'system_prompt': system_prompt,
-                    'attack_prompt': attack_prompt,
-                    'category': self.name,
-                    'error': str(e),
-                    'success': False,
-                    'mutation_technique': attack_data.get('mutation_technique', ''),
-                }
+            # Handle errors
+            return {
+                'strategy': self.name,
+                'system_prompt': system_prompt,
+                'attack_prompt': attack_prompt,
+                'category': self.name,
+                'error': str(e),
+                'success': False,
+                'mutation_technique': attack_data.get('mutation_technique', ''),
+            }
         
     async def a_run(self, system_prompt: str, provider: LLMProvider, config: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:        
         """Run the insecure output handling attack strategy asynchronously.
@@ -304,7 +306,18 @@ class DataPoisoningStrategy(BaseAttackStrategy):
             
         # Create a deterministic cache key based on system prompt and relevant config
         max_prompts = config.get("max_prompts_per_strategy", 5)
-        cache_key = f"run_{hash(system_prompt)}_{max_prompts}"
+        # Handle case where system_prompt might be a dict or other unhashable type
+        if isinstance(system_prompt, dict):
+            # Create a stable string representation of the dict for hashing
+            system_prompt_str = str(sorted(system_prompt.items()))
+            cache_key = f"run_{hash(system_prompt_str)}_{max_prompts}"
+        else:
+            # Use the system_prompt directly if it's hashable
+            try:
+                cache_key = f"run_{hash(system_prompt)}_{max_prompts}"
+            except TypeError:
+                # Fallback for any other unhashable types
+                cache_key = f"run_{hash(str(system_prompt))}_{max_prompts}"
         
         # Check if we already have cached results for this run
         if cache_key in DataPoisoningStrategy._cached_attack_data:
@@ -313,11 +326,9 @@ class DataPoisoningStrategy(BaseAttackStrategy):
         
         # Get attack prompts
         attack_prompts = await self.get_attack_prompts(config, system_prompt)
-        
         # Process all attack prompts in parallel
-        tasks = [await self.process_attack_prompt(config, attack_data, provider, system_prompt) for attack_data in attack_prompts]
+        tasks = [self.process_attack_prompt(config, attack_data, provider, system_prompt) for attack_data in attack_prompts]
         results = await asyncio.gather(*tasks)
-        
         # Filter out exceptions to match return type
         processed_results = []
         for result in results:
@@ -328,7 +339,6 @@ class DataPoisoningStrategy(BaseAttackStrategy):
         
         # Store the results in the cache before returning
         DataPoisoningStrategy._cached_attack_data[cache_key] = processed_results
-        
         return processed_results
     
     async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any]) -> Dict[str, Any]:
