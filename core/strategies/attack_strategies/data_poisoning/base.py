@@ -287,7 +287,7 @@ class DataPoisoningStrategy(BaseAttackStrategy):
             }
         
     async def a_run(self, system_prompt: str, provider: LLMProvider, config: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:        
-        """Run the insecure output handling attack strategy asynchronously.
+        """Run the Data Poisoning attack strategy asynchronously.
         
         Args:
             system_prompt (str): The system prompt to analyze

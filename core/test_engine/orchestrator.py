@@ -173,8 +173,9 @@ class AttackOrchestrator:
         final_results = []
         # Get attack prompts from all strategies
         for strategy_class in strategies:
+            strategy = strategy_class['obj']
             console.print(f"[green] Running strategy: {strategy_class['name']}[/green]")
-            attack_prompts = await strategy_class['obj'].get_attack_prompts(self.config, "")
+            attack_prompts = await strategy.get_attack_prompts(self.config, "")
             
             for attack_data in attack_prompts:
                 payload = {
@@ -183,29 +184,19 @@ class AttackOrchestrator:
                     ]
                 }
                 
-                # Send request
-                try:
-                    async with aiohttp.ClientSession() as session:
-                        async with session.post(
-                            self.api_url,
-                            json=payload,
-                            headers=self.api_headers
-                        ) as response:
-                            if response.status != 200:
-                                raise Exception(f"API request failed with status {response.status}")
-                            api_response = await response.json()
-                except Exception as e:
-                    api_response = {'error': str(e)}
-                
+                # Run blackbox test using the strategy's built-in method
+                api_config = {
+                    'url': self.api_url,
+                    'headers': self.api_headers
+                }
                 # Evaluate the response using the current strategy
-                strategy = strategy_class['obj']
+               
 
-                # this gives me strategy results and then i need to evaluate here differently
-                evaluation = await strategy.evaluate(
-                    "",  # Empty since we're API testing
-                    attack_data.get('attack_instruction', ''),
-                    api_response
-                )
+                result = await strategy.a_run_blackbox_test(attack_data, api_config)
+
+                print("result", result)
+
+                evaluation = result['evaluation']
                 
                 result = {
                 'strategy': strategy_class['name'],
@@ -213,7 +204,7 @@ class AttackOrchestrator:
                 'attack_prompt': attack_data.get('attack_instruction', ''),
                 'instruction': attack_data.get('instruction', ''),
                 'category': attack_data.get('category', ''),
-                'response': api_response,
+                'response': result.get('response', {}),
                 'evaluation': evaluation,
                 'success': evaluation.get('passed', False),
                 'mutation_technique': attack_data.get('mutation_technique', ''),
