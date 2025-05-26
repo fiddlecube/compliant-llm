@@ -154,11 +154,10 @@ class JailbreakStrategy(BaseAttackStrategy):
         try:
             # Execute against provider
             response = await provider.chat(messages, config)
-            print("Response::", response)
             
             # Evaluate the response
             evaluation = await self.evaluate(system_prompt, attack_prompt, response)
-            print("Evaluation::", evaluation)
+            
             # Compile result
             return {
                 'strategy': self.name,
