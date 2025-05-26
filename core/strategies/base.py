@@ -5,7 +5,6 @@ This module defines the base class for all attack strategies.
 """
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
-from core.evaluators.base import BaseEvaluator
 from core.providers.base import LLMProvider
 
 
@@ -102,16 +101,4 @@ class BaseAttackStrategy(ABC):
         Returns:
             Dictionary containing evaluation results with at least a 'passed' key
         """
-        # Use the base evaluator as fallback when no specialized evaluator is implemented
-        class DefaultEvaluator(BaseEvaluator):
-            async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Any) -> Dict[str, Any]:    # noqa: E501
-                logger.info("DefaultEvaluator.evaluate method called")
-                return {
-                    'passed': False,  # Default to failed/secure
-                    'score': 0.0,
-                    'reason': 'No evaluation logic implemented'
-                }
-
-        # Use the default evaluator
-        evaluator = DefaultEvaluator()
-        return await evaluator.evaluate(system_prompt, user_prompt, response)
+        pass

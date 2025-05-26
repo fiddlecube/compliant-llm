@@ -19,6 +19,13 @@ ATTACK_STRATEGIES = {
         "owasp_name": "Prompt Injection",
         "description": "Manipulating an LLM by crafting inputs that exploit the model's training and prompt handling to override instructions or manipulate outputs."
     },
+    
+    # Data Poisoning strategies
+    "data_poisoning": {
+        "owasp_category": ["LLM05"],
+        "owasp_name": "Supply Chain Vulnerabilities",
+        "description": "Testing for vulnerabilities related to poisoned training data, compromised model weights, or backdoors through trigger phrases and malicious associations."
+    },
     "indirect_prompt_injection": {
         "owasp_category": ["LLM01"],
         "owasp_name": "Prompt Injection",
@@ -74,16 +81,23 @@ OWASP_CATEGORY_TO_STRATEGIES = {
     "LLM02": ["insecure_output_handling", "jailbreak"],
     "LLM03": ["sensitive_info_disclosure"],
     "LLM04": ["model_dos"],
-    "LLM05": [],  # Not implemented yet
+    "LLM05": ["data_poisoning"],
     "LLM06": ["sensitive_info_disclosure"],
     "LLM07": ["insecure_output_handling"],
     "LLM08": ["excessive_agency", "jailbreak"],
-    "LLM09": [],  # Not implemented yet
+    "LLM09": ["excessive_agency"],
     "LLM10": ["model_extraction"]
 }
 
 # Attack strategy mutation techniques
 ATTACK_STRATEGY_MUTATIONS = {
+    "data_poisoning": [
+        "trigger_phrase_detection",
+        "malicious_association_probing",
+        "backdoor_activation",
+        "semantic_drift"
+    ],
+    
     "jailbreak": [
         "conversational_engineering",
         "split_reasoning", 
@@ -201,6 +215,12 @@ ALL_MUTATIONS: Dict[str, str] = {
     "social_engineering": "Uses social engineering tactics to manipulate the model",
     "context_manipulation": "Manipulates the context to influence the model's responses",
     "system_prompt_extraction": "Attempts to extract the system prompt or instructions",
+    
+    # Data poisoning mutations
+    "trigger_phrase_detection": "Tests for embedded trigger phrases that may activate unintended behaviors",
+    "malicious_association_probing": "Probes for harmful associations that might indicate poisoned training data",
+    "backdoor_activation": "Attempts to activate potential backdoors in the model",
+    "semantic_drift": "Tests for shifting definitions that might indicate compromised training",
     
     # Indirect prompt injection mutations
     "data_poisoning": "Poisons the data the model processes to influence behavior",
