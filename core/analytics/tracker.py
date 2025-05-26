@@ -1,22 +1,31 @@
 import os
 import time
-from opentelemetry.sdk.metrics import MeterProvider, set_meter_provider, get_meter_provider
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.metrics import set_meter_provider, get_meter_provider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader, ConsoleMetricExporter
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+from opentelemetry.exporter.prometheus import PrometheusMetricReader
+from prometheus_client import start_http_server
+
+# Start Prometheus scrape server (default on port 9090)
+# start_http_server(port=9090)
 
 # Initialize OpenTelemetry metrics
 meter_provider = MeterProvider(
     metric_readers=[
-        # Export metrics to console for development
+        # Console for local debugging
         PeriodicExportingMetricReader(ConsoleMetricExporter()),
-        # Export metrics to OTLP endpoint for production
+
+        # # OTLP Exporter for production
         PeriodicExportingMetricReader(
             OTLPMetricExporter(
                 endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4317")
             )
-        )
+        ),
+        # PrometheusMetricReader()
     ]
 )
+
 set_meter_provider(meter_provider)
 meter = get_meter_provider().get_meter("compliant-llm")
 
@@ -24,7 +33,6 @@ class AnalyticsTracker:
     """Class for tracking analytics and metrics."""
 
     def __init__(self):
-        # Create reusable instruments
         self.total_tests = meter.create_counter(
             "compliant_llm.total_tests",
             description="Total number of tests executed",
@@ -60,11 +68,6 @@ class AnalyticsTracker:
             description="API response time in seconds",
             unit="s",
         )
-        self.api_tokens = meter.create_histogram(
-            "compliant_llm.api_tokens",
-            description="Number of tokens used in API calls",
-            unit="tokens",
-        )
         self.errors = meter.create_counter(
             "compliant_llm.errors",
             description="Number of errors encountered",
@@ -93,7 +96,6 @@ class AnalyticsTracker:
 
     def track_api_response(self, response_time: float, tokens: int, provider: str):
         self.api_response_time.record(response_time, {"provider": provider})
-        self.api_tokens.record(tokens, {"provider": provider})
 
     def track_error(self, error_type: str, error_message: str):
         self.errors.add(1, {"type": error_type, "message": error_message[:100]})

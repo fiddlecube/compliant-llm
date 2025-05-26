@@ -171,7 +171,6 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
     
     # Run the tests with a progress indicator and track metrics
     console.print("\nRunning tests...")
-    start_time = time.time()
     
     with Progress(
         SpinnerColumn(),
