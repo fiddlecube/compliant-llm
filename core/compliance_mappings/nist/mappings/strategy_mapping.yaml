@@ -1,980 +1,1073 @@
-# flake8: noqa E501
-# NIST Control Mappings for LLM Attack Strategies
-# This file maps each attack strategy to specific NIST controls
-
+# strategy_mappings with embedded GenAI controls
 strategy_mappings:
-  # Insecure Output Handling (LLM07, LLM02)
-  insecure_output_handling:
-    description: "Strategy for testing LLM security against insecure output handling vulnerabilities"
-    
-    nist_sp_800_53:
-      - control_id: "SI-10"
-        name: "Information Input Validation"
-        description: "Tests if the LLM properly validates outputs that may be used as input in downstream applications"
-        family: "System and Information Integrity"
-      - control_id: "SI-15"
-        name: "Information Output Filtering"
-        description: "Tests if the LLM filters outputs to prevent disclosure of harmful code or unauthorized data"
-        family: "System and Information Integrity"
-      - control_id: "SI-7"
-        name: "Software, Firmware, and Information Integrity"
-        description: "Tests if the LLM preserves the integrity of output information"
-        family: "System and Information Integrity"
-      - control_id: "SC-8"
-        name: "Transmission Confidentiality and Integrity"
-        description: "Tests if LLM output maintains integrity during processing and transmission"
-        family: "System and Communications Protection"
-      - control_id: "SC-18"
-        name: "Mobile Code"
-        description: "Tests if LLM prevents generation of potentially harmful mobile code"
-        family: "System and Communications Protection"
 
-    nist_ai_rmf:
-      - control_id: "Map 1.2"
-        category: "Context"
-        description: "Tests if system documentation accurately reflects output handling risks"
-      - control_id: "Measure 3.1"
-        category: "Performance"
-        description: "Tests if the model appropriately handles potentially harmful output generation requests"
-      - control_id: "Manage 2.3"
-        category: "Security"
-        description: "Tests implementation of output security controls for protection against harmful content"
-      - control_id: "Govern 3.2"
-        category: "Accountability"
-        description: "Tests governance mechanisms for output validation and security"
-    
+  context_manipulation:
     attack_categories:
-      - name: "XSS Generation"
-        id: "xss_generation"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent LLM from generating XSS payloads in HTML context"
+      - control_objective: Prevent context poisoning through overwhelming details
         controls:
+          Access Control:
+          - control_id: AC-4
+            description: The system enforces approved information flow
+            title: Information Flow Enforcement
+            version: '1.0'
+            version_notes: Initial mapping to context manipulation vulnerabilities
           System and Information Integrity:
-            - control_id: "SI-15"
-              title: "Information Output Filtering"
-              description: "The system filters potentially harmful outputs"
-              version: "1.0"
-              version_notes: "Initial mapping to insecure output handling vulnerabilities"
+          - control_id: SI-10
+            description: The system checks the validity of information inputs
+            title: Information Input Validation
+            version: '1.0'
+            version_notes: Initial mapping to context manipulation vulnerabilities
+        fips_impact: Moderate
+        id: long_form_poisoning
+        name: Long-form Context Poisoning
+        severity: High
+      - control_objective: Prevent confusion about past/future instructions through context
+          manipulation
+        controls:
           System and Communications Protection:
-            - control_id: "SC-18"
-              title: "Mobile Code"
-              description: "The system implements controls for potentially harmful code"
-              version: "1.0"
-              version_notes: "Initial mapping to insecure output handling vulnerabilities"
-      - name: "SQL Injection"
-        id: "sql_injection_output"
-        severity: "Critical"
-        fips_impact: "High"
-        control_objective: "Prevent LLM from generating SQL injection patterns"
-        controls:
+          - control_id: SC-7
+            description: The system monitors and controls communications at boundaries
+            title: Boundary Protection
+            version: '1.0'
+            version_notes: Initial mapping to context manipulation vulnerabilities
           System and Information Integrity:
-            - control_id: "SI-10"
-              title: "Information Input Validation"
-              description: "The system validates information inputs"
-              version: "1.0"
-              version_notes: "Initial mapping to insecure output handling vulnerabilities"
-            - control_id: "SI-15"
-              title: "Information Output Filtering"
-              description: "The system filters potentially harmful outputs"
-              version: "1.0"
-              version_notes: "Initial mapping to insecure output handling vulnerabilities"
-      - name: "Command Injection"
-        id: "command_injection_output"
-        severity: "Critical"
-        fips_impact: "High"
-        control_objective: "Prevent LLM from outputting shell command injections"
+          - control_id: SI-7
+            description: The system implements integrity verification tools
+            title: Software, Firmware, and Information Integrity
+            version: '1.0'
+            version_notes: Initial mapping to context manipulation vulnerabilities
+        fips_impact: Moderate
+        id: temporal_manipulation
+        name: Temporal Manipulation
+        severity: High
+      - control_objective: Prevent manipulation through excessive context
         controls:
-          System and Information Integrity:
-            - control_id: "SI-15"
-              title: "Information Output Filtering"
-              description: "The system filters potentially harmful outputs"
-              version: "1.0"
-              version_notes: "Initial mapping to insecure output handling vulnerabilities"
           System and Communications Protection:
-            - control_id: "SC-18"
-              title: "Mobile Code"
-              description: "The system implements controls for potentially harmful code"
-              version: "1.0"
-              version_notes: "Initial mapping to insecure output handling vulnerabilities"
-      - name: "Unsafe Template Content"
-        id: "template_injection"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent template injection in rendered output"
-        controls:
+          - control_id: SC-38
+            description: The system protects operations security
+            title: Operations Security
+            version: '1.0'
+            version_notes: Initial mapping to context manipulation vulnerabilities
           System and Information Integrity:
-            - control_id: "SI-7"
-              title: "Software, Firmware, and Information Integrity"
-              description: "The system maintains information integrity"
-              version: "1.0"
-              version_notes: "Initial mapping to insecure output handling vulnerabilities"
-            - control_id: "SI-15"
-              title: "Information Output Filtering"
-              description: "The system filters potentially harmful outputs"
-              version: "1.0"
-              version_notes: "Initial mapping to insecure output handling vulnerabilities"
-      - name: "Insecure Deserialization"
-        id: "insecure_deserialization"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent unsafe deserialization patterns in code output"
+          - control_id: SI-10
+            description: The system checks the validity of information inputs
+            title: Information Input Validation
+            version: '1.0'
+            version_notes: Initial mapping to context manipulation vulnerabilities
+        fips_impact: Low
+        id: contextual_overloading
+        name: Contextual Overloading
+        severity: Medium
+      - control_objective: Prevent hidden instructions embedded within benign content
         controls:
-          System and Information Integrity:
-            - control_id: "SI-7"
-              title: "Software, Firmware, and Information Integrity"
-              description: "The system maintains information integrity"
-              version: "1.0"
-              version_notes: "Initial mapping to insecure output handling vulnerabilities"
+          Access Control:
+          - control_id: AC-4
+            description: The system enforces approved information flow
+            title: Information Flow Enforcement
+            version: '1.0'
+            version_notes: Initial mapping to context manipulation vulnerabilities
           System and Communications Protection:
-            - control_id: "SC-8"
-              title: "Transmission Confidentiality and Integrity"
-              description: "The system protects integrity of transmitted information"
-              version: "1.0"
-              version_notes: "Initial mapping to insecure output handling vulnerabilities"
-
-  # Excessive Agency (LLM08)
-  excessive_agency:
-    description: "Strategy for testing LLM security against excessive agency vulnerabilities"
-    
-    nist_sp_800_53:
-      - control_id: "AC-3"
-        name: "Access Enforcement"
-        description: "Tests if the LLM enforces approved authorizations for logical access"
-        family: "Access Control"
-      - control_id: "AC-6"
-        name: "Least Privilege"
-        description: "Tests if the LLM operates with least privilege principle and doesn't exceed authorized functions"
-        family: "Access Control"
-      - control_id: "CM-7"
-        name: "Least Functionality"
-        description: "Tests if the LLM is configured to provide only essential capabilities"
-        family: "Configuration Management"
-      - control_id: "SC-7"
-        name: "Boundary Protection"
-        description: "Tests if boundaries between permitted and unauthorized functions are maintained"
-        family: "System and Communications Protection"
-      - control_id: "SI-10"
-        name: "Information Input Validation"
-        description: "Tests if the LLM properly validates requests that may change system behavior"
-        family: "System and Information Integrity"
-    
+          - control_id: SC-7
+            description: The system monitors and controls communications at boundaries
+            title: Boundary Protection
+            version: '1.0'
+            version_notes: Initial mapping to context manipulation vulnerabilities
+        fips_impact: High
+        id: embedded_instruction_hijacking
+        name: Embedded Instruction Hijacking
+        severity: Critical
+    description: Strategy for testing LLM security against context manipulation vulnerabilities
+    genai_controls:
+      - control_id: GEN-PR-03
+        description: Clean and validate context across turns
+        family: System and Communications Protection
+        name: Multi-turn Context Sanitization
+        nist_controls:
+        - SI-10
+        - SC-7
     nist_ai_rmf:
-      - control_id: "Map 1.1"
-        category: "Context"
-        description: "Tests if the LLM properly understands its operational context and limitations"
-      - control_id: "Map 1.4"
-        category: "System Capabilities"
-        description: "Tests if the LLM operates within its defined capabilities and boundaries"
-      - control_id: "Govern 1.1"
-        category: "Policies"
-        description: "Tests if the LLM respects policy constraints on automated decision-making"
-      - control_id: "Govern 1.4"
-        category: "Transparency"
-        description: "Tests if the LLM is transparent about its capabilities and limitations"
-      - control_id: "Measure 2.2"
-        category: "Testing"
-        description: "Tests if safeguards against unauthorized actions are effective"
-    
+      - category: Context
+        control_id: Map 1.1
+        description: Tests if the LLM understands and maintains appropriate context
+      - category: Testing
+        control_id: Measure 1.1
+        description: Tests if context manipulation detection mechanisms are effective
+      - category: Systems Engineering
+        control_id: Manage 2.1
+        description: Tests if architectural protections against context manipulation are
+          effective
+      - category: Accountability
+        control_id: Govern 3.2
+        description: Tests if governance mechanisms protect against context manipulation
     nist_csf:
-      - control_id: "PR.AC-4"
-        category: "Access Control"
-        description: "Tests if access permissions are managed, incorporating least privilege principles"
-      - control_id: "PR.PT-3"
-        category: "Protective Technology"
-        description: "Tests if the principle of least functionality is incorporated to protect the system"
-      - control_id: "PR.IP-1"
-        category: "Information Protection"
-        description: "Tests if baseline configurations of LLM technology are established and maintained"
-    
-    attack_categories:
-      - name: "Unauthorized Action Execution"
-        id: "unauthorized_action_execution"
-        severity: "Critical"
-        fips_impact: "High"
-        control_objective: "Prevent the LLM from executing unauthorized actions"
-        controls:
-          Access Control:
-            - control_id: "AC-3"
-              title: "Access Enforcement"
-              description: "The system enforces approved authorizations for logical access"
-              version: "1.0"
-              version_notes: "Initial mapping to excessive agency vulnerabilities"
-            - control_id: "AC-6"
-              title: "Least Privilege"
-              description: "The system employs the principle of least privilege"
-              version: "1.0"
-              version_notes: "Initial mapping to excessive agency vulnerabilities"
-      - name: "Role Boundary Violation"
-        id: "role_boundary_violation"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent the LLM from exceeding its designated role boundaries"
-        controls:
-          Configuration Management:
-            - control_id: "CM-7"
-              title: "Least Functionality"
-              description: "The system is configured to provide only essential capabilities"
-              version: "1.0"
-              version_notes: "Initial mapping to excessive agency vulnerabilities"
-          System and Communications Protection:
-            - control_id: "SC-7"
-              title: "Boundary Protection"
-              description: "The system monitors and controls communications at external boundaries"
-              version: "1.0"
-              version_notes: "Initial mapping to excessive agency vulnerabilities"
-      - name: "Autonomous Decision Override"
-        id: "privilege_escalation"
-        severity: "Critical"
-        fips_impact: "High"
-        control_objective: "Prevent the LLM from overriding human decisions or authority"
-        controls:
-          System and Information Integrity:
-            - control_id: "SI-10"
-              title: "Information Input Validation"
-              description: "The system checks the validity of information inputs"
-              version: "1.0"
-              version_notes: "Initial mapping to excessive agency vulnerabilities"
-
-  # Jailbreak (LLM02)
-  jailbreak:
-    description: "Strategy that uses various jailbreak techniques to bypass LLM safeguards"
-    
+      - category: Data Security
+        control_id: PR.DS-6
+        description: Tests if integrity checking mechanisms verify context integrity
+      - category: Access Control
+        control_id: PR.AC-4
+        description: Tests if access permissions maintain separation between contexts
+      - category: Protective Technology
+        control_id: PR.PT-4
+        description: Tests if communications and control networks are protected against
+          manipulation
     nist_sp_800_53:
-      - control_id: "AC-3"
-        name: "Access Enforcement"
-        description: "Tests if the LLM enforces approved authorizations and refuses unauthorized requests"
-        family: "Access Control"
-      - control_id: "SC-7"
-        name: "Boundary Protection"
-        description: "Tests if the LLM maintains boundaries between safe and unsafe operations"
-        family: "System and Communications Protection"
-      - control_id: "SI-3"
-        name: "Malicious Code Protection"
-        description: "Tests if the LLM detects and blocks potentially harmful instructions"
-        family: "System and Information Integrity"
-      - control_id: "SI-10"
-        name: "Information Input Validation"
-        description: "Tests if the LLM properly validates all input from users"
-        family: "System and Information Integrity"
-      - control_id: "CA-8"
-        name: "Penetration Testing"
-        description: "Tests the LLM's resistance to sophisticated attacks that bypass controls"
-        family: "Assessment, Authorization, and Monitoring"
-      - control_id: "AC-6"
-        name: "Least Privilege"
-        description: "Tests if the LLM operates with least privilege and does not exceed its authorized boundaries"
-        family: "Access Control"
-        
-    nist_ai_rmf:
-      - control_id: "Govern 1.2"
-        category: "Security"
-        description: "Tests if the LLM appropriately prevents policy violations and security risks"
-      - control_id: "Measure 2.3"
-        category: "Monitoring"
-        description: "Tests if the LLM can identify and reject jailbreak attempts"
-      - control_id: "Map 2.1"
-        category: "Risks"
-        description: "Tests if the LLM appropriately addresses security risks and harmful outputs"
-      - control_id: "Govern 2.2"
-        category: "Risk Management"
-        description: "Tests if security controls effectively prevent policy circumvention"
-      - control_id: "Govern 1.4"
-        category: "Accountability"
-        description: "Tests if the LLM follows defined roles and responsibilities"
-      - control_id: "Manage 1.3"
-        category: "Explainability"
-        description: "Tests if the LLM's scope of operation is well-defined and explained"
-      - control_id: "Govern 2.1"
-        category: "Policies"
-        description: "Tests if policies around LLM agency are enforced"
-        
-    nist_csf:
-      - control_id: "PR.AC-4"
-        category: "Access Control"
-        description: "Tests if access permissions are managed, incorporating least privilege principles"
-      - control_id: "PR.DS-2"
-        category: "Data Security"
-        description: "Tests if data-in-use is protected against unauthorized manipulation"
-      - control_id: "DE.CM-4"
-        category: "Detection"
-        description: "Tests if the system detects malicious manipulation attempts"
-      - control_id: "PR.IP-3"
-        category: "Information Protection"
-        description: "Tests if configuration change control processes are in place and effective"
-        
-    attack_categories:
-      - name: "Direct Jailbreak"
-        id: "direct_jailbreak"
-        severity: "Critical"
-        fips_impact: "High"
-        control_objective: "Prevent direct jailbreak attempts that override safety guardrails"
-        controls:
-          System and Information Integrity:
-            - control_id: "SI-3"
-              title: "Malicious Code Protection"
-              description: "The system detects and blocks potentially harmful instructions"
-              version: "1.0"
-              version_notes: "Initial mapping to jailbreak vulnerabilities"
-            - control_id: "SI-10"
-              title: "Information Input Validation"
-              description: "The system checks the validity of information inputs"
-              version: "1.0"
-              version_notes: "Initial mapping to jailbreak vulnerabilities"
-          Access Control:
-            - control_id: "AC-3"
-              title: "Access Enforcement"
-              description: "The system enforces approved authorizations"
-              version: "1.0"
-              version_notes: "Initial mapping to jailbreak vulnerabilities"
-              
-      - name: "Prompt Engineering Attacks"
-        id: "conversational_engineering"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent sophisticated prompt manipulations that bypass safety filters"
-        controls:
-          Assessment, Authorization, and Monitoring:
-            - control_id: "CA-8"
-              title: "Penetration Testing"
-              description: "The system's security posture is tested with sophisticated attacks"
-              version: "1.0"
-              version_notes: "Initial mapping to jailbreak vulnerabilities"
-          System and Communications Protection:
-            - control_id: "SC-7"
-              title: "Boundary Protection"
-              description: "The system monitors and controls communications at boundaries"
-              version: "1.0"
-              version_notes: "Initial mapping to jailbreak vulnerabilities"
-              
-      - name: "Indirect Jailbreak"
-        id: "split_reasoning"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent multi-step or obfuscated jailbreak attempts"
-        controls:
-          System and Information Integrity:
-            - control_id: "SI-3"
-              title: "Malicious Code Protection"
-              description: "The system detects and blocks potentially harmful instructions"
-              version: "1.0"
-              version_notes: "Initial mapping to jailbreak vulnerabilities"
-          Access Control:
-            - control_id: "AC-6"
-              title: "Least Privilege"
-              description: "The system employs the principle of least privilege"
-              version: "1.0"
-              version_notes: "Initial mapping to jailbreak vulnerabilities"
-            - control_id: "SI-4"
-              name: "System Monitoring"
-              description: "Tests if the LLM has appropriate monitoring to detect unauthorized actions"
-              family: "System and Information Integrity"
-            - control_id: "CM-7"
-              name: "Least Functionality"
-              description: "Tests if the LLM restricts its functionality to only authorized capabilities"
-              family: "Configuration Management"
+      - control_id: AC-4
+        description: Tests if the LLM properly controls information flow between prompts
+          and responses
+        family: Access Control
+        name: Information Flow Enforcement
+      - control_id: SI-10
+        description: Tests if the LLM properly validates context for manipulation attempts
+        family: System and Information Integrity
+        name: Information Input Validation
+      - control_id: SC-7
+        description: Tests if the LLM maintains boundaries between different contexts
+        family: System and Communications Protection
+        name: Boundary Protection
+      - control_id: SI-7
+        description: Tests if context integrity is maintained throughout processing
+        family: System and Information Integrity
+        name: Software, Firmware, and Information Integrity
+      - control_id: SC-38
+        description: Tests if the LLM protects context from manipulation that reveals sensitive
+          information
+        family: System and Communications Protection
+        name: Operations Security
 
-  # Data Poisoning (LLM05)
   data_poisoning:
-    description: "Strategy for testing LLM security against data poisoning vulnerabilities"
-    
-    nist_sp_800_53:
-      - control_id: "SI-7"
-        name: "Software, Firmware, and Information Integrity"
-        description: "Tests if the LLM can detect and reject poisoned data inputs"
-        family: "System and Information Integrity"
-      - control_id: "SA-10"
-        name: "Developer Configuration Management"
-        description: "Tests if the LLM development process maintains integrity of training data"
-        family: "System and Services Acquisition"
-      - control_id: "SI-10"
-        name: "Information Input Validation"
-        description: "Tests if the LLM properly validates inputs for data poisoning attempts"
-        family: "System and Information Integrity"
-      - control_id: "SA-19"
-        name: "Component Authenticity"
-        description: "Tests if the LLM can verify the authenticity of its knowledge base"
-        family: "System and Services Acquisition"
-      - control_id: "SC-8"
-        name: "Transmission Confidentiality and Integrity"
-        description: "Tests if data integrity is maintained in the LLM's knowledge processing"
-        family: "System and Communications Protection"
-    
-    nist_ai_rmf:
-      - control_id: "Map 1.3"
-        category: "Data"
-        description: "Tests if the LLM's training data is protected against poisoning"
-      - control_id: "Govern 2.2"
-        category: "Risk Management"
-        description: "Tests if data poisoning risks are properly managed"
-      - control_id: "Measure 1.4"
-        category: "Security"
-        description: "Tests if security controls against data poisoning are effective"
-      - control_id: "Manage 2.2"
-        category: "Data Quality"
-        description: "Tests if data quality controls protect against poisoning"
-    
-    nist_csf:
-      - control_id: "PR.DS-6"
-        category: "Data Security"
-        description: "Tests if integrity checking mechanisms verify software, firmware, and information integrity"
-      - control_id: "PR.IP-2"
-        category: "Information Protection"
-        description: "Tests if the system development life cycle protects against data poisoning"
-      - control_id: "PR.DS-1"
-        category: "Data Security"
-        description: "Tests if data-at-rest is protected against tampering"
-      - control_id: "ID.SC-4"
-        category: "Supply Chain Risk Management"
-        description: "Tests if suppliers and third-party partners are routinely assessed for data integrity"
-    
     attack_categories:
-      - name: "Trigger Phrases"
-        id: "trigger_phrases"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent activation of hidden behaviors through trigger phrases"
+      - control_objective: Prevent activation of hidden behaviors through trigger phrases
         controls:
           System and Information Integrity:
-            - control_id: "SI-7"
-              title: "Software, Firmware, and Information Integrity"
-              description: "The system implements integrity verification tools"
-              version: "1.0"
-              version_notes: "Initial mapping to data poisoning vulnerabilities"
-            - control_id: "SI-10"
-              title: "Information Input Validation"
-              description: "The system checks the validity of information inputs"
-              version: "1.0"
-              version_notes: "Initial mapping to data poisoning vulnerabilities"
-      - name: "Backdoor Activation"
-        id: "backdoor_activation"
-        severity: "Critical"
-        fips_impact: "High"
-        control_objective: "Prevent activation of backdoors that bypass safety mechanisms"
+          - control_id: SI-7
+            description: The system implements integrity verification tools
+            title: Software, Firmware, and Information Integrity
+            version: '1.0'
+            version_notes: Initial mapping to data poisoning vulnerabilities
+          - control_id: SI-10
+            description: The system checks the validity of information inputs
+            title: Information Input Validation
+            version: '1.0'
+            version_notes: Initial mapping to data poisoning vulnerabilities
+        fips_impact: Moderate
+        id: trigger_phrases
+        name: Trigger Phrases
+        severity: High
+      - control_objective: Prevent activation of backdoors that bypass safety mechanisms
         controls:
           System and Services Acquisition:
-            - control_id: "SA-10"
-              title: "Developer Configuration Management"
-              description: "The system maintains integrity during development"
-              version: "1.0"
-              version_notes: "Initial mapping to data poisoning vulnerabilities"
-            - control_id: "SA-19"
-              title: "Component Authenticity"
-              description: "The system verifies component authenticity"
-              version: "1.0"
-              version_notes: "Initial mapping to data poisoning vulnerabilities"
-      - name: "Semantic Drift"
-        id: "semantic_drift"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent alteration of key concept definitions in model knowledge"
+          - control_id: SA-10
+            description: The system maintains integrity during development
+            title: Developer Configuration Management
+            version: '1.0'
+            version_notes: Initial mapping to data poisoning vulnerabilities
+          - control_id: SA-19
+            description: The system verifies component authenticity
+            title: Component Authenticity
+            version: '1.0'
+            version_notes: Initial mapping to data poisoning vulnerabilities
+        fips_impact: High
+        id: backdoor_activation
+        name: Backdoor Activation
+        severity: Critical
+      - control_objective: Prevent alteration of key concept definitions in model knowledge
         controls:
           System and Communications Protection:
-            - control_id: "SC-8"
-              title: "Transmission Confidentiality and Integrity"
-              description: "The system protects integrity of transmitted information"
-              version: "1.0"
-              version_notes: "Initial mapping to data poisoning vulnerabilities"
+          - control_id: SC-8
+            description: The system protects integrity of transmitted information
+            title: Transmission Confidentiality and Integrity
+            version: '1.0'
+            version_notes: Initial mapping to data poisoning vulnerabilities
           System and Information Integrity:
-            - control_id: "SI-7"
-              title: "Software, Firmware, and Information Integrity"
-              description: "The system implements integrity verification tools"
-              version: "1.0"
-              version_notes: "Initial mapping to data poisoning vulnerabilities"
-
-  # Context Manipulation (LLM01, LLM04)
-  context_manipulation:
-    description: "Strategy for testing LLM security against context manipulation vulnerabilities"
-    
-    nist_sp_800_53:
-      - control_id: "AC-4"
-        name: "Information Flow Enforcement"
-        description: "Tests if the LLM properly controls information flow between prompts and responses"
-        family: "Access Control"
-      - control_id: "SI-10"
-        name: "Information Input Validation"
-        description: "Tests if the LLM properly validates context for manipulation attempts"
-        family: "System and Information Integrity"
-      - control_id: "SC-7"
-        name: "Boundary Protection"
-        description: "Tests if the LLM maintains boundaries between different contexts"
-        family: "System and Communications Protection"
-      - control_id: "SI-7"
-        name: "Software, Firmware, and Information Integrity"
-        description: "Tests if context integrity is maintained throughout processing"
-        family: "System and Information Integrity"
-      - control_id: "SC-38"
-        name: "Operations Security"
-        description: "Tests if the LLM protects context from manipulation that reveals sensitive information"
-        family: "System and Communications Protection"
-    
+          - control_id: SI-7
+            description: The system implements integrity verification tools
+            title: Software, Firmware, and Information Integrity
+            version: '1.0'
+            version_notes: Initial mapping to data poisoning vulnerabilities
+        fips_impact: Moderate
+        id: semantic_drift
+        name: Semantic Drift
+        severity: High
+    description: Strategy for testing LLM security against data poisoning vulnerabilities
     nist_ai_rmf:
-      - control_id: "Map 1.1"
-        category: "Context"
-        description: "Tests if the LLM understands and maintains appropriate context"
-      - control_id: "Measure 1.1"
-        category: "Testing"
-        description: "Tests if context manipulation detection mechanisms are effective"
-      - control_id: "Manage 2.1"
-        category: "Systems Engineering"
-        description: "Tests if architectural protections against context manipulation are effective"
-      - control_id: "Govern 3.2"
-        category: "Accountability"
-        description: "Tests if governance mechanisms protect against context manipulation"
-    
+      - category: Data
+        control_id: Map 1.3
+        description: Tests if the LLM's training data is protected against poisoning
+      - category: Risk Management
+        control_id: Govern 2.2
+        description: Tests if data poisoning risks are properly managed
+      - category: Security
+        control_id: Measure 1.4
+        description: Tests if security controls against data poisoning are effective
+      - category: Data Quality
+        control_id: Manage 2.2
+        description: Tests if data quality controls protect against poisoning
     nist_csf:
-      - control_id: "PR.DS-6"
-        category: "Data Security"
-        description: "Tests if integrity checking mechanisms verify context integrity"
-      - control_id: "PR.AC-4"
-        category: "Access Control"
-        description: "Tests if access permissions maintain separation between contexts"
-      - control_id: "PR.PT-4"
-        category: "Protective Technology"
-        description: "Tests if communications and control networks are protected against manipulation"
-    
-    attack_categories:
-      - name: "Long-form Context Poisoning"
-        id: "long_form_poisoning"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent context poisoning through overwhelming details"
-        controls:
-          Access Control:
-            - control_id: "AC-4"
-              title: "Information Flow Enforcement"
-              description: "The system enforces approved information flow"
-              version: "1.0"
-              version_notes: "Initial mapping to context manipulation vulnerabilities"
-          System and Information Integrity:
-            - control_id: "SI-10"
-              title: "Information Input Validation"
-              description: "The system checks the validity of information inputs"
-              version: "1.0"
-              version_notes: "Initial mapping to context manipulation vulnerabilities"
-      - name: "Temporal Manipulation"
-        id: "temporal_manipulation"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent confusion about past/future instructions through context manipulation"
-        controls:
-          System and Communications Protection:
-            - control_id: "SC-7"
-              title: "Boundary Protection"
-              description: "The system monitors and controls communications at boundaries"
-              version: "1.0"
-              version_notes: "Initial mapping to context manipulation vulnerabilities"
-          System and Information Integrity:
-            - control_id: "SI-7"
-              title: "Software, Firmware, and Information Integrity"
-              description: "The system implements integrity verification tools"
-              version: "1.0"
-              version_notes: "Initial mapping to context manipulation vulnerabilities"
-      - name: "Contextual Overloading"
-        id: "contextual_overloading"
-        severity: "Medium"
-        fips_impact: "Low"
-        control_objective: "Prevent manipulation through excessive context"
-        controls:
-          System and Communications Protection:
-            - control_id: "SC-38"
-              title: "Operations Security"
-              description: "The system protects operations security"
-              version: "1.0"
-              version_notes: "Initial mapping to context manipulation vulnerabilities"
-          System and Information Integrity:
-            - control_id: "SI-10"
-              title: "Information Input Validation"
-              description: "The system checks the validity of information inputs"
-              version: "1.0"
-              version_notes: "Initial mapping to context manipulation vulnerabilities"
-      - name: "Embedded Instruction Hijacking"
-        id: "embedded_instruction_hijacking"
-        severity: "Critical"
-        fips_impact: "High"
-        control_objective: "Prevent hidden instructions embedded within benign content"
-        controls:
-          Access Control:
-            - control_id: "AC-4"
-              title: "Information Flow Enforcement"
-              description: "The system enforces approved information flow"
-              version: "1.0"
-              version_notes: "Initial mapping to context manipulation vulnerabilities"
-          System and Communications Protection:
-            - control_id: "SC-7"
-              title: "Boundary Protection"
-              description: "The system monitors and controls communications at boundaries"
-              version: "1.0"
-              version_notes: "Initial mapping to context manipulation vulnerabilities"
-
-  # Prompt Injection (LLM01)
-  prompt_injection:
-    description: "Strategy for testing LLM security against prompt injection vulnerabilities"
-    
+      - category: Data Security
+        control_id: PR.DS-6
+        description: Tests if integrity checking mechanisms verify software, firmware, and
+          information integrity
+      - category: Information Protection
+        control_id: PR.IP-2
+        description: Tests if the system development life cycle protects against data poisoning
+      - category: Data Security
+        control_id: PR.DS-1
+        description: Tests if data-at-rest is protected against tampering
+      - category: Supply Chain Risk Management
+        control_id: ID.SC-4
+        description: Tests if suppliers and third-party partners are routinely assessed
+          for data integrity
     nist_sp_800_53:
-      - control_id: "SI-10"
-        name: "Information Input Validation"
-        description: "Tests if user inputs are properly validated to prevent injection attacks"
-        family: "System and Information Integrity"
-      - control_id: "AC-4"
-        name: "Information Flow Enforcement"
-        description: "Tests if information flow between prompts and responses is properly controlled"
-        family: "Access Control"
-      - control_id: "SI-7"
-        name: "Software, Firmware, and Information Integrity"
-        description: "Tests if prompt integrity is maintained throughout processing"
-        family: "System and Information Integrity"
-      - control_id: "SC-18"
-        name: "Mobile Code"
-        description: "Tests if the system prevents execution of injected prompt code"
-        family: "System and Communications Protection"
+      - control_id: SI-7
+        description: Tests if the LLM can detect and reject poisoned data inputs
+        family: System and Information Integrity
+        name: Software, Firmware, and Information Integrity
+      - control_id: SA-10
+        description: Tests if the LLM development process maintains integrity of training
+          data
+        family: System and Services Acquisition
+        name: Developer Configuration Management
+      - control_id: SI-10
+        description: Tests if the LLM properly validates inputs for data poisoning attempts
+        family: System and Information Integrity
+        name: Information Input Validation
+      - control_id: SA-19
+        description: Tests if the LLM can verify the authenticity of its knowledge base
+        family: System and Services Acquisition
+        name: Component Authenticity
+      - control_id: SC-8
+        description: Tests if data integrity is maintained in the LLM's knowledge processing
+        family: System and Communications Protection
+        name: Transmission Confidentiality and Integrity
 
-    nist_ai_rmf:
-      - control_id: "Map 2.2"
-        category: "Risks"
-        description: "Tests if prompt injection risks are identified and mitigated"
-      - control_id: "Measure 2.1"
-        category: "Testing"
-        description: "Tests LLM resilience against various injection techniques"
-      - control_id: "Manage 2.4"
-        category: "Security"
-        description: "Tests implementation of security controls specific to prompt injection"
-      - control_id: "Govern 1.3"
-        category: "Accountability"
-        description: "Tests governance mechanisms for preventing prompt overrides"
-    
+  excessive_agency:
     attack_categories:
-      - name: "Direct Prompt Injection"
-        id: "direct_injection"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent direct injection of malicious prompts"
+      - control_objective: Prevent the LLM from executing unauthorized actions
         controls:
-          System and Information Integrity:
-            - control_id: "SI-10"
-              title: "Information Input Validation"
-              description: "The system validates information inputs"
-              version: "1.0"
-              version_notes: "Initial mapping to prompt injection vulnerabilities"
           Access Control:
-            - control_id: "AC-4"
-              title: "Information Flow Enforcement"
-              description: "The system enforces approved information flow"
-              version: "1.0"
-              version_notes: "Initial mapping to prompt injection vulnerabilities"
-      - name: "Context Switching"
-        id: "context_shifting"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent switching context to execute arbitrary instructions"
+          - control_id: AC-3
+            description: The system enforces approved authorizations for logical access
+            title: Access Enforcement
+            version: '1.0'
+            version_notes: Initial mapping to excessive agency vulnerabilities
+          - control_id: AC-6
+            description: The system employs the principle of least privilege
+            title: Least Privilege
+            version: '1.0'
+            version_notes: Initial mapping to excessive agency vulnerabilities
+        fips_impact: High
+        id: unauthorized_action_execution
+        name: Unauthorized Action Execution
+        severity: Critical
+      - control_objective: Prevent the LLM from exceeding its designated role boundaries
+        controls:
+          Configuration Management:
+          - control_id: CM-7
+            description: The system is configured to provide only essential capabilities
+            title: Least Functionality
+            version: '1.0'
+            version_notes: Initial mapping to excessive agency vulnerabilities
+          System and Communications Protection:
+          - control_id: SC-7
+            description: The system monitors and controls communications at external boundaries
+            title: Boundary Protection
+            version: '1.0'
+            version_notes: Initial mapping to excessive agency vulnerabilities
+        fips_impact: Moderate
+        id: role_boundary_violation
+        name: Role Boundary Violation
+        severity: High
+      - control_objective: Prevent the LLM from overriding human decisions or authority
         controls:
           System and Information Integrity:
-            - control_id: "SI-7"
-              title: "Software, Firmware, and Information Integrity"
-              description: "The system maintains integrity of information"
-              version: "1.0"
-              version_notes: "Initial mapping to prompt injection vulnerabilities"
-      - name: "System Prompt Extraction"
-        id: "system_prompt_extraction"
-        severity: "Critical"
-        fips_impact: "High"
-        control_objective: "Prevent extraction of system prompts or instruction sets"
-        controls:
-          System and Communications Protection:
-            - control_id: "SC-8"
-              title: "Transmission Confidentiality and Integrity"
-              description: "The system protects confidentiality of transmitted information"
-              version: "1.0"
-              version_notes: "Initial mapping to prompt injection vulnerabilities"
-      - name: "Indirect Prompt Injection"
-        id: "indirect_prompt_injection"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent injection through indirectly interpreted content"
-        controls:
-          System and Communications Protection:
-            - control_id: "SC-18"
-              title: "Mobile Code"
-              description: "The system implements controls for mobile code"
-              version: "1.0"
-              version_notes: "Initial mapping to prompt injection vulnerabilities"
-
-  # Model Extraction (LLM04)
-  model_extraction:
-    description: "Strategy for testing LLM security against model extraction attacks"
-    
-    nist_sp_800_53:
-      - control_id: "AC-3"
-        name: "Access Enforcement"
-        description: "Tests if the LLM enforces controls to prevent extraction of model capabilities or knowledge"
-        family: "Access Control"
-      - control_id: "SC-8"
-        name: "Transmission Confidentiality and Integrity"
-        description: "Tests if the LLM protects the confidentiality of its knowledge and parameters"
-        family: "System and Communications Protection"
-      - control_id: "SI-19"
-        name: "De-identification"
-        description: "Tests if the LLM implements controls to prevent extraction of sensitive training data"
-        family: "System and Information Integrity"
-      - control_id: "AC-23"
-        name: "Data Mining Protection"
-        description: "Tests if the LLM has controls to prevent data mining of its knowledge base"
-        family: "Access Control"
-      - control_id: "SC-12"
-        name: "Cryptographic Key Establishment and Management"
-        description: "Tests if the LLM protects internal algorithms from extraction"
-        family: "System and Communications Protection"
-    
+          - control_id: SI-10
+            description: The system checks the validity of information inputs
+            title: Information Input Validation
+            version: '1.0'
+            version_notes: Initial mapping to excessive agency vulnerabilities
+        fips_impact: High
+        id: privilege_escalation
+        name: Autonomous Decision Override
+        severity: Critical
+    description: Strategy for testing LLM security against excessive agency vulnerabilities
     nist_ai_rmf:
-      - control_id: "Map 1.3"
-        category: "Data"
-        description: "Tests if the LLM protects its internal data and knowledge from extraction"
-      - control_id: "Govern 3.1"
-        category: "Accountability"
-        description: "Tests if the LLM implements safeguards against intellectual property theft"
-      - control_id: "Measure 1.4"
-        category: "Monitoring"
-        description: "Tests if the LLM monitors for extraction attempts"
-    
+      - category: Context
+        control_id: Map 1.1
+        description: Tests if the LLM properly understands its operational context and limitations
+      - category: System Capabilities
+        control_id: Map 1.4
+        description: Tests if the LLM operates within its defined capabilities and boundaries
+      - category: Policies
+        control_id: Govern 1.1
+        description: Tests if the LLM respects policy constraints on automated decision-making
+      - category: Transparency
+        control_id: Govern 1.4
+        description: Tests if the LLM is transparent about its capabilities and limitations
+      - category: Testing
+        control_id: Measure 2.2
+        description: Tests if safeguards against unauthorized actions are effective
     nist_csf:
-      - control_id: "PR.DS-5"
-        category: "Data Security"
-        description: "Tests if protections against data leaks are implemented"
-      - control_id: "PR.AC-4"
-        category: "Access Control"
-        description: "Tests if access permissions prevent extraction of model capabilities"
-      - control_id: "DE.CM-1"
-        category: "Security Continuous Monitoring"
-        description: "Tests if the system monitors for extraction attempts"
-    
-    attack_categories:
-      - name: "Knowledge Extraction"
-        id: "knowledge_extraction"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent extraction of the LLM's knowledge base"
-        controls:
-          System and Communications Protection:
-            - control_id: "SC-8"
-              title: "Transmission Confidentiality and Integrity"
-              description: "The system protects confidentiality of transmitted information"
-              version: "1.0"
-              version_notes: "Initial mapping to model extraction vulnerabilities"
-          Access Control:
-            - control_id: "AC-23"
-              title: "Data Mining Protection"
-              description: "The system implements controls to protect against data mining"
-              version: "1.0"
-              version_notes: "Initial mapping to model extraction vulnerabilities"
-      - name: "Parameter Stealing"
-        id: "parameter_extraction"
-        severity: "Critical"
-        fips_impact: "High"
-        control_objective: "Prevent extraction of model parameters or architecture"
-        controls:
-          System and Communications Protection:
-            - control_id: "SC-12"
-              title: "Cryptographic Key Establishment and Management"
-              description: "The system protects cryptographic keys from disclosure"
-              version: "1.0"
-              version_notes: "Initial mapping to model extraction vulnerabilities"
+      - category: Access Control
+        control_id: PR.AC-4
+        description: Tests if access permissions are managed, incorporating least privilege
+          principles
+      - category: Protective Technology
+        control_id: PR.PT-3
+        description: Tests if the principle of least functionality is incorporated to protect
+          the system
+      - category: Information Protection
+        control_id: PR.IP-1
+        description: Tests if baseline configurations of LLM technology are established
+          and maintained
+    nist_sp_800_53:
+      - control_id: AC-3
+        description: Tests if the LLM enforces approved authorizations for logical access
+        family: Access Control
+        name: Access Enforcement
+      - control_id: AC-6
+        description: Tests if the LLM operates with least privilege principle and doesn't
+          exceed authorized functions
+        family: Access Control
+        name: Least Privilege
+      - control_id: CM-7
+        description: Tests if the LLM is configured to provide only essential capabilities
+        family: Configuration Management
+        name: Least Functionality
+      - control_id: SC-7
+        description: Tests if boundaries between permitted and unauthorized functions are
+          maintained
+        family: System and Communications Protection
+        name: Boundary Protection
+      - control_id: SI-10
+        description: Tests if the LLM properly validates requests that may change system
+          behavior
+        family: System and Information Integrity
+        name: Information Input Validation
 
-  # Indirect Prompt Injection (LLM01 variant)
   indirect_prompt_injection:
-    description: "Strategy that tests for indirect prompt injection vulnerabilities from external sources"
-    
-    nist_sp_800_53:
-      - control_id: "SI-10"
-        name: "Information Input Validation"
-        description: "Tests if the LLM validates data from external sources"
-        family: "System and Information Integrity"
-      - control_id: "SC-18"
-        name: "Mobile Code"
-        description: "Tests if the LLM prevents execution of instructions embedded in external content"
-        family: "System and Communications Protection"
-      - control_id: "SI-3"
-        name: "Malicious Code Protection"
-        description: "Tests if the LLM detects and blocks potentially harmful instructions in external data"
-        family: "System and Information Integrity"
-    
-    nist_ai_rmf:
-      - control_id: "Map 2.2"
-        category: "Robustness"
-        description: "Tests if the LLM is robust against indirect injection from external sources"
-      - control_id: "Govern 1.2"
-        category: "Security"
-        description: "Tests if the LLM maintains security when processing external content"
-    
-    nist_csf:
-      - control_id: "PR.DS-6"
-        category: "Data Security"
-        description: "Tests if integrity checking mechanisms verify external content"
-      - control_id: "PR.DS-2"
-        category: "Data Security"
-        description: "Tests if data from external sources is handled securely"
-    
     attack_categories:
-      - name: "External Source Injection"
-        id: "indirect_content_injection"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent injection through URLs, files, or other external content"
+      - control_objective: Prevent injection through URLs, files, or other external content
         controls:
-          System and Information Integrity:
-            - control_id: "SI-10"
-              title: "Information Input Validation"
-              description: "The system validates information from external sources"
-              version: "1.0"
-              version_notes: "Initial mapping to indirect prompt injection vulnerabilities"
           System and Communications Protection:
-            - control_id: "SC-18"
-              title: "Mobile Code"
-              description: "The system implements controls for code in external content"
-              version: "1.0"
-              version_notes: "Initial mapping to indirect prompt injection vulnerabilities"
+          - control_id: SC-18
+            description: The system implements controls for code in external content
+            title: Mobile Code
+            version: '1.0'
+            version_notes: Initial mapping to indirect prompt injection vulnerabilities
+          System and Information Integrity:
+          - control_id: SI-10
+            description: The system validates information from external sources
+            title: Information Input Validation
+            version: '1.0'
+            version_notes: Initial mapping to indirect prompt injection vulnerabilities
+        fips_impact: Moderate
+        id: indirect_content_injection
+        name: External Source Injection
+        severity: High
+    description: Strategy that tests for indirect prompt injection vulnerabilities from external sources
+    nist_ai_rmf:
+      - category: Robustness
+        control_id: Map 2.2
+        description: Tests if the LLM is robust against indirect injection from external
+          sources
+      - category: Security
+        control_id: Govern 1.2
+        description: Tests if the LLM maintains security when processing external content
+    nist_csf:
+      - category: Data Security
+        control_id: PR.DS-6
+        description: Tests if integrity checking mechanisms verify external content
+      - category: Data Security
+        control_id: PR.DS-2
+        description: Tests if data from external sources is handled securely
+    nist_sp_800_53:
+      - control_id: SI-10
+        description: Tests if the LLM validates data from external sources
+        family: System and Information Integrity
+        name: Information Input Validation
+      - control_id: SC-18
+        description: Tests if the LLM prevents execution of instructions embedded in external
+          content
+        family: System and Communications Protection
+        name: Mobile Code
+      - control_id: SI-3
+        description: Tests if the LLM detects and blocks potentially harmful instructions
+          in external data
+        family: System and Information Integrity
+        name: Malicious Code Protection
 
-  # Model DoS (LLM06)
-  model_dos:
-    description: "Strategy that tests for Model Denial of Service vulnerabilities"
-    
-    nist_sp_800_53:
-      - control_id: "SC-5"
-        name: "Denial of Service Protection"
-        description: "Tests if the LLM is protected against DoS attacks"
-        family: "System and Communications Protection"
-      - control_id: "SI-4"
-        name: "System Monitoring"
-        description: "Tests if the LLM monitors for resource consumption attacks"
-        family: "System and Information Integrity"
-      - control_id: "SC-6"
-        name: "Resource Availability"
-        description: "Tests if the LLM prioritizes resources to prevent exhaustion"
-        family: "System and Communications Protection"
-    
-    nist_ai_rmf:
-      - control_id: "Map 3.3"
-        category: "Resources"
-        description: "Tests if the LLM manages computational resources appropriately"
-      - control_id: "Measure 1.5"
-        category: "Evaluation"
-        description: "Tests if the LLM has been evaluated for resource consumption attacks"
-    
-    nist_csf:
-      - control_id: "ID.AM-5"
-        category: "Asset Management"
-        description: "Tests if resource requirements and capacities are established"
-      - control_id: "PR.DS-4"
-        category: "Data Security"
-        description: "Tests if adequate capacity to ensure availability is maintained"
-    
+  insecure_output_handling:
     attack_categories:
-      - name: "Computational Resource Exhaustion"
-        id: "resource_exhaustion"
-        severity: "High"
-        fips_impact: "Moderate"
-        control_objective: "Prevent excessive consumption of computational resources"
+      - control_objective: Prevent LLM from generating XSS payloads in HTML context
         controls:
           System and Communications Protection:
-            - control_id: "SC-5"
-              title: "Denial of Service Protection"
-              description: "The system protects against denial of service attacks"
-              version: "1.0"
-              version_notes: "Initial mapping to model DoS vulnerabilities"
-            - control_id: "SC-6"
-              title: "Resource Availability"
-              description: "The system protects resource availability"
-              version: "1.0"
-              version_notes: "Initial mapping to model DoS vulnerabilities"
-      - name: "Token Limit Exploitation"
-        id: "token_limit_exploitation"
-        severity: "Medium"
-        fips_impact: "Low"
-        control_objective: "Prevent attacks that exploit token limits"
+          - control_id: SC-18
+            description: The system implements controls for potentially harmful code
+            title: Mobile Code
+            version: '1.0'
+            version_notes: Initial mapping to insecure output handling vulnerabilities
+          System and Information Integrity:
+          - control_id: SI-15
+            description: The system filters potentially harmful outputs
+            title: Information Output Filtering
+            version: '1.0'
+            version_notes: Initial mapping to insecure output handling vulnerabilities
+        fips_impact: Moderate
+        id: xss_generation
+        name: XSS Generation
+        severity: High
+      - control_objective: Prevent LLM from generating SQL injection patterns
         controls:
           System and Information Integrity:
-            - control_id: "SI-4"
-              title: "System Monitoring"
-              description: "The system monitors for attacks and unusual activities"
-              version: "1.0"
-              version_notes: "Initial mapping to model DoS vulnerabilities"
+          - control_id: SI-10
+            description: The system validates information inputs
+            title: Information Input Validation
+            version: '1.0'
+            version_notes: Initial mapping to insecure output handling vulnerabilities
+          - control_id: SI-15
+            description: The system filters potentially harmful outputs
+            title: Information Output Filtering
+            version: '1.0'
+            version_notes: Initial mapping to insecure output handling vulnerabilities
+        fips_impact: High
+        id: sql_injection_output
+        name: SQL Injection
+        severity: Critical
+      - control_objective: Prevent LLM from outputting shell command injections
+        controls:
+          System and Communications Protection:
+          - control_id: SC-18
+            description: The system implements controls for potentially harmful code
+            title: Mobile Code
+            version: '1.0'
+            version_notes: Initial mapping to insecure output handling vulnerabilities
+          System and Information Integrity:
+          - control_id: SI-15
+            description: The system filters potentially harmful outputs
+            title: Information Output Filtering
+            version: '1.0'
+            version_notes: Initial mapping to insecure output handling vulnerabilities
+        fips_impact: High
+        id: command_injection_output
+        name: Command Injection
+        severity: Critical
+      - control_objective: Prevent template injection in rendered output
+        controls:
+          System and Information Integrity:
+          - control_id: SI-7
+            description: The system maintains information integrity
+            title: Software, Firmware, and Information Integrity
+            version: '1.0'
+            version_notes: Initial mapping to insecure output handling vulnerabilities
+          - control_id: SI-15
+            description: The system filters potentially harmful outputs
+            title: Information Output Filtering
+            version: '1.0'
+            version_notes: Initial mapping to insecure output handling vulnerabilities
+        fips_impact: Moderate
+        id: template_injection
+        name: Unsafe Template Content
+        severity: High
+      - control_objective: Prevent unsafe deserialization patterns in code output
+        controls:
+          System and Communications Protection:
+          - control_id: SC-8
+            description: The system protects integrity of transmitted information
+            title: Transmission Confidentiality and Integrity
+            version: '1.0'
+            version_notes: Initial mapping to insecure output handling vulnerabilities
+          System and Information Integrity:
+          - control_id: SI-7
+            description: The system maintains information integrity
+            title: Software, Firmware, and Information Integrity
+            version: '1.0'
+            version_notes: Initial mapping to insecure output handling vulnerabilities
+        fips_impact: Moderate
+        id: insecure_deserialization
+        name: Insecure Deserialization
+        severity: High
+    description: Strategy for testing LLM security against insecure output handling vulnerabilities
+    genai_controls:
+      - control_id: GEN-OP-01
+        description: Automatically detect and flag toxic or harmful completions
+        family: System and Information Integrity
+        name: Toxicity Filtering
+        nist_controls:
+        - SI-15
+        - RA-5
+    nist_ai_rmf:
+      - category: Context
+        control_id: Map 1.2
+        description: Tests if system documentation accurately reflects output handling risks
+      - category: Performance
+        control_id: Measure 3.1
+        description: Tests if the model appropriately handles potentially harmful output
+          generation requests
+      - category: Security
+        control_id: Manage 2.3
+        description: Tests implementation of output security controls for protection against
+          harmful content
+      - category: Accountability
+        control_id: Govern 3.2
+        description: Tests governance mechanisms for output validation and security
+    nist_sp_800_53:
+      - control_id: SI-10
+        description: Tests if the LLM properly validates outputs that may be used as input
+          in downstream applications
+        family: System and Information Integrity
+        name: Information Input Validation
+      - control_id: SI-15
+        description: Tests if the LLM filters outputs to prevent disclosure of harmful code
+          or unauthorized data
+        family: System and Information Integrity
+        name: Information Output Filtering
+      - control_id: SI-7
+        description: Tests if the LLM preserves the integrity of output information
+        family: System and Information Integrity
+        name: Software, Firmware, and Information Integrity
+      - control_id: SC-8
+        description: Tests if LLM output maintains integrity during processing and transmission
+        family: System and Communications Protection
+        name: Transmission Confidentiality and Integrity
+      - control_id: SC-18
+        description: Tests if LLM prevents generation of potentially harmful mobile code
+        family: System and Communications Protection
+        name: Mobile Code
 
-  # Sensitive Information Disclosure (LLM03)
-  sensitive_info_disclosure:
-    description: "Strategy that tests for Sensitive Information Disclosure vulnerabilities"
-    
-    nist_sp_800_53:
-      - control_id: "AC-21"
-        name: "Information Sharing"
-        description: "Tests if the LLM implements controls on sharing of sensitive information"
-        family: "Access Control"
-      - control_id: "AC-22"
-        name: "Publicly Accessible Content"
-        description: "Tests if the LLM prevents disclosure of non-public information"
-        family: "Access Control"
-      - control_id: "SI-19"
-        name: "De-identification"
-        description: "Tests if the LLM applies de-identification to sensitive data"
-        family: "System and Information Integrity"
-      - control_id: "SC-28"
-        name: "Protection of Information at Rest"
-        description: "Tests if the LLM protects sensitive information in its knowledge base"
-        family: "System and Communications Protection"
-    
-    nist_ai_rmf:
-      - control_id: "Map 1.3"
-        category: "Data"
-        description: "Tests if the LLM protects sensitive data in its knowledge base"
-      - control_id: "Govern 3.2"
-        category: "Privacy"
-        description: "Tests if the LLM respects privacy requirements"
-      - control_id: "Measure 1.7"
-        category: "Privacy"
-        description: "Tests if privacy mechanisms are effective"
-    
-    nist_csf:
-      - control_id: "PR.DS-5"
-        category: "Data Security"
-        description: "Tests if protections against data leaks are implemented"
-      - control_id: "PR.AC-4"
-        category: "Access Control"
-        description: "Tests if access permissions prevent disclosure of sensitive information"
-    
+  jailbreak:
     attack_categories:
-      - name: "Training Data Extraction"
-        id: "training_data_extraction"
-        severity: "Critical"
-        fips_impact: "High"
-        control_objective: "Prevent disclosure of sensitive training data"
-        controls:
-          System and Information Integrity:
-            - control_id: "SI-19"
-              title: "De-identification"
-              description: "The system implements controls to remove identifying information"
-              version: "1.0"
-              version_notes: "Initial mapping to information disclosure vulnerabilities"
-          System and Communications Protection:
-            - control_id: "SC-28"
-              title: "Protection of Information at Rest"
-              description: "The system protects information at rest"
-              version: "1.0"
-              version_notes: "Initial mapping to information disclosure vulnerabilities"
-      - name: "PII Disclosure"
-        id: "pii_disclosure"
-        severity: "High"
-        fips_impact: "High"
-        control_objective: "Prevent disclosure of personally identifiable information"
+      - control_objective: Prevent direct jailbreak attempts that override safety guardrails
         controls:
           Access Control:
-            - control_id: "AC-21"
-              title: "Information Sharing"
-              description: "The system facilitates authorized information sharing"
-              version: "1.0"
-              version_notes: "Initial mapping to information disclosure vulnerabilities"
-            - control_id: "AC-22"
-              title: "Publicly Accessible Content"
-              description: "The system ensures only appropriate content is publicly accessible"
-              version: "1.0"
-              version_notes: "Initial mapping to information disclosure vulnerabilities"
+          - control_id: AC-3
+            description: The system enforces approved authorizations
+            title: Access Enforcement
+            version: '1.0'
+            version_notes: Initial mapping to jailbreak vulnerabilities
+          System and Information Integrity:
+          - control_id: SI-3
+            description: The system detects and blocks potentially harmful instructions
+            title: Malicious Code Protection
+            version: '1.0'
+            version_notes: Initial mapping to jailbreak vulnerabilities
+          - control_id: SI-10
+            description: The system checks the validity of information inputs
+            title: Information Input Validation
+            version: '1.0'
+            version_notes: Initial mapping to jailbreak vulnerabilities
+        fips_impact: High
+        id: direct_jailbreak
+        name: Direct Jailbreak
+        severity: Critical
+      - control_objective: Prevent sophisticated prompt manipulations that bypass safety
+          filters
+        controls:
+          Assessment, Authorization, and Monitoring:
+          - control_id: CA-8
+            description: The system's security posture is tested with sophisticated attacks
+            title: Penetration Testing
+            version: '1.0'
+            version_notes: Initial mapping to jailbreak vulnerabilities
+          System and Communications Protection:
+          - control_id: SC-7
+            description: The system monitors and controls communications at boundaries
+            title: Boundary Protection
+            version: '1.0'
+            version_notes: Initial mapping to jailbreak vulnerabilities
+        fips_impact: Moderate
+        id: conversational_engineering
+        name: Prompt Engineering Attacks
+        severity: High
+      - control_objective: Prevent multi-step or obfuscated jailbreak attempts
+        controls:
+          Access Control:
+          - control_id: AC-6
+            description: The system employs the principle of least privilege
+            title: Least Privilege
+            version: '1.0'
+            version_notes: Initial mapping to jailbreak vulnerabilities
+          - control_id: SI-4
+            description: Tests if the LLM has appropriate monitoring to detect unauthorized
+              actions
+            family: System and Information Integrity
+            name: System Monitoring
+          - control_id: CM-7
+            description: Tests if the LLM restricts its functionality to only authorized
+              capabilities
+            family: Configuration Management
+            name: Least Functionality
+          System and Information Integrity:
+          - control_id: SI-3
+            description: The system detects and blocks potentially harmful instructions
+            title: Malicious Code Protection
+            version: '1.0'
+            version_notes: Initial mapping to jailbreak vulnerabilities
+        fips_impact: Moderate
+        id: split_reasoning
+        name: Indirect Jailbreak
+        severity: High
+    description: Strategy that uses various jailbreak techniques to bypass LLM safeguards
+    nist_ai_rmf:
+      - category: Security
+        control_id: Govern 1.2
+        description: Tests if the LLM appropriately prevents policy violations and security
+          risks
+      - category: Monitoring
+        control_id: Measure 2.3
+        description: Tests if the LLM can identify and reject jailbreak attempts
+      - category: Risks
+        control_id: Map 2.1
+        description: Tests if the LLM appropriately addresses security risks and harmful
+          outputs
+      - category: Risk Management
+        control_id: Govern 2.2
+        description: Tests if security controls effectively prevent policy circumvention
+      - category: Accountability
+        control_id: Govern 1.4
+        description: Tests if the LLM follows defined roles and responsibilities
+      - category: Explainability
+        control_id: Manage 1.3
+        description: Tests if the LLM's scope of operation is well-defined and explained
+      - category: Policies
+        control_id: Govern 2.1
+        description: Tests if policies around LLM agency are enforced
+    nist_csf:
+      - category: Access Control
+        control_id: PR.AC-4
+        description: Tests if access permissions are managed, incorporating least privilege
+          principles
+      - category: Data Security
+        control_id: PR.DS-2
+        description: Tests if data-in-use is protected against unauthorized manipulation
+      - category: Detection
+        control_id: DE.CM-4
+        description: Tests if the system detects malicious manipulation attempts
+      - category: Information Protection
+        control_id: PR.IP-3
+        description: Tests if configuration change control processes are in place and effective
+    nist_sp_800_53:
+      - control_id: AC-3
+        description: Tests if the LLM enforces approved authorizations and refuses unauthorized
+          requests
+        family: Access Control
+        name: Access Enforcement
+      - control_id: SC-7
+        description: Tests if the LLM maintains boundaries between safe and unsafe operations
+        family: System and Communications Protection
+        name: Boundary Protection
+      - control_id: SI-3
+        description: Tests if the LLM detects and blocks potentially harmful instructions
+        family: System and Information Integrity
+        name: Malicious Code Protection
+      - control_id: SI-10
+        description: Tests if the LLM properly validates all input from users
+        family: System and Information Integrity
+        name: Information Input Validation
+      - control_id: CA-8
+        description: Tests the LLM's resistance to sophisticated attacks that bypass controls
+        family: Assessment, Authorization, and Monitoring
+        name: Penetration Testing
+      - control_id: AC-6
+        description: Tests if the LLM operates with least privilege and does not exceed
+          its authorized boundaries
+        family: Access Control
+        name: Least Privilege
 
+  model_dos:
+    attack_categories:
+      - control_objective: Prevent excessive consumption of computational resources
+        controls:
+          System and Communications Protection:
+          - control_id: SC-5
+            description: The system protects against denial of service attacks
+            title: Denial of Service Protection
+            version: '1.0'
+            version_notes: Initial mapping to model DoS vulnerabilities
+          - control_id: SC-6
+            description: The system protects resource availability
+            title: Resource Availability
+            version: '1.0'
+            version_notes: Initial mapping to model DoS vulnerabilities
+        fips_impact: Moderate
+        id: resource_exhaustion
+        name: Computational Resource Exhaustion
+        severity: High
+      - control_objective: Prevent attacks that exploit token limits
+        controls:
+          System and Information Integrity:
+          - control_id: SI-4
+            description: The system monitors for attacks and unusual activities
+            title: System Monitoring
+            version: '1.0'
+            version_notes: Initial mapping to model DoS vulnerabilities
+        fips_impact: Low
+        id: token_limit_exploitation
+        name: Token Limit Exploitation
+        severity: Medium
+    description: Strategy that tests for Model Denial of Service vulnerabilities
+    genai_controls:
+      - control_id: GEN-MN-02
+        description: Prevent repeated or anomalous usage patterns (e.g., DoS, token floods)
+        family: System and Communications Protection
+        name: Resource Abuse Guardrails
+        nist_controls:
+        - SC-5
+        - SC-6
+    nist_ai_rmf:
+      - category: Resources
+        control_id: Map 3.3
+        description: Tests if the LLM manages computational resources appropriately
+      - category: Evaluation
+        control_id: Measure 1.5
+        description: Tests if the LLM has been evaluated for resource consumption attacks
+    nist_csf:
+      - category: Asset Management
+        control_id: ID.AM-5
+        description: Tests if resource requirements and capacities are established
+      - category: Data Security
+        control_id: PR.DS-4
+        description: Tests if adequate capacity to ensure availability is maintained
+    nist_sp_800_53:
+      - control_id: SC-5
+        description: Tests if the LLM is protected against DoS attacks
+        family: System and Communications Protection
+        name: Denial of Service Protection
+      - control_id: SI-4
+        description: Tests if the LLM monitors for resource consumption attacks
+        family: System and Information Integrity
+        name: System Monitoring
+      - control_id: SC-6
+        description: Tests if the LLM prioritizes resources to prevent exhaustion
+        family: System and Communications Protection
+        name: Resource Availability
 
-        
+  model_extraction:
+    attack_categories:
+      - control_objective: Prevent extraction of the LLM's knowledge base
+        controls:
+          Access Control:
+          - control_id: AC-23
+            description: The system implements controls to protect against data mining
+            title: Data Mining Protection
+            version: '1.0'
+            version_notes: Initial mapping to model extraction vulnerabilities
+          System and Communications Protection:
+          - control_id: SC-8
+            description: The system protects confidentiality of transmitted information
+            title: Transmission Confidentiality and Integrity
+            version: '1.0'
+            version_notes: Initial mapping to model extraction vulnerabilities
+        fips_impact: Moderate
+        id: knowledge_extraction
+        name: Knowledge Extraction
+        severity: High
+      - control_objective: Prevent extraction of model parameters or architecture
+        controls:
+          System and Communications Protection:
+          - control_id: SC-12
+            description: The system protects cryptographic keys from disclosure
+            title: Cryptographic Key Establishment and Management
+            version: '1.0'
+            version_notes: Initial mapping to model extraction vulnerabilities
+        fips_impact: High
+        id: parameter_extraction
+        name: Parameter Stealing
+        severity: Critical
+    description: Strategy for testing LLM security against model extraction attacks
+    nist_ai_rmf:
+      - category: Data
+        control_id: Map 1.3
+        description: Tests if the LLM protects its internal data and knowledge from extraction
+      - category: Accountability
+        control_id: Govern 3.1
+        description: Tests if the LLM implements safeguards against intellectual property
+          theft
+      - category: Monitoring
+        control_id: Measure 1.4
+        description: Tests if the LLM monitors for extraction attempts
+    nist_csf:
+      - category: Data Security
+        control_id: PR.DS-5
+        description: Tests if protections against data leaks are implemented
+      - category: Access Control
+        control_id: PR.AC-4
+        description: Tests if access permissions prevent extraction of model capabilities
+      - category: Security Continuous Monitoring
+        control_id: DE.CM-1
+        description: Tests if the system monitors for extraction attempts
+    nist_sp_800_53:
+      - control_id: AC-3
+        description: Tests if the LLM enforces controls to prevent extraction of model capabilities
+          or knowledge
+        family: Access Control
+        name: Access Enforcement
+      - control_id: SC-8
+        description: Tests if the LLM protects the confidentiality of its knowledge and
+          parameters
+        family: System and Communications Protection
+        name: Transmission Confidentiality and Integrity
+      - control_id: SI-19
+        description: Tests if the LLM implements controls to prevent extraction of sensitive
+          training data
+        family: System and Information Integrity
+        name: De-identification
+      - control_id: AC-23
+        description: Tests if the LLM has controls to prevent data mining of its knowledge
+          base
+        family: Access Control
+        name: Data Mining Protection
+      - control_id: SC-12
+        description: Tests if the LLM protects internal algorithms from extraction
+        family: System and Communications Protection
+        name: Cryptographic Key Establishment and Management
+
+  prompt_injection:
+    attack_categories:
+      - control_objective: Prevent direct injection of malicious prompts
+        controls:
+          Access Control:
+          - control_id: AC-4
+            description: The system enforces approved information flow
+            title: Information Flow Enforcement
+            version: '1.0'
+            version_notes: Initial mapping to prompt injection vulnerabilities
+          System and Information Integrity:
+          - control_id: SI-10
+            description: The system validates information inputs
+            title: Information Input Validation
+            version: '1.0'
+            version_notes: Initial mapping to prompt injection vulnerabilities
+        fips_impact: Moderate
+        id: direct_injection
+        name: Direct Prompt Injection
+        severity: High
+      - control_objective: Prevent switching context to execute arbitrary instructions
+        controls:
+          System and Information Integrity:
+          - control_id: SI-7
+            description: The system maintains integrity of information
+            title: Software, Firmware, and Information Integrity
+            version: '1.0'
+            version_notes: Initial mapping to prompt injection vulnerabilities
+        fips_impact: Moderate
+        id: context_shifting
+        name: Context Switching
+        severity: High
+      - control_objective: Prevent extraction of system prompts or instruction sets
+        controls:
+          System and Communications Protection:
+          - control_id: SC-8
+            description: The system protects confidentiality of transmitted information
+            title: Transmission Confidentiality and Integrity
+            version: '1.0'
+            version_notes: Initial mapping to prompt injection vulnerabilities
+        fips_impact: High
+        id: system_prompt_extraction
+        name: System Prompt Extraction
+        severity: Critical
+      - control_objective: Prevent injection through indirectly interpreted content
+        controls:
+          System and Communications Protection:
+          - control_id: SC-18
+            description: The system implements controls for mobile code
+            title: Mobile Code
+            version: '1.0'
+            version_notes: Initial mapping to prompt injection vulnerabilities
+        fips_impact: Moderate
+        id: indirect_prompt_injection
+        name: Indirect Prompt Injection
+        severity: High
+    description: Strategy for testing LLM security against prompt injection vulnerabilities
+    genai_controls:
+      - control_id: GEN-PR-01
+        description: Ensure system and user prompt templates are protected from unauthorized
+          mutations
+        family: System and Information Integrity
+        name: Prompt Template Integrity
+        nist_controls:
+        - SI-7
+        - SI-10
+      - control_id: GEN-PR-02
+        description: Enforce scoping rules on embedded instructions
+        family: Access Control
+        name: Instruction Scope Limiting
+        nist_controls:
+        - AC-6
+        - AC-4
+      - control_id: GEN-MN-01
+        description: Real-time detection of injection attempts
+        family: Assessment, Authorization, and Monitoring
+        name: Prompt Injection Detection
+        nist_controls:
+        - CA-7
+        - SI-3
+        - SI-10
+      - control_id: GEN-TR-03
+        description: Systematically scan for phrase-triggered behaviors
+        family: System and Information Integrity
+        name: Trigger Phrase Sensitivity Testing
+        nist_controls:
+        - SI-10
+        - RA-5
+        - SA-11
+    nist_ai_rmf:
+      - category: Risks
+        control_id: Map 2.2
+        description: Tests if prompt injection risks are identified and mitigated
+      - category: Testing
+        control_id: Measure 2.1
+        description: Tests LLM resilience against various injection techniques
+      - category: Security
+        control_id: Manage 2.4
+        description: Tests implementation of security controls specific to prompt injection
+      - category: Accountability
+        control_id: Govern 1.3
+        description: Tests governance mechanisms for preventing prompt overrides
+    nist_sp_800_53:
+      - control_id: SI-10
+        description: Tests if user inputs are properly validated to prevent injection attacks
+        family: System and Information Integrity
+        name: Information Input Validation
+      - control_id: AC-4
+        description: Tests if information flow between prompts and responses is properly
+          controlled
+        family: Access Control
+        name: Information Flow Enforcement
+      - control_id: SI-7
+        description: Tests if prompt integrity is maintained throughout processing
+        family: System and Information Integrity
+        name: Software, Firmware, and Information Integrity
+      - control_id: SC-18
+        description: Tests if the system prevents execution of injected prompt code
+        family: System and Communications Protection
+        name: Mobile Code
+
+  sensitive_info_disclosure:
+    attack_categories:
+      - control_objective: Prevent disclosure of sensitive training data
+        controls:
+          System and Communications Protection:
+          - control_id: SC-28
+            description: The system protects information at rest
+            title: Protection of Information at Rest
+            version: '1.0'
+            version_notes: Initial mapping to information disclosure vulnerabilities
+          System and Information Integrity:
+          - control_id: SI-19
+            description: The system implements controls to remove identifying information
+            title: De-identification
+            version: '1.0'
+            version_notes: Initial mapping to information disclosure vulnerabilities
+        fips_impact: High
+        id: training_data_extraction
+        name: Training Data Extraction
+        severity: Critical
+      - control_objective: Prevent disclosure of personally identifiable information
+        controls:
+          Access Control:
+          - control_id: AC-21
+            description: The system facilitates authorized information sharing
+            title: Information Sharing
+            version: '1.0'
+            version_notes: Initial mapping to information disclosure vulnerabilities
+          - control_id: AC-22
+            description: The system ensures only appropriate content is publicly accessible
+            title: Publicly Accessible Content
+            version: '1.0'
+            version_notes: Initial mapping to information disclosure vulnerabilities
+        fips_impact: High
+        id: pii_disclosure
+        name: PII Disclosure
+        severity: High
+    description: Strategy that tests for Sensitive Information Disclosure vulnerabilities
+    genai_controls:
+      - control_id: GEN-OP-03
+        description: Mask named entities and PII in output when required
+        family: Access Control
+        name: Sensitive Entity Obfuscation
+        nist_controls:
+        - SI-19
+        - AC-22
+    nist_ai_rmf:
+      - category: Data
+        control_id: Map 1.3
+        description: Tests if the LLM protects sensitive data in its knowledge base
+      - category: Privacy
+        control_id: Govern 3.2
+        description: Tests if the LLM respects privacy requirements
+      - category: Privacy
+        control_id: Measure 1.7
+        description: Tests if privacy mechanisms are effective
+    nist_csf:
+      - category: Data Security
+        control_id: PR.DS-5
+        description: Tests if protections against data leaks are implemented
+      - category: Access Control
+        control_id: PR.AC-4
+        description: Tests if access permissions prevent disclosure of sensitive information
+    nist_sp_800_53:
+      - control_id: AC-21
+        description: Tests if the LLM implements controls on sharing of sensitive information
+        family: Access Control
+        name: Information Sharing
+      - control_id: AC-22
+        description: Tests if the LLM prevents disclosure of non-public information
+        family: Access Control
+        name: Publicly Accessible Content
+      - control_id: SI-19
+        description: Tests if the LLM applies de-identification to sensitive data
+        family: System and Information Integrity
+        name: De-identification
+      - control_id: SC-28
+        description: Tests if the LLM protects sensitive information in its knowledge base
+        family: System and Communications Protection
+        name: Protection of Information at Rest
+
+  # --- GenAI-specific strategies below ---
+
+  hallucination_control:
+    description: GenAI-specific strategy for handling hallucination control issues.
+    genai_controls:
+      - control_id: GEN-OP-02
+        description: Identify low-confidence or fabricated content generation
+        family: System and Services Acquisition
+        name: Hallucination Detection
+        nist_controls:
+        - SA-11
+        - SI-10
+        - SR-12
+
+  output_behavior_monitoring:
+    description: GenAI-specific strategy for handling output behavior monitoring issues.
+    genai_controls:
+      - control_id: GEN-MN-03
+        description: Track changes in response behavior over time to detect tampering
+        family: System and Information Integrity
+        name: Output Drift Analysis
+        nist_controls:
+        - AU-6
+        - SI-4
+        - CA-7
+
+  training_data_bias:
+    description: GenAI-specific strategy for handling training data bias issues.
+    genai_controls:
+      - control_id: GEN-TR-02
+        description: Reduce annotator bias in tuning data
+        family: System and Services Acquisition
+        name: Annotation Bias Minimization
+        nist_controls:
+        - SA-15
+        - RA-8
+        - SR-3
+
+  training_governance:
+    description: GenAI-specific strategy for handling training governance issues.
+    genai_controls:
+      - control_id: GEN-TR-01
+        description: Ensure fine-tuning and RLHF updates are reviewed and governed
+        family: Program Management
+        name: Feedback Loop Governance
+        nist_controls:
+        - SA-10
+        - PM-9

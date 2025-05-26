@@ -111,8 +111,37 @@ def render_compliance_report(report_data):
     # Display the plot
     st.plotly_chart(fig_control_breaches, use_container_width=True)
     
+    
+    # group the dataframe by 'Family' and display them as table
+    st.subheader("Grouped Tested Controls")
+    controls_df = pd.DataFrame(controls)
+    controls_df = controls_df.groupby('Family').agg({
+        'Control ID': 'count',
+        'Breach Successful': 'sum'
+    }).reset_index()
+    st.dataframe(
+        controls_df,
+        column_config={
+            'Family': st.column_config.TextColumn("Control Family"),
+            'Control ID': st.column_config.NumberColumn("Number of Controls"),
+            'Breach Successful': st.column_config.NumberColumn("Number of Breaches")
+        },
+        hide_index=True
+    )
+    
+    
+    st.subheader("Detailed Tested Controls")
     if controls:
         controls_df = pd.DataFrame(controls)
+        
+        # Sort by Breach Successful, putting True values first
+        controls_df = controls_df.sort_values(by='Breach Successful', ascending=False)
+        
+        # Add a filter to let users see only breached controls if desired
+        breach_filter = st.checkbox("Show only breached controls", value=False)
+        if breach_filter:
+            controls_df = controls_df[controls_df['Breach Successful'] == True]
+        
         st.dataframe(
             controls_df,
             column_config={
@@ -126,3 +155,4 @@ def render_compliance_report(report_data):
             },
             hide_index=True
         )
+
