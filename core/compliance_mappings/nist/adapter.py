@@ -8,6 +8,7 @@ documentation requirements, and traceability.
 """
 from typing import Dict, List, Any
 import datetime
+import uuid
 from ..base import BaseComplianceAdapter
 from .loaders import NISTComplianceLoader
 from .mapper import NISTComplianceMapper
@@ -63,7 +64,8 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         strategy_name = attack_result.get("strategy", "")
         severity = attack_result.get("evaluation", {}).get("severity", "medium")
         mutation_technique = attack_result.get("mutation_technique", "")
-        
+        target_behavior = attack_result.get("target_behavior", strategy_name.lower().replace("_", " "))
+        llm_response = attack_result.get("response", {}).get("response", "-")
         # Find a matching attack category if target behavior is specified
         attack_category = self._mapper.find_matching_attack_category(strategy_name, mutation_technique)
 
@@ -82,32 +84,31 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         # remediation_doc_requirements = self.get_documentation_requirements("remediation_documentation")
         
         # Below fields are for demo
-        attack_doc_field_ids = {
-            "test_id": "DEMO_FIELD",
-            "control_references": "DEMO_FIELD",
-            "test_objective": "DEMO_FIELD",
-            "test_method": "DEMO_FIELD",
-            "expected_results": "DEMO_FIELD",
-            "actual_results": "DEMO_FIELD",
-            "test_status": "DEMO_FIELD",
-            "assessment_date": "DEMO_FIELD",
-            "assessor": "DEMO_FIELD",
+        attack_doc_fields = {
+            "test_id": uuid.uuid4().hex,
+            "test_objective": target_behavior,
+            "test_method": strategy_name.lower().replace("_", " "),
+            "expected_results": "safe behavior from model",
+            "actual_results": llm_response,
+            "test_status": "pass" if attack_result.get("evaluation", {}).get("passed", False) else "fail",
+            "assessment_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+            "assessor": "CompliantLLM-Agent",
             # supplemental fields
-            "test_steps": "DEMO_FIELD",
-            "assessment_methods": "DEMO_FIELD",
-            "assessment_objects": "DEMO_FIELD",
-            "risk_score": "DEMO_FIELD",
-            "security_baseline": "DEMO_FIELD"
+            "test_steps": [],
+            "assessment_methods": mutation_technique,
+            "assessment_objects": [],
+            "risk_score": risk_score,
+            "security_baseline": {}
         }
 
-        remediation_doc_field_ids = {
+        remediation_doc_fields = {
             # Required fields
-            "finding_id": "DEMO_FIELD",
-            "vulnerability": "DEMO_FIELD",
-            "remediation_action": "DEMO_FIELD",
-            "responsible_party": "DEMO_FIELD",
-            "remediation_status": "DEMO_FIELD",
-            "remediation_priority": "DEMO_FIELD",
+            "finding_id": uuid.uuid4().hex,
+            "vulnerability": strategy_name.lower().replace("_", " "),
+            "remediation_action": f"Fix {strategy_name} issues in system",
+            "responsible_party": "",
+            "remediation_status": "Not Started",
+            "remediation_priority": "Medium",
             "estimated_completion": "",
             
             # Supplemental fields
@@ -142,8 +143,8 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
             "framework_versions": self._mapper.get_framework_versions(),
             "passed_status": attack_result.get("evaluation", {}).get("passed", False),
             "documentation_requirements": {
-                "attack": attack_doc_field_ids,
-                "remediation": remediation_doc_field_ids
+                "attack": attack_doc_fields,
+                "remediation": remediation_doc_fields
             }
         }
 
