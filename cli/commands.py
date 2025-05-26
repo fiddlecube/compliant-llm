@@ -14,10 +14,11 @@ from rich.table import Table
 from rich.progress import (
     Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 )
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Callable
 from rich import box
 from core.runner import execute_prompt_tests, execute_rerun_test
 from core.config_manager.cli_adapter import CLIConfigAdapter
+from core.analytics.tracker import analytics_tracker
 
 
 def dict_to_cli_table(
@@ -120,6 +121,9 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
     cli_adapter = CLIConfigAdapter()
     
     try:
+        # Track test start
+        analytics_tracker.track_test_start(strategy or "manual", provider or "unknown")
+        
         # Load configuration from CLI arguments
         cli_adapter.load_from_cli(
             config_path=config_path,
@@ -165,8 +169,10 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         click.echo(f"Error processing configuration: {e}", err=True)
         sys.exit(1)
     
-    # Run the tests with a progress indicator
+    # Run the tests with a progress indicator and track metrics
     console.print("\nRunning tests...")
+    start_time = time.time()
+    
     with Progress(
         SpinnerColumn(),
         TextColumn("[bold blue]{task.description}"),
@@ -175,6 +181,9 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         task = progress.add_task("[cyan]Testing prompt security", total=None)
         report_data = execute_prompt_tests(config_dict=runner_config)
         progress.update(task, completed=True)
+    
+    # Track test completion
+    analytics_tracker.track_test_end(report_data['metadata'].get('success_count', 0) > 0)
     
     console.print("[bold green]Tests completed successfully![/]")
     console.print(f"[bold cyan]Report saved successfully at {report_data['report_metadata']['path']}[/]")
@@ -191,6 +200,12 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         attack_success_rate = (attack_success_count / test_count) * 100 if test_count > 0 else 0
         attack_success_style = ("red" if attack_success_rate >= 50 else
                               "yellow" if attack_success_rate >= 20 else "green")
+        
+        # Track additional metrics
+        analytics_tracker.track_prompt_length(
+            metadata.get('prompt', ''),
+            metadata.get('prompt_type', 'system')
+        )
         
         # Create a dictionary with all the report metrics
         report_metrics = {
