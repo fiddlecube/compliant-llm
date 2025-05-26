@@ -1,0 +1,68 @@
+,insecure_output_handling,excessive_agency,jailbreak,data_poisoning,context_manipulation,prompt_injection,model_extraction,indirect_prompt_injection,model_dos,sensitive_info_disclosure
+AC-21,False,False,False,False,False,False,False,False,False,True
+AC-22,False,False,False,False,False,False,False,False,False,True
+AC-23,False,False,False,False,False,False,True,False,False,False
+AC-3,False,True,True,False,False,False,True,False,False,False
+AC-4,False,False,False,False,True,True,False,False,False,False
+AC-6,False,True,True,False,False,False,False,False,False,False
+CA-8,False,False,True,False,False,False,False,False,False,False
+CM-7,False,True,False,False,False,False,False,False,False,False
+DE.CM-1,False,False,False,False,False,False,True,False,False,False
+DE.CM-4,False,False,True,False,False,False,False,False,False,False
+Govern 1.1,False,True,False,False,False,False,False,False,False,False
+Govern 1.2,False,False,True,False,False,False,False,True,False,False
+Govern 1.3,False,False,False,False,False,True,False,False,False,False
+Govern 1.4,False,True,True,False,False,False,False,False,False,False
+Govern 2.1,False,False,True,False,False,False,False,False,False,False
+Govern 2.2,False,False,True,True,False,False,False,False,False,False
+Govern 3.1,False,False,False,False,False,False,True,False,False,False
+Govern 3.2,True,False,False,False,True,False,False,False,False,True
+ID.AM-5,False,False,False,False,False,False,False,False,True,False
+ID.SC-4,False,False,False,True,False,False,False,False,False,False
+Manage 1.3,False,False,True,False,False,False,False,False,False,False
+Manage 2.1,False,False,False,False,True,False,False,False,False,False
+Manage 2.2,False,False,False,True,False,False,False,False,False,False
+Manage 2.3,True,False,False,False,False,False,False,False,False,False
+Manage 2.4,False,False,False,False,False,True,False,False,False,False
+Map 1.1,False,True,False,False,True,False,False,False,False,False
+Map 1.2,True,False,False,False,False,False,False,False,False,False
+Map 1.3,False,False,False,True,False,False,True,False,False,True
+Map 1.4,False,True,False,False,False,False,False,False,False,False
+Map 2.1,False,False,True,False,False,False,False,False,False,False
+Map 2.2,False,False,False,False,False,True,False,True,False,False
+Map 3.3,False,False,False,False,False,False,False,False,True,False
+Measure 1.1,False,False,False,False,True,False,False,False,False,False
+Measure 1.4,False,False,False,True,False,False,True,False,False,False
+Measure 1.5,False,False,False,False,False,False,False,False,True,False
+Measure 1.7,False,False,False,False,False,False,False,False,False,True
+Measure 2.1,False,False,False,False,False,True,False,False,False,False
+Measure 2.2,False,True,False,False,False,False,False,False,False,False
+Measure 2.3,False,False,True,False,False,False,False,False,False,False
+Measure 3.1,True,False,False,False,False,False,False,False,False,False
+PR.AC-4,False,True,True,False,True,False,True,False,False,True
+PR.DS-1,False,False,False,True,False,False,False,False,False,False
+PR.DS-2,False,False,True,False,False,False,False,True,False,False
+PR.DS-4,False,False,False,False,False,False,False,False,True,False
+PR.DS-5,False,False,False,False,False,False,True,False,False,True
+PR.DS-6,False,False,False,True,True,False,False,True,False,False
+PR.IP-1,False,True,False,False,False,False,False,False,False,False
+PR.IP-2,False,False,False,True,False,False,False,False,False,False
+PR.IP-3,False,False,True,False,False,False,False,False,False,False
+PR.PT-3,False,True,False,False,False,False,False,False,False,False
+PR.PT-4,False,False,False,False,True,False,False,False,False,False
+SA-10,False,False,False,True,False,False,False,False,False,False
+SA-19,False,False,False,True,False,False,False,False,False,False
+SC-12,False,False,False,False,False,False,True,False,False,False
+SC-18,True,False,False,False,False,True,False,True,False,False
+SC-28,False,False,False,False,False,False,False,False,False,True
+SC-38,False,False,False,False,True,False,False,False,False,False
+SC-5,False,False,False,False,False,False,False,False,True,False
+SC-6,False,False,False,False,False,False,False,False,True,False
+SC-7,False,True,True,False,True,False,False,False,False,False
+SC-8,True,False,False,True,False,False,True,False,False,False
+SI-10,True,True,True,True,True,True,False,True,False,False
+SI-15,True,False,False,False,False,False,False,False,False,False
+SI-19,False,False,False,False,False,False,True,False,False,True
+SI-3,False,False,True,False,False,False,False,True,False,False
+SI-4,False,False,False,False,False,False,False,False,True,False
+SI-7,True,False,False,True,True,True,False,False,False,False
