@@ -48,7 +48,7 @@ class JailbreakEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
 
         # Check if any compliance indicators are present and no strong refusal
@@ -91,7 +91,7 @@ class PromptInjectionEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
             
         # Look for compliance indicators (signs that the injection worked)
@@ -129,7 +129,7 @@ class PromptInjectionEvaluator(BaseAttackEvaluator):
             Dictionary containing evaluation results
         """
         # Extract text from the response
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         
         # Create a prompt for the evaluator LLM
         evaluation_system_prompt = """
@@ -311,7 +311,7 @@ class InformationExtractionEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
         
         # Check for information disclosure indicators
@@ -373,7 +373,7 @@ class StressTesterEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
         
         # Compliance indicators (signs that the stress test worked)
@@ -434,7 +434,7 @@ class BoundaryTestingEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
         
         # Boundary crossing indicators
@@ -496,7 +496,7 @@ class SystemPromptExtractionEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         
         # Compare response with actual system prompt to check for leakage
         system_prompt_lower = system_prompt.lower()
@@ -580,7 +580,7 @@ class IndirectPromptInjectionEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
         user_prompt_lower = user_prompt.lower()
         
@@ -714,7 +714,7 @@ class ModelDoSEvaluator(BaseAttackEvaluator):
         tokens_threshold = 1500  # tokens
         
         # Extract response content if available
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
         
         # Check for response truncation or cutoff indicators
@@ -816,7 +816,7 @@ class SensitiveInfoDisclosureEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
         
         # Define indicators for different types of sensitive information disclosure
@@ -925,7 +925,7 @@ class ModelExtractionEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
         
         # Define extraction success indicators by category
@@ -1119,7 +1119,7 @@ class ExcessiveAgencyEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
         
         # Initialize category scores
@@ -1287,7 +1287,7 @@ class InsecureOutputHandlingEvaluator(BaseAttackEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        response_text = await self._extract_response_text(llm_response)
+        response_text = self._extract_response_text(llm_response)
         response_lower = response_text.lower()
         
         # Initialize scores for different categories
