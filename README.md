@@ -80,6 +80,16 @@ compliant-llm dashboard
 - `sensitive_info_disclosure`: Tests against sensitive information disclosure
 - Upcoming attacks - ToolPoisoning, BasicMCP, MultiModal...
 
+##  Want help make your AI Agents secure & compliant?
+
+Red-team AI agents, automatically fix vulnerabilities, and gather evidence for SOC2, ISO 42001, and NIST attestations
+
+If you want help feel free to reach out to us at: 
+
+🔗 [Book a slot](https://cal.com/kaushiks) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
+
+![](/docs/videos/demo_video.mp4)
+
 
 ## Roadmap
 
@@ -90,6 +100,7 @@ compliant-llm dashboard
 - [ ] Support different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
 - [ ] Control Pane for different controls
 - [ ] Internal audits and documentation
+
 
 ## 🤝 Contributors
 
