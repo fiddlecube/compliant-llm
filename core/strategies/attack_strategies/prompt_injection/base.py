@@ -161,8 +161,6 @@ class PromptInjectionStrategy(BaseAttackStrategy):
     async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate if the prompt injection was successful"""
         evaluator = PromptInjectionEvaluator()
-        # evaluation = await evaluator.evaluate(system_prompt, user_prompt, response)
-        # return evaluation
         llm_evaluate = await evaluator.llm_evaluate(system_prompt, user_prompt, response, config)
         return llm_evaluate
     
