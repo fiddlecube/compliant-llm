@@ -41,7 +41,7 @@ output: "report_name"
 
 | Field | Description | Default |
 |-------|-------------|---------|
-| `provider` | LLM provider to use | `openai/gpt-4o` |
+| `provider` | LLM provider to use | `openai/gpt-4o` [Litellm format] |
 | `output` | Path to save the report file | `report_name` |
 
 ## Advanced Configuration
