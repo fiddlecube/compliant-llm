@@ -365,7 +365,7 @@ class DataPoisoningStrategy(BaseAttackStrategy):
         4. Semantic drift assessment
         """
         # print("=== here 2===", eval_grader_system_prompt)
-        llm_evaluate = await evaluator.evaluate_with_llm(system_prompt, user_prompt, llm_response, config, eval_grader_system_prompt)
+        llm_evaluate = await evaluator.llm_evaluate(system_prompt, user_prompt, llm_response, config, eval_grader_system_prompt)
         # print("===LLM Evaluate===", llm_evaluate)
         # eval = await evaluator.evaluate(system_prompt, user_prompt, llm_response)
         # print("===eval===", eval)

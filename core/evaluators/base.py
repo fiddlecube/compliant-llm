@@ -139,7 +139,6 @@ class BaseAttackEvaluator(BaseEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
-        print("---here in super class---")
         try:
             provider = LiteLLMProvider()
                         
