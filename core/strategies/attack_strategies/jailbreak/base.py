@@ -157,6 +157,7 @@ class JailbreakStrategy(BaseAttackStrategy):
             
             # Evaluate the response
             evaluation = await self.evaluate(system_prompt, attack_prompt, response)
+            
             # Compile result
             return {
                 'strategy': self.name,
