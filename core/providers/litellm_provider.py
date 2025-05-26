@@ -157,7 +157,6 @@ class LiteLLMProvider(LLMProvider):
 
             # Extract provider-specific configuration
             # TODO: @vini - simplify this
-            print("--config--", config)
             provider_config = config.get("provider_config", {})
             model = provider_config.get("model", "gpt-4o")
             temperature = provider_config.get("temperature", 0.7)
