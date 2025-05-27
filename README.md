@@ -65,18 +65,33 @@ compliant-llm dashboard
 compliant-llm test --config_path configs/config.yaml
 ```
 
-All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
-
 3. View the latest test report in UI:
 
 ```bash
 compliant-llm dashboard
 ```
 
-### File Structure
+![](docs/gif/demo.gif)
 
-- **Reports**: All generated reports are saved to the `reports/` directory by default (excluded from git)
-- **Configs**: Configuration files are stored in the `configs/` directory
+## Roadmap
+
+- [ ] Full Application Pen Testing
+- [ ] Compliant MCP Servers
+- [ ] Multimodal Testing and Redteaming
+- [ ] CI/CD
+- [ ] Support different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
+- [ ] Control Pane for different controls
+- [ ] Internal audits and documentation
+
+
+##  Want a Self Hosted Compliant LLM?
+
+Red-team AI agents, automatically fix vulnerabilities, and gather evidence for SOC2, ISO 42001, and NIST attestations
+
+If you want help feel free to reach out to us at: 
+
+🔗 [Book a slot](https://cal.com/kaushiks/fc) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
+
 
 #### Available Testing Strategies
 
@@ -90,25 +105,6 @@ compliant-llm dashboard
 - `sensitive_info_disclosure`: Tests against sensitive information disclosure
 - Upcoming attacks - ToolPoisoning, BasicMCP, MultiModal...
 
-##  Want help make your AI Agents secure & compliant?
-
-Red-team AI agents, automatically fix vulnerabilities, and gather evidence for SOC2, ISO 42001, and NIST attestations
-
-If you want help feel free to reach out to us at: 
-
-🔗 [Book a slot](https://cal.com/kaushiks/fc) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
-
-![](docs/gif/demo.gif)
-
-## Roadmap
-
-- [ ] Full Application Pen Testing
-- [ ] Compliant MCP Servers
-- [ ] Multimodal Testing and Redteaming
-- [ ] CI/CD
-- [ ] Support different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
-- [ ] Control Pane for different controls
-- [ ] Internal audits and documentation
 
 
 ## 🤝 Contributors
