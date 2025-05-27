@@ -125,14 +125,14 @@ Understand how Compliant LLM is used and improve the most relevant features.
 Track overall usage for internal and external (e.g. fundraising) reporting.
 None of the data is shared with third parties and does not include any sensitive information. We want to be super transparent about this and you can find the exact data we collect here.
 
-You can opt-out by setting TELEMETRY_ENABLED=false.
+You can opt-out by setting `TELEMETRY_ENABLED=false` in the `.env` file.
 
 
 ## 📝 Cite Us
 
-@misc{compliant_llm2025,
+`@misc{compliant_llm2025,
   author       = {FiddleCube},
   title        = {Compliant LLM: Build Secure AI agents and MCP Servers},
   year         = {2025},
   howpublished = {\url{<https://github.com/fiddlecube/compliant-llm}}>,
-}
+}`
