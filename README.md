@@ -1,6 +1,7 @@
 [![Compliant LLM](/docs/images/github.png)](https://github.com/fiddlecube/compliant-llm)
 
 ![License](https://img.shields.io/badge/License-MIT-red)
+[![GitHub Stars](https://img.shields.io/github/stars/fiddlecube/compliant-llm?style=flat)](https://github.com/fiddlecube/compliant-llm/stargazers)
 [![YC](https://img.shields.io/badge/Y%20Combinator-W23-orange)](https://www.ycombinator.com/companies/fiddlecube)
 [![PyPI](https://img.shields.io/pypi/dm/compliant-llm?label=pypi%20compliant-llm)](https://pypi.org/project/compliant-llm/)
 [![Discord Chat](https://img.shields.io/discord/1376840449167458424?label=chat&logo=discord&color=5865F2)](https://discord.gg/yJuvmj7r)
@@ -91,20 +92,6 @@ Red-team AI agents, automatically fix vulnerabilities, and gather evidence for S
 If you want help feel free to reach out to us at: 
 
 🔗 [Book a slot](https://cal.com/kaushiks/fc) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
-
-
-#### Available Testing Strategies
-
-- `prompt_injection`: Tests resilience against prompt injection attacks
-- `jailbreak`: Tests against jailbreak attempts to bypass restrictions
-- `excessive_agency`: Tests if the system prompt can be extracted
-- `indirect_prompt_injection`: Tests against indirect prompt injection attacks
-- `insecure_output_handling`: Tests against insecure output handling
-- `model_dos`: Tests against model DoS attacks
-- `model_extraction`: Tests against model extraction attacks
-- `sensitive_info_disclosure`: Tests against sensitive information disclosure
-- Upcoming attacks - ToolPoisoning, BasicMCP, MultiModal...
-
 
 
 ## 🤝 Contributors
