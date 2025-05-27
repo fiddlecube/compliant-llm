@@ -158,9 +158,7 @@ def execute_rerun_test(config_dict, report_file):
         'temperature': config.get('temperature', 0.7),
         'timeout': config.get('timeout', 30)
     }
-    
-    print(f"[bold cyan]Running test with provider config: {provider_config}[/]")
-    
+        
     # Create provider
     provider = LiteLLMProvider()
 

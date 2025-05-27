@@ -124,7 +124,7 @@ def run_test(prompt, selected_strategies, config):
         return "", str(e)
 
 def render_beautiful_json_output(json_output):
-    container = st.container(height=300, border=True)
+    container = st.container(height=500, border=True)
     with container:
         st.code(json.dumps(json_output, indent=2), language="json")
 
