@@ -1,4 +1,4 @@
-# 🛡️ Compliant LLM
+[![Compliant LLM](/docs/images/github.png)](https://github.com/fiddlecube/compliant-llm)
 
 
 [![YC](https://img.shields.io/badge/Y%20Combinator-W23-orange)](https://www.ycombinator.com/companies/fiddlecube)
