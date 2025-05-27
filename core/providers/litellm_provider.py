@@ -153,14 +153,14 @@ class LiteLLMProvider(LLMProvider):
             model = provider_config.get("provider_name", "gpt-4o")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
-            api_key = provider_config.get("api_key")
+            # api_key = provider_config.get("api_key")
             # Execute the prompt asynchronously
             response = await acompletion(
                 model=model,
                 messages=chat_history,
                 temperature=temperature,
                 timeout=timeout,
-                api_key=api_key
+                # api_key=api_key
             )
 
             # Properly extract the message and add to history in the correct format
@@ -211,7 +211,7 @@ class LiteLLMProvider(LLMProvider):
             model = provider_config.get("provider_name")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
-            api_key = provider_config.get("api_key")
+            # api_key = provider_config.get("api_key")
 
             # Execute the prompt
             response = await acompletion(
@@ -222,7 +222,7 @@ class LiteLLMProvider(LLMProvider):
                 ],
                 temperature=temperature,
                 timeout=timeout,
-                api_key=api_key
+                # api_key=api_key
             )
             
             # Extract the message content in the same way as the chat method
