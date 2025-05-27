@@ -48,7 +48,7 @@ This will:
 compliant-llm dashboard
 ```
 
-![Dashboard View](docs/images/ui_screenshot.png)
+![Dashboard View](../images/ui_screenshot.png)
 
 Here you will be able to see all your past test runs.
 
