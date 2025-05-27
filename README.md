@@ -82,10 +82,6 @@ compliant-llm dashboard
 ![](docs/gif/demo.gif)
 
 
-![](docs/images/nist.png)
-
-
-
 ## Roadmap
 
 - [ ] Full Application Pen Testing
