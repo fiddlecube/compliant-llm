@@ -82,11 +82,13 @@ compliant-llm dashboard
 
 ## Support
 
+[![Create Issue](https://img.shields.io/badge/Create-Issue-blue?style=flat&logo=github)](https://github.com/fiddlecube/compliant-llm/issues/new/choose)
+
 Contact: founders@fiddlecube.ai
 
 Meet: 🔗 [Find a slot](https://cal.com/kaushiks/fc)
 
-Community: 💬[Discord](https://discord.gg/yJuvmj7r), [X](https://x.com/FiddleCubeAI), [LinkedIn](https://www.linkedin.com/company/fiddlecube/)
+Community: 💬 [Discord](https://discord.gg/yJuvmj7r), [X](https://x.com/FiddleCubeAI), [LinkedIn](https://www.linkedin.com/company/fiddlecube/)
 
 ## Self-hosted or hosted cloud: Book a demo
 
