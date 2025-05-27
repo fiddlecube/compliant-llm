@@ -1,6 +1,5 @@
 [![Compliant LLM](/docs/images/github.png)](https://github.com/fiddlecube/compliant-llm)
 
-![License](https://img.shields.io/badge/License-MIT-red)
 [![PyPI](https://img.shields.io/pypi/dm/compliant-llm?label=pypi%20compliant-llm)](https://pypi.org/project/compliant-llm/)
 [![Discord Chat](https://img.shields.io/discord/1376840449167458424?label=chat&logo=discord&color=5865F2)](https://discord.gg/yJuvmj7r)
 [![GitHub Stars](https://img.shields.io/github/stars/fiddlecube/compliant-llm?style=flat)](https://github.com/fiddlecube/compliant-llm/stargazers)
@@ -9,6 +8,7 @@
 [![Follow on X](https://img.shields.io/twitter/follow/FiddleCubeAI?style=social)](https://twitter.com/fiddlecube)
 [![Commit Activity](https://img.shields.io/github/commit-activity/m/fiddlecube/compliant-llm?label=commit%20activity)](https://github.com/fiddlecube/compliant-llm/commits)
 [![Issues Closed](https://img.shields.io/github/issues-closed/fiddlecube/compliant-llm)](https://github.com/fiddlecube/compliant-llm/issues?q=is%3Aissue+is%3Aclosed)
+![License](https://img.shields.io/badge/License-MIT-red)
 
 
 Compliant LLM is your comprehensive toolkit for ensuring compliance and security of your AI systems -- globally, across multiple compliance frameworks like NIST, ISO, HIPAA, GDPR, etc.
