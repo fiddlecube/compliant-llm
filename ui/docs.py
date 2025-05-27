@@ -70,7 +70,8 @@ def create_markdown_viewer():
         is_active = file.stem == selected_file
         
         # Create a URL-friendly version of the file name
-        url_name = file.stem.replace('_', '-')
+        # url_name = file.stem.replace('_', '-')
+        url_name = file_name
         
         st.sidebar.markdown(f"""
             <li class="{'active' if is_active else ''}">

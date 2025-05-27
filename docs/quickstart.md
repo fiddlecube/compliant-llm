@@ -48,9 +48,12 @@ This will:
 compliant-llm dashboard
 ```
 
+![Dashboard View](https://github.com/fiddlecube/compliant-llm/blob/main/docs/images/ui_screenshot.png)
+
 Here you will be able to see all your past test runs.
 
 Clicking them open will show you detailed reports, including:
+
 - Number of successful/failed tests
 - Timestamp and settings used for the test
 - Test results
