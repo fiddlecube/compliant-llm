@@ -87,11 +87,9 @@ compliant-llm dashboard
 
 ##  Want a Self Hosted Compliant LLM?
 
-Red-team AI agents, automatically fix vulnerabilities, and gather evidence for SOC2, ISO 42001, and NIST attestations
+Reach out to us at: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
 
-If you want help feel free to reach out to us at: 
-
-🔗 [Book a slot](https://cal.com/kaushiks/fc) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
+🔗 [Book a slot](https://cal.com/kaushiks/fc).
 
 
 ## 🤝 Contributors
