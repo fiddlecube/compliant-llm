@@ -42,19 +42,19 @@ strategy: prompt_injection,adversarial
 
 #### Connect to the LLM:
 
-##### for openai models
+##### For OpenAI models
 
 ```bash
 export OPENAI_API_KEY=your_api_key_here
 ```
 
-##### for anthropic models
+##### For Anthropic models
 
 ```bash
 export ANTHROPIC_API_KEY=your_api_key_here
 ```
 
-##### for azure openai models
+##### For Azure OpenAI models
 
 ```bash
 export AZURE_API_KEY="my-azure-api-key"
@@ -62,7 +62,7 @@ export AZURE_API_BASE="https://example-endpoint.openai.azure.com"
 export AZURE_API_VERSION="2023-05-15"
 ```
 
-#### Run the tool:
+#### Run the tool
 
 ```bash
 compliant-llm test --config configs/your_config.yaml
