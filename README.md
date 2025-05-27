@@ -1,18 +1,17 @@
 [![Compliant LLM](/docs/images/github.png)](https://github.com/fiddlecube/compliant-llm)
 
 ![License](https://img.shields.io/badge/License-MIT-red)
-[![GitHub Stars](https://img.shields.io/github/stars/fiddlecube/compliant-llm?style=flat)](https://github.com/fiddlecube/compliant-llm/stargazers)
-[![YC](https://img.shields.io/badge/Y%20Combinator-W23-orange)](https://www.ycombinator.com/companies/fiddlecube)
 [![PyPI](https://img.shields.io/pypi/dm/compliant-llm?label=pypi%20compliant-llm)](https://pypi.org/project/compliant-llm/)
-[![Discord Chat](https://img.shields.io/discord/1376840449167458424?label=chat&logo=discord&color=5865F2)](https://discord.gg/yJuvmj7r)
-[![Follow on X](https://img.shields.io/twitter/follow/FiddleCubeAI?style=social)](https://twitter.com/fiddlecube)
+[![Discord Chat](https://img.shields.io/discord/1376840449167458424?
+[![GitHub Stars](https://img.shields.io/github/stars/fiddlecube/compliant-llm?style=flat)](https://github.com/fiddlecube/compliant-llm/stargazers)
+[![YC](https://img.shields.io/badge/Y%20Combinator-W23-orange)](https://www.ycombinator.com/companies/fiddlecube)label=chat&logo=discord&color=5865F2)](https://discord.gg/yJuvmj7r)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Follow-blue?logo=linkedin)](https://www.linkedin.com/company/fiddlecube)
-[![Issues Closed](https://img.shields.io/github/issues-closed/fiddlecube/compliant-llm)](https://github.com/fiddlecube/compliant-llm/issues?q=is%3Aissue+is%3Aclosed)
-[![Discussions](https://img.shields.io/github/discussions/fiddlecube/compliant-llm?label=discussions)](https://github.com/fiddlecube/compliant-llm/discussions)
+[![Follow on X](https://img.shields.io/twitter/follow/FiddleCubeAI?style=social)](https://twitter.com/fiddlecube)
 [![Commit Activity](https://img.shields.io/github/commit-activity/m/fiddlecube/compliant-llm?label=commit%20activity)](https://github.com/fiddlecube/compliant-llm/commits)
+[![Issues Closed](https://img.shields.io/github/issues-closed/fiddlecube/compliant-llm)](https://github.com/fiddlecube/compliant-llm/issues?q=is%3Aissue+is%3Aclosed)
 
 
-Compliant LLM is your comprehensive toolkit for ensuring compliance, reliability and security of your AI systems -- globally, across multiple compliance frameworks like NIST, ISO, HIPAA, GDPR, etc.
+Compliant LLM is your comprehensive toolkit for ensuring compliance and security of your AI systems -- globally, across multiple compliance frameworks like NIST, ISO, HIPAA, GDPR, etc.
 
 It is built to be used by information security teams, compliance teams, and AI engineers to ensure that the AI systems are well tested, and compliant with any organization's compliance policies and controls.
 
