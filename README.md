@@ -63,9 +63,25 @@ All reports are automatically saved to the `reports/` directory, which is exclud
 compliant-llm dashboard
 ```
 
+![](docs/gif/demo.gif)
+
+##  Support
+
+Contact: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai)
+
+## Roadmap
+
+- [ ] Full Application Pen Testing
+- [ ] Compliant MCP Servers
+- [ ] Multimodal Testing and Redteaming
+- [ ] CI/CD
+- [ ] Support different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
+- [ ] Control Pane for different controls
+- [ ] Internal audits and documentation
+
 ### File Structure
 
-- **Reports**: All generated reports are saved to the `reports/` directory by default (excluded from git)
+- **Reports**: All generated reports are saved to the `reports/` directory by default
 - **Configs**: Configuration files are stored in the `configs/` directory
 
 #### Available Testing Strategies
@@ -79,26 +95,6 @@ compliant-llm dashboard
 - `model_extraction`: Tests against model extraction attacks
 - `sensitive_info_disclosure`: Tests against sensitive information disclosure
 - Upcoming attacks - ToolPoisoning, BasicMCP, MultiModal...
-
-##  Want help make your AI Agents secure & compliant?
-
-Red-team AI agents, automatically fix vulnerabilities, and gather evidence for SOC2, ISO 42001, and NIST attestations
-
-If you want help feel free to reach out to us at: 
-
-🔗 [Book a slot](https://cal.com/kaushiks/fc) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
-
-![](docs/gif/demo.gif)
-
-## Roadmap
-
-- [ ] Full Application Pen Testing
-- [ ] Compliant MCP Servers
-- [ ] Multimodal Testing and Redteaming
-- [ ] CI/CD
-- [ ] Support different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
-- [ ] Control Pane for different controls
-- [ ] Internal audits and documentation
 
 
 ## 🤝 Contributors
