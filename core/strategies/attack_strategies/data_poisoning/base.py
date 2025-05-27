@@ -171,7 +171,6 @@ class DataPoisoningStrategy(BaseAttackStrategy):
                                 'mutation_technique': mutation.get('technique', 'unknown'),
                                 'target_behavior': prompt.get('target_behavior', '')
                             })
-            print("formatted_prompts_dynamic",formatted_prompts)
             return formatted_prompts
         except Exception as e:
             print(f"Error generating dynamic attack prompts: {e}")

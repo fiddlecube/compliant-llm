@@ -221,6 +221,7 @@ class ExcessiveAgencyStrategy(BaseAttackStrategy):
             }
         except Exception as e:
             # Handle errors
+            # implement stack trace here
             return {
                 'strategy': self.name,
                 'system_prompt': system_prompt,

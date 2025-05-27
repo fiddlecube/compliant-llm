@@ -102,6 +102,8 @@ def clean_response(response: str) -> str:
         if code_block_match:
             # Extract language tag and content
             language_tag = code_block_match.group(1)
+            if language_tag is None:
+                language_tag = ''
             content = code_block_match.group(2).strip()
             
             # If content is empty, return the original response
