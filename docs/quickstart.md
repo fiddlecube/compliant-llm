@@ -48,6 +48,8 @@ This will:
 compliant-llm dashboard
 ```
 
+![UI Screenshot](docs/images/ui_screenshot.png)
+
 Here you will be able to see all your past test runs.
 
 Clicking them open will show you detailed reports, including:
