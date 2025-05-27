@@ -11,9 +11,7 @@
 ![License](https://img.shields.io/badge/License-MIT-red)
 
 
-Compliant LLM is your comprehensive toolkit for ensuring compliance and security of your AI systems -- globally, across multiple compliance frameworks like NIST, ISO, HIPAA, GDPR, etc.
-
-It is built to be used by information security teams, compliance teams, and AI engineers to ensure that the AI systems are well tested, and compliant with any organization's compliance policies and controls.
+Compliant LLM is your comprehensive toolkit for ensuring compliance and security of your AI systems. Infosec, compliance, and gen AI teams use compliant-llm to ensure that their AI agents are secure and compliant with internal policies and frameworks like NIST, ISO, etc
 
 It supports multiple LLM providers, and can be used to test prompts, agents, MCP servers and GenAI models.
 
