@@ -155,7 +155,7 @@ class AttackOrchestrator:
     
     async def orchestrate_attack(self, system_prompt: str, strategies: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Run the orchestrator with parallel execution using asyncio.gather"""
-        
+        print("====config====", self.config)
         # Create tasks for all strategies
         strategy_tasks = [self.run_strategy_attack(strategy, system_prompt) for strategy in strategies]
         
