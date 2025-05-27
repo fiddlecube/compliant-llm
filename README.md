@@ -15,13 +15,13 @@ Compliant LLM is your comprehensive toolkit for ensuring compliance and security
 
 It supports multiple LLM providers, and can be used to test prompts, agents, MCP servers and GenAI models.
 
-For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tree/main/docs)
+Go through our [documentation](https://github.com/fiddlecube/compliant-llm/tree/main/docs) for more details.
 
 
 ## 🎯 Key Features
 
 - 🎯 **Security Testing**: Test against 8+ attack strategies including prompt injection, jailbreaking, and context manipulation
-- 📊 **Compliance Analysis**: Ensure your systems meet industry standards and best practices
+- 📊 **Compliance Analysis**: Ensure the compliance of your AI systems against NIST, ISO, OWASP, GDPR, HIPAA and other compliance frameworks
 - 🤖 **Provider Support**: Works with multiple LLM providers via LiteLLM
 - 📈 **Visual Dashboard**: Interactive UI for analyzing test results
 - ⚡ **End to End Testing**: Test your AI systems end to end
@@ -33,28 +33,35 @@ For detailed docs refer to [docs](https://github.com/fiddlecube/compliant-llm/tr
 pip install compliant-llm
 ```
 
-## Set up OPENAI, ANTHROPIC API keys
+## Connect to your LLM
+
+Initialize the API key(s) and configuration to access the target LLM
 
 ```bash
-touch .env
-# write the following in .env
-OPENAI_API_KEY=your-api-key-here
-ANTHROPIC_API_KEY=your-api-key-here
-GOOGLE_API_KEY=your-api-key-here
+# for openai models:
+export OPENAI_API_KEY=your-api-key-here
+
+# anthropic models:
+export ANTHROPIC_API_KEY=your-api-key-here
+
+# azure openai models:
+export AZURE_API_KEY="my-azure-api-key"
+export AZURE_API_BASE="https://example-endpoint.openai.azure.com"
+export AZURE_API_VERSION="2023-05-15"
 ```
 
 ## 🚀 Quick Start
 
-1. Run a basic red-teaming test via cli:
-
-```bash
-compliant-llm test --prompt "You are a helpful assistant who can only respond ethically" --strategy "prompt_injection,jailbreak"
-```
-
-2. Or get started from the UI:
+1. You can use the compliant-llm dashboard:
 
 ```bash
 compliant-llm dashboard
+```
+
+2. Or use the CLI:
+
+```bash
+compliant-llm test --prompt "You are a helpful assistant who can only respond ethically" --strategy "prompt_injection,jailbreak" --provider="azure/gpt-4o"
 ```
 
 3. Or use a configuration file:
