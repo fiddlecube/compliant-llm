@@ -110,11 +110,22 @@ We welcome contributions from the community! Whether it's bug fixes, feature add
 5. Open a Pull Request
 
 
-## 🔍 Open Analytics
+## 🔒 Security & Privacy
 
-At Compliant LLM, we believe in transparency. We collect minimal, anonymized usage data to improve our product and guide our development efforts.
+We take data security and privacy seriously. Please refer to our Security and Privacy page for more information.
 
-✅ No personal or company-identifying information
+
+### Telemetry
+
+By default, Compliant LLM automatically reports basic usage statistics of self-hosted instances to a centralized server (Azure).
+
+This helps us to:
+
+Understand how Compliant LLM is used and improve the most relevant features.
+Track overall usage for internal and external (e.g. fundraising) reporting.
+None of the data is shared with third parties and does not include any sensitive information. We want to be super transparent about this and you can find the exact data we collect here.
+
+You can opt-out by setting TELEMETRY_ENABLED=false.
 
 
 ## 📝 Cite Us
