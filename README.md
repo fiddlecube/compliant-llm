@@ -6,6 +6,9 @@
 [![Discord Chat](https://img.shields.io/discord/1376840449167458424?label=chat&logo=discord&color=5865F2)](https://discord.gg/yJuvmj7r)
 [![Follow on X](https://img.shields.io/twitter/follow/FiddleCubeAI?style=social)](https://twitter.com/fiddlecube)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Follow-blue?logo=linkedin)](https://www.linkedin.com/company/fiddlecube)
+[![Issues Closed](https://img.shields.io/github/issues-closed/fiddlecube/compliant-llm)](https://github.com/fiddlecube/compliant-llm/issues?q=is%3Aissue+is%3Aclosed)
+[![Discussions](https://img.shields.io/github/discussions/fiddlecube/compliant-llm?label=discussions)](https://github.com/fiddlecube/compliant-llm/discussions)
+[![Commit Activity](https://img.shields.io/github/commit-activity/m/fiddlecube/compliant-llm?label=commit%20activity)](https://github.com/fiddlecube/compliant-llm/commits)
 
 
 Compliant LLM is your comprehensive toolkit for ensuring compliance, reliability and security of your AI systems -- globally, across multiple compliance frameworks like NIST, ISO, HIPAA, GDPR, etc.
