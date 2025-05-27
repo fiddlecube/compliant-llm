@@ -21,8 +21,7 @@ class UIConfigAdapter:
         """
         self.config_manager = config_manager or ConfigManager()
         self.default_config = {
-            "provider": {"name": "openai/gpt-4o"}, # Default provider
-            # "model": "gpt-4o",          # Default model
+            "provider": {"provider_name": "openai/gpt-4o"}, # Default provider
             "temperature": 0.7,        # Default temperature
             "max_tokens": 2000,        # Default max tokens
             "timeout": 30,             # Default timeout in seconds
@@ -55,10 +54,9 @@ class UIConfigAdapter:
             "prompt": {"content": prompt},
             "strategies": strategies,
             "provider": {
-                "name": self.default_config["provider"]["name"],
-                "api_key": os.getenv(f"{self.default_config['provider']['name'].upper()}_API_KEY", '')
+                "provider_name": self.default_config["provider"]["provider_name"],
+                "api_key": os.getenv(f"{self.default_config['provider']['provider_name'].upper()}_API_KEY", '')
             },
-            # "model": self.default_config["model"],
             "temperature": self.default_config["temperature"],
             "timeout": self.default_config["timeout"],
             "max_tokens": self.default_config["max_tokens"],
