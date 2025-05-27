@@ -48,7 +48,7 @@ This will:
 compliant-llm dashboard
 ```
 
-![Dashboard View](../images/ui_screenshot.png)
+![Dashboard View](https://github.com/fiddlecube/compliant-llm/blob/f86dc6d3013bac829d1753c3c0ecd67f7e95cce5/docs/images/ui_screenshot.png)
 
 Here you will be able to see all your past test runs.
 
