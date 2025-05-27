@@ -1,4 +1,4 @@
-[![Compliant LLM](/docs/images/github.png)](https://github.com/fiddlecube/compliant-llm)
+[![Compliant LLM](https://github.com/fiddlecube/compliant-llm/blob/main/docs/images/github.png)](https://github.com/fiddlecube/compliant-llm)
 
 [![PyPI](https://img.shields.io/pypi/dm/compliant-llm?label=pypi%20compliant-llm)](https://pypi.org/project/compliant-llm/)
 [![Documentation](https://img.shields.io/badge/Documentation-Read-green?style=flat&logo=github)](https://github.com/fiddlecube/compliant-llm/tree/main/docs)
