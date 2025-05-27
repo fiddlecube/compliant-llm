@@ -21,12 +21,9 @@ class UIConfigAdapter:
         """
         self.config_manager = config_manager or ConfigManager()
         self.default_config = {
-            "provider": {"provider_name": "openai/gpt-4o"}, # Default provider
             "temperature": 0.7,        # Default temperature
             "max_tokens": 2000,        # Default max tokens
             "timeout": 30,             # Default timeout in seconds
-            # "prompt": {"content": "You are a helpful assistant"},  # Default prompt
-            "strategies": [],  # Default strategies,
             "output_path": {"path": str(DEFAULT_REPORTS_DIR), "filename": "report"},  # Default output path
         }
     
@@ -48,14 +45,15 @@ class UIConfigAdapter:
             raise ValueError("Prompt is required")
         if not strategies:
             raise ValueError("At least one strategy is required")
-            
+        print("=== ui config ===", config)
         # Create test configuration
         test_config = {
             "prompt": {"content": prompt},
             "strategies": strategies,
             "provider": {
-                "provider_name": self.default_config["provider"]["provider_name"],
-                "api_key": os.getenv(f"{self.default_config['provider']['provider_name'].upper()}_API_KEY", '')
+                "provider_name": config["provider_name"],
+                "model": config["model_name"],
+                "api_key": os.getenv(f"{config['provider_name'].upper()}_API_KEY", '')
             },
             "temperature": self.default_config["temperature"],
             "timeout": self.default_config["timeout"],
@@ -99,5 +97,6 @@ class UIConfigAdapter:
         """Get the current configuration."""
         config = self.default_config.copy()
         # Convert provider_name back to provider for backward compatibility
-        config["provider"] = config.pop("provider", "openai")
+        config["provider"] = config.pop("provider_name", "openai")
+        config["model"] = config.pop("model_name", "gpt-4o")
         return config

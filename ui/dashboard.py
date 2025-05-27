@@ -158,12 +158,9 @@ def create_app_ui():
     if 'selected_report' in st.session_state:
         open_dashboard_with_report(st.session_state['selected_report'])
         del st.session_state['selected_report']
-
-    # Variable to control submit button state
-    submit_disabled = True
     
     # configuration payload
-    config = {}
+    # config = {}
     
     # main content
     st.header("Setup Configuration")
@@ -175,10 +172,13 @@ def create_app_ui():
 
     # Select provider outside the form so it reruns on change
     provider_name = st.selectbox(
-        "Select Provider", [p["name"] for p in PROVIDER_SETUP]
+        "Select Provider", [p["name"] for p in PROVIDER_SETUP],
+        index=len(PROVIDER_SETUP) - 1
     )
     provider = next(p for p in PROVIDER_SETUP if p["name"] == provider_name)
-
+    model = st.text_input(
+        "Select Model", "gpt-4o"
+    )
     # Form for entering keys
     with st.form("provider_form"):
         # Dynamically create input fields for the selected provider
@@ -194,23 +194,38 @@ def create_app_ui():
         submitted = st.form_submit_button("Save Config")
 
         if submitted:
+            if not provider_name:
+                st.error("Please select a provider")
+                return
+            
+            empty_fields = [key for key, value in inputs.items() if not value.strip()]
+            if empty_fields:
+                st.error(f"Please fill in all required fields: {', '.join(empty_fields)}")
+                return
+            
             env_path = ".env"
             if not os.path.exists(env_path):
                 open(env_path, "w").close()
 
-            config = {'provider': provider['value']}
+            config = {'provider_name': provider['value'], 'model_name': model}
             for field, val in inputs.items():
-                env_key = f"{provider['value'].upper()}_{field.upper()}"
+                env_key = f"{field.upper()}"
                 set_key(env_path, env_key, val)
                 # Set in-process environment for immediate use
                 os.environ[env_key] = val
-                st.success(f"Configuration for {provider_name} saved to .env and loaded into session")
+                # st.success(f"Configuration for {provider_name} saved to .env and loaded into session")
                 config[field] = val
-    st.write(config)
-    # st.session_state['saved_config'] = config
+
+            st.write(config)
+            st.session_state['saved_config'] = config
     
 
     st.header("Run New Test")
+    submit_button_disabled = True
+    provider_config = st.session_state['saved_config']
+
+    if provider_config:
+        submit_button_disabled = False
     with st.form("test_form", clear_on_submit=True):
         col1, col2 = st.columns([2, 1])
         with col1:
@@ -218,7 +233,7 @@ def create_app_ui():
         with col2:
             st.write("### Select Testing Strategies")
             selected_strategies = st.multiselect("Choose strategies to test", get_available_strategies(), default=["prompt_injection", "jailbreak"])
-        submit_button = st.form_submit_button(label="Run Test", type="primary", disabled=submit_disabled)
+        submit_button = st.form_submit_button(label="Run Test", type="primary", disabled=submit_button_disabled)
 
     if submit_button:
         if not prompt.strip():
@@ -229,7 +244,7 @@ def create_app_ui():
             st.stop()
 
         with st.spinner("🔍 Running tests..."):
-            stdout, stderr = run_test(prompt, selected_strategies, config)
+            stdout, stderr = run_test(prompt, selected_strategies, provider_config)
             reports = get_reports()
 
         st.subheader("✅ Test Results")
