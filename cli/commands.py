@@ -121,9 +121,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
     cli_adapter = CLIConfigAdapter()
     
     try:
-        # Track test start
-        analytics_tracker.track_test_start(strategy or "manual", provider or "unknown")
-        
+        analytics_tracker.track_cli_command("test")
         # Load configuration from CLI arguments
         cli_adapter.load_from_cli(
             config_path=config_path,
@@ -163,13 +161,15 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
             runner_config['nist_compliance'] = True
 
     except FileNotFoundError as e:
+        analytics_tracker.track_error("FileNotFound", f"Configuration file not found: {e}")
         click.echo(str(e), err=True)
         sys.exit(1)
     except Exception as e:
+        analytics_tracker.track_error("ConfigProcessing", f"Error processing configuration: {e}")
         click.echo(f"Error processing configuration: {e}", err=True)
         sys.exit(1)
     
-    # Run the tests with a progress indicator and track metrics
+    # Run the tests with a progress indicator
     console.print("\nRunning tests...")
     
     with Progress(
@@ -178,11 +178,15 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         TimeElapsedColumn(),
     ) as progress:
         task = progress.add_task("[cyan]Testing prompt security", total=None)
+        start_time = analytics_tracker.track_test_start(
+            strategy or "manual",
+            provider or "unknown"
+        )
         report_data = execute_prompt_tests(config_dict=runner_config)
         progress.update(task, completed=True)
     
     # Track test completion
-    analytics_tracker.track_test_end(report_data['metadata'].get('success_count', 0) > 0)
+    analytics_tracker.track_test_end(start_time, report_data['metadata'].get('success_count', 0) > 0)
     
     console.print("[bold green]Tests completed successfully![/]")
     console.print(f"[bold cyan]Report saved successfully at {report_data['report_metadata']['path']}[/]")
@@ -199,12 +203,6 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         attack_success_rate = (attack_success_count / test_count) * 100 if test_count > 0 else 0
         attack_success_style = ("red" if attack_success_rate >= 50 else
                               "yellow" if attack_success_rate >= 20 else "green")
-        
-        # Track additional metrics
-        analytics_tracker.track_prompt_length(
-            metadata.get('prompt', ''),
-            metadata.get('prompt_type', 'system')
-        )
         
         # Create a dictionary with all the report metrics
         report_metrics = {
@@ -253,6 +251,8 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
 def report(report_file, format, summary):
     """Analyze and view previous test results. If no file is specified, uses the latest report."""
     try:
+        analytics_tracker.track_cli_command("report")
+        analytics_tracker.track_report_view(format, summary)
         # If no report file is specified, find the latest one
         if not report_file:
             report_dir = "reports"
@@ -312,11 +312,13 @@ def report(report_file, format, summary):
                 f.write("</body></html>")
             click.echo(f"HTML report saved to {html_path}")
 
-    except FileNotFoundError:
-        click.echo(f"Report file not found: {report_file}", err=True)
+    except FileNotFoundError as e:
+        analytics_tracker.track_error("FileNotFound", f"Report file not found: {e}")
+        click.echo(f"Error: Report file not found: {e}", err=True)
         sys.exit(1)
     except json.JSONDecodeError:
-        click.echo(f"Invalid JSON in report file: {report_file}", err=True)
+        analytics_tracker.track_error("InvalidJSON", "Invalid JSON format in report file")
+        click.echo("Error: Invalid JSON format in report file.", err=True)
         sys.exit(1)
 
 
@@ -326,6 +328,8 @@ def report(report_file, format, summary):
 @click.option('--output', '-o', help='Output file path')
 def generate(type, template, output):
     """Generate configuration files or sample prompts."""
+    analytics_tracker.track_cli_command("generate")
+    analytics_tracker.track_template_use(type, template or "default")
     if type == 'config':
         # Define some templates
         templates = {
@@ -412,7 +416,7 @@ Your responses should be:
 @click.option('--validate', '-v', help='Validate a configuration file')
 def config(list, show, validate):
     """Manage configuration files."""
-    
+    analytics_tracker.track_cli_command("config")
     if list:
         click.echo("Available configurations:")
         # Get the list of config directories from core.config
@@ -443,6 +447,7 @@ def config(list, show, validate):
             # Output the raw configuration
             click.echo(yaml.dump(cli_adapter.config_manager.config, default_flow_style=False))  # noqa: E501
         except FileNotFoundError as e:
+            analytics_tracker.track_error("FileNotFound", f"Configuration file not found: {e}")
             click.echo(str(e), err=True)
             sys.exit(1)
     
@@ -461,9 +466,11 @@ def config(list, show, validate):
             click.echo("Processed configuration for runner:")
             click.echo(yaml.dump(runner_config, default_flow_style=False))
         except FileNotFoundError as e:
-            click.echo(str(e), err=True)
+            analytics_tracker.track_error("FileNotFound", f"Configuration file not found: {e}")
+            click.echo(f"Error: Configuration file not found: {e}", err=True)
             sys.exit(1)
         except Exception as e:
+            analytics_tracker.track_error("ConfigValidation", f"Configuration validation failed: {e}")
             click.echo(f"Configuration validation failed: {e}", err=True)
             sys.exit(1)
     
@@ -485,6 +492,7 @@ def rerun(prompt, report_file):
     """
     # Create a rich console for showing output
     console = Console()
+    analytics_tracker.track_cli_command("rerun")
     # Validate inputs
     if not prompt:
         console.print("[red]Error: System prompt is required.[/red]")
