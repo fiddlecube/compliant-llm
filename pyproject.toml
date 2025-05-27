@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "compliant-llm"
-version = "0.1.4-rc1"
+version = "0.1.4-rc2"
 description = "Tool for testing AI system prompts against various attack vectors"
 readme = "README.md"
 requires-python = ">=3.9"
