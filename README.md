@@ -1,4 +1,5 @@
 [![Compliant LLM](/docs/images/github.png)](https://github.com/fiddlecube/compliant-llm)
+<a class="github-button" href="https://github.com/fiddlecube/compliant-llm" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star fiddlecube/compliant-llm on GitHub">Star</a>
 
 [![PyPI](https://img.shields.io/pypi/dm/compliant-llm?label=pypi%20compliant-llm)](https://pypi.org/project/compliant-llm/)
 [![Discord Chat](https://img.shields.io/discord/1376840449167458424?label=chat&logo=discord&color=5865F2)](https://discord.gg/yJuvmj7r)
@@ -139,3 +140,6 @@ You can opt-out by setting `export DISABLE_COMPLIANT_LLM_TELEMETRY=true`.
   year         = {2025},
   howpublished = {\url{<https://github.com/fiddlecube/compliant-llm}}>,
 }`
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
