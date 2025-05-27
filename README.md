@@ -1,6 +1,7 @@
 [![Compliant LLM](/docs/images/github.png)](https://github.com/fiddlecube/compliant-llm)
 
 [![PyPI](https://img.shields.io/pypi/dm/compliant-llm?label=pypi%20compliant-llm)](https://pypi.org/project/compliant-llm/)
+[![Documentation](https://img.shields.io/badge/Documentation-Read-green?style=flat&logo=github)](https://github.com/fiddlecube/compliant-llm/tree/main/docs)
 [![Discord Chat](https://img.shields.io/discord/1376840449167458424?label=chat&logo=discord&color=5865F2)](https://discord.gg/yJuvmj7r)
 [![GitHub Stars](https://img.shields.io/github/stars/fiddlecube/compliant-llm?style=flat)](https://github.com/fiddlecube/compliant-llm/stargazers)
 [![YC](https://img.shields.io/badge/Y%20Combinator-W23-orange)](https://www.ycombinator.com/companies/fiddlecube)
@@ -10,7 +11,6 @@
 [![Issues Closed](https://img.shields.io/github/issues-closed/fiddlecube/compliant-llm)](https://github.com/fiddlecube/compliant-llm/issues?q=is%3Aissue+is%3Aclosed)
 ![License](https://img.shields.io/badge/License-MIT-red)
 
-
 Compliant LLM is your comprehensive toolkit for ensuring compliance and security of your AI systems.
 
 Infosec, compliance, and gen AI teams use compliant-llm to ensure that their AI agents are secure and compliant with internal policies and frameworks like NIST, ISO, HIPAA, GDPR, etc.
@@ -18,6 +18,12 @@ Infosec, compliance, and gen AI teams use compliant-llm to ensure that their AI 
 It supports multiple LLM providers, and can be used to test prompts, agents, MCP servers and GenAI models.
 
 Go through our [documentation](https://github.com/fiddlecube/compliant-llm/tree/main/docs) for more details.
+
+
+
+[![Report a Bug](https://img.shields.io/badge/Report%20a%20Bug-GitHub-red?style=flat&logo=github)](https://github.com/fiddlecube/compliant-llm/issues/new?assignees=&labels=bug&template=bug_report.md&title=%5BBUG%5D+)
+
+[![Request a Feature](https://img.shields.io/badge/Request%20a%20Feature-GitHub-blue?style=flat&logo=github)](https://github.com/fiddlecube/compliant-llm/issues/new?assignees=&labels=feature&template=feature_request.md&title=%5BFEATURE%5D+)
 
 
 ## 🎯 Key Features
@@ -82,11 +88,13 @@ compliant-llm dashboard
 
 ## Support
 
+[![Create Issue](https://img.shields.io/badge/Create-Issue-blue?style=flat&logo=github)](https://github.com/fiddlecube/compliant-llm/issues/new/choose)
+
 Contact: founders@fiddlecube.ai
 
 Meet: 🔗 [Find a slot](https://cal.com/kaushiks/fc)
 
-Community: 💬[Discord](https://discord.gg/yJuvmj7r), [X](https://x.com/FiddleCubeAI), [LinkedIn](https://www.linkedin.com/company/fiddlecube/)
+Community: 💬 [Discord](https://discord.gg/yJuvmj7r), [X](https://x.com/FiddleCubeAI), [LinkedIn](https://www.linkedin.com/company/fiddlecube/)
 
 ## Self-hosted or hosted cloud: Book a demo
 
