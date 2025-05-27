@@ -113,7 +113,7 @@ We welcome contributions from the community! Whether it's bug fixes, feature add
 
 ## 🔒 Security & Privacy
 
-We take data security and privacy seriously. Please refer to our Security and Privacy page for more information.
+We take data security and privacy seriously. Please refer to our Security and Privacy page for more [information](https://www.fiddlecube.ai/privacy-policy).
 
 
 ### Telemetry
