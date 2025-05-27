@@ -3,6 +3,23 @@
 
 Compliant LLM is your comprehensive toolkit for ensuring compliance, reliability and security of your AI systems -- globally, across multiple compliance frameworks like NIST, ISO, HIPAA, GDPR, etc.
 
+
+## 📦 Ecosystem & Stats
+
+[![YC](https://img.shields.io/badge/Y%20Combinator-W23-orange)](https://www.ycombinator.com/companies/fiddlecube)
+[![PyPI](https://img.shields.io/pypi/dm/compliant-llm?label=pypi%20compliant-llm)](https://pypi.org/project/compliant-llm/)
+
+---
+
+## 🌐 Community
+
+[![Discord Chat](https://img.shields.io/discord/1101108732332722216?label=chat&logo=discord&color=5865F2)](https://discord.gg/compliantllm)
+[![Follow on X](https://img.shields.io/twitter/follow/fiddlecube?style=social)](https://twitter.com/fiddlecube)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Follow-blue?logo=linkedin)](https://www.linkedin.com/company/fiddlecube)
+
+---
+
+
 It is built to be used by information security teams, compliance teams, and AI engineers to ensure that the AI systems are well tested, and compliant with any organization's compliance policies and controls.
 
 It supports multiple LLM providers, and can be used to test prompts, agents, MCP servers and GenAI models.
