@@ -2,6 +2,7 @@
 UI-specific configuration adapter for Compliant LLM.
 """
 import os
+from dotenv import load_dotenv, get_key
 from typing import Dict, List, Any, Optional
 from .config import ConfigManager, DEFAULT_REPORTS_DIR
 from core.runner import execute_prompt_tests_with_orchestrator
@@ -9,6 +10,8 @@ from rich.console import Console
 from rich.progress import (
     Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 )
+
+load_dotenv()
 class UIConfigAdapter:
     """Adapter for handling UI-specific configurations and test execution."""
     
@@ -45,15 +48,18 @@ class UIConfigAdapter:
             raise ValueError("Prompt is required")
         if not strategies:
             raise ValueError("At least one strategy is required")
-        print("=== ui config ===", config)
+        
         # Create test configuration
+        api_key_key = f"{config['provider_name'].upper()}_API_KEY"
+        api_key = os.getenv(api_key_key, 'n/a') or get_key(".env", api_key_key)
+
         test_config = {
             "prompt": {"content": prompt},
             "strategies": strategies,
             "provider": {
                 "provider_name": config["provider_name"],
-                "model": config["model_name"],
-                "api_key": os.getenv(f"{config['provider_name'].upper()}_API_KEY", '')
+                "model": config["model"],
+                "api_key": api_key
             },
             "temperature": self.default_config["temperature"],
             "timeout": self.default_config["timeout"],

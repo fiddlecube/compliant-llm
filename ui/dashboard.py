@@ -9,14 +9,14 @@ import random
 from typing import Set
 import json
 import os
-from dotenv import load_dotenv, set_key
+from dotenv import load_dotenv, set_key, get_key
 import socket
 from core.config_manager.ui_adapter import UIConfigAdapter
 from rich.console import Console
 from ui.constants.provider import PROVIDERS, PROVIDER_SETUP
 
 console = Console()
-
+load_dotenv()
 # Constants
 BASE_DIR = Path(__file__).parent
 REPORTS_DIR = Path.home() / ".compliant-llm" / "reports"
@@ -179,6 +179,7 @@ def create_app_ui():
     model = st.text_input(
         "Select Model", "gpt-4o"
     )
+    has_all_keys = False
     # Form for entering keys
     with st.form("provider_form"):
         # Dynamically create input fields for the selected provider
@@ -187,15 +188,22 @@ def create_app_ui():
             if key in ("name", "value"):
                 continue
             label = key.replace("_", " ").title()
-            env_key = f"{provider['value'].upper()}_{key.upper()}"
-            default_val = os.getenv(env_key, "")
-            inputs[key] = st.text_input(label, value=default_val)
+            env_key = f"{key.upper()}"
+            default_val = os.getenv(env_key, "") or get_key(".env", env_key)
+            if default_val is None:
+                has_all_keys = False
+            else:
+                has_all_keys = True
+            inputs[key] = st.text_input(label, value=default_val, type="password" if "API_KEY" in env_key else "default")
 
         submitted = st.form_submit_button("Save Config")
 
         if submitted:
             if not provider_name:
                 st.error("Please select a provider")
+                return
+            if not model:
+                st.error("Please select a model")
                 return
             
             empty_fields = [key for key, value in inputs.items() if not value.strip()]
@@ -207,7 +215,7 @@ def create_app_ui():
             if not os.path.exists(env_path):
                 open(env_path, "w").close()
 
-            config = {'provider_name': provider['value'], 'model_name': model}
+            config = {'provider_name': provider['value'], 'model': model}
             for field, val in inputs.items():
                 env_key = f"{field.upper()}"
                 set_key(env_path, env_key, val)
@@ -216,7 +224,6 @@ def create_app_ui():
                 # st.success(f"Configuration for {provider_name} saved to .env and loaded into session")
                 config[field] = val
 
-            st.write(config)
             st.session_state['saved_config'] = config
     
 
@@ -224,7 +231,7 @@ def create_app_ui():
     submit_button_disabled = True
     provider_config = st.session_state['saved_config']
 
-    if provider_config:
+    if provider_config or has_all_keys:
         submit_button_disabled = False
     with st.form("test_form", clear_on_submit=True):
         col1, col2 = st.columns([2, 1])
