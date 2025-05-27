@@ -1,5 +1,4 @@
 [![Compliant LLM](/docs/images/github.png)](https://github.com/fiddlecube/compliant-llm)
-
 <a class="github-button" href="https://github.com/fiddlecube/compliant-llm" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star fiddlecube/compliant-llm on GitHub">Star</a>
 
 [![PyPI](https://img.shields.io/pypi/dm/compliant-llm?label=pypi%20compliant-llm)](https://pypi.org/project/compliant-llm/)
@@ -11,6 +10,7 @@
 [![Commit Activity](https://img.shields.io/github/commit-activity/m/fiddlecube/compliant-llm?label=commit%20activity)](https://github.com/fiddlecube/compliant-llm/commits)
 [![Issues Closed](https://img.shields.io/github/issues-closed/fiddlecube/compliant-llm)](https://github.com/fiddlecube/compliant-llm/issues?q=is%3Aissue+is%3Aclosed)
 ![License](https://img.shields.io/badge/License-MIT-red)
+
 
 Compliant LLM is your comprehensive toolkit for ensuring compliance and security of your AI systems.
 
