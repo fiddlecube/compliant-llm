@@ -9,6 +9,7 @@ documentation requirements, and traceability.
 from typing import Dict, List, Any
 import datetime
 import uuid
+import copy
 from ..base import BaseComplianceAdapter
 from .loaders import NISTComplianceLoader
 from .mapper import NISTComplianceMapper
@@ -66,9 +67,6 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         mutation_technique = attack_result.get("mutation_technique", "")
         target_behavior = attack_result.get("target_behavior", strategy_name.lower().replace("_", " "))
         llm_response = attack_result.get("response", {}).get("response", "-")
-        # Find a matching attack category if target behavior is specified
-        attack_category = self._mapper.find_matching_attack_category(strategy_name, mutation_technique)
-
         
         # Map severity to impact and likelihood
         impact_likelihood = self._mapper.map_severity_to_impact_likelihood(severity)
@@ -116,26 +114,23 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         }
 
         
-        
+        # Find a matching attack category if target behavior is specified
+        attack_category = self._mapper.find_matching_attack_category(strategy_name, mutation_technique)
+
         # Extract relevant controls based on attack category if available
-        controls = []
-        if attack_category:
-            # Get controls from the attack category
-            for control_family, control_items in attack_category.get("controls", {}).items():
-                for control_item in control_items:
-                    controls.append({
-                        "family": control_family,
-                        "control_id": control_item.get("control_id", ""),
-                        "title": control_item.get("title", ""),
-                        "description": control_item.get("description", ""),
-                        "version": control_item.get("version", "1.0"),
-                        "version_notes": control_item.get("version_notes", ""),
-                    })
+        all_tested_controls = attack_category.get("all_tested_controls", [])
+        
+        # create a deep copy of attack_category
+        attack_category_copy = copy.deepcopy(attack_category)
+        # remove all_tested_controls from attack_category_copy
+        attack_category_copy.pop("all_tested_controls", None)
         
         # Build compliance data
         compliance_data = {
             "risk_score": risk_score,
-            "tested_controls": controls,
+            "all_tests": attack_category_copy,
+            "tested_controls": all_tested_controls,
+            "tested_control_ids": attack_category.get("tested_control_ids", ""),
             "framework_versions": self._mapper.get_framework_versions(),
             "passed_status": attack_result.get("evaluation", {}).get("passed", False),
             "documentation_requirements": {

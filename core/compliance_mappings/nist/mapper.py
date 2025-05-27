@@ -83,15 +83,81 @@ class NISTComplianceMapper:
             mutation_technique = strategy_name
             
         nist_controls = self.get_controls_for_strategy(strategy_name)
+
         attack_categories = nist_controls.get("attack_categories", [])
-        attack_category = None
-        for category in attack_categories:
-            if (category.get("id", "").lower() == mutation_technique.lower()):
-                attack_category = category
-                break
-        if not attack_category:
-            attack_category = attack_categories[0]
-        return attack_category
+        nist_ai_rmf = nist_controls.get("nist_ai_rmf", [])
+        nist_csf = nist_controls.get("nist_csf", [])
+        genai_controls = nist_controls.get("genai_controls", [])
+
+        attacks_dedup = {
+            "nist_ai_rmf": nist_ai_rmf,
+            "nist_csf": nist_csf,
+            "nist_sp_800_53": attack_categories,
+            "genai_controls": genai_controls,
+            "all_tested_controls": []
+        }
+        # get all tested controls
+        nist_sp_800_53_controls = []
+        for attack_category in attack_categories:
+            for control_family, control_items in attack_category.get("controls", {}).items():
+                for control_item in control_items:
+                    nist_sp_800_53_controls.append({
+                        "family": control_family,
+                        "control_id": control_item.get("control_id", ""),
+                        "title": control_item.get("title", ""),
+                        "description": control_item.get("description", ""),
+                        "version": control_item.get("version", "1.0"),
+                        "version_notes": control_item.get("version_notes", ""),
+                    })
+        
+        nist_csf_controls = []
+        for el in nist_csf:
+            nist_csf_controls.append({
+                "family": el.get("category", el.get("control_id", "n/a")),
+                "control_id": el.get("control_id", ""),
+                "title": el.get("category", ""),
+                "description": el.get("description", ""),
+                "version": el.get("version", "1.0"),
+                "version_notes": el.get("version_notes", ""),
+            })
+        
+        nist_ai_rmf_controls = []
+        for el in nist_ai_rmf:
+            nist_ai_rmf_controls.append({
+                "family": el.get("category", el.get("control_id", "n/a")),
+                "control_id": el.get("control_id", ""),
+                "title": el.get("category", ""),
+                "description": el.get("description", ""),
+                "version": el.get("version", "1.0"),
+                "version_notes": el.get("version_notes", ""),
+            })
+        
+        genai_controls = []
+        for el in genai_controls:
+            genai_controls.append({
+                "family": el.get("family", "Gen AI controls"),
+                "control_id": ", ".join(el.get("nist_controls", [])),
+                "title": el.get("name", ""),
+                "description": el.get("description", ""),
+                "version": el.get("version", "1.0"),
+                "version_notes": el.get("version_notes", ""),
+            })
+        
+        all_test_controls = nist_sp_800_53_controls + nist_csf_controls + nist_ai_rmf_controls + genai_controls
+        tested_control_ids = set()
+        for el in all_test_controls:
+            tested_control_ids.add(el.get("control_id", ""))
+            
+        # Convert set to string by joining with commas
+        tested_control_ids_str = ", ".join(tested_control_ids)
+        attacks_dedup["tested_control_ids"] = tested_control_ids_str
+        attacks_dedup["all_tested_controls"] = all_test_controls
+        attacks_dedup["nist_sp_800_53"] = nist_sp_800_53_controls
+        attacks_dedup["nist_csf"] = nist_csf_controls
+        attacks_dedup["nist_ai_rmf"] = nist_ai_rmf_controls
+        attacks_dedup["genai_controls"] = genai_controls
+
+        return attacks_dedup
         
     def map_severity_to_impact_likelihood(self, severity: str) -> Dict[str, str]:
         """Map severity levels to impact and likelihood levels.

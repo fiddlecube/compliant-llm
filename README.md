@@ -86,7 +86,7 @@ Red-team AI agents, automatically fix vulnerabilities, and gather evidence for S
 
 If you want help feel free to reach out to us at: 
 
-🔗 [Book a slot](https://cal.com/kaushiks) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
+🔗 [Book a slot](https://cal.com/kaushiks/fc) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
 
 ![](docs/gif/demo.gif)
 
