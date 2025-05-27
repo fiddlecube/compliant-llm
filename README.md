@@ -84,6 +84,10 @@ compliant-llm dashboard
 - [ ] Internal audits and documentation
 
 
+## ⭐️ Star us
+
+![](docs/gif/stars.gif)
+
 ##  Want a Self Hosted Compliant LLM?
 
 Reach out to us at: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
