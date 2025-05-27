@@ -176,16 +176,17 @@ def create_app_ui():
         index=len(PROVIDER_SETUP) - 1
     )
     provider = next(p for p in PROVIDER_SETUP if p["name"] == provider_name)
-    model = st.text_input(
-        "Select Model", "gpt-4o"
-    )
+    
     has_all_keys = False
     # Form for entering keys
     with st.form("provider_form"):
         # Dynamically create input fields for the selected provider
         inputs = {}
+        model = st.text_input(
+                    "Enter Model", provider["default_model"]
+                )
         for key in provider:
-            if key in ("name", "value"):
+            if key in ("name", "value", "default_model"):
                 continue
             label = key.replace("_", " ").title()
             env_key = f"{key.upper()}"
