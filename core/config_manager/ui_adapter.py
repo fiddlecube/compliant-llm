@@ -57,8 +57,8 @@ class UIConfigAdapter:
             "prompt": {"content": prompt},
             "strategies": strategies,
             "provider": {
-                "provider_name": config["provider_name"],
-                "model": config["model"],
+                "provider_name": f"{config['provider_name']}/{config['model']}",
+                "model": f"{config['provider_name']}/{config['model']}",
                 "api_key": api_key
             },
             "temperature": self.default_config["temperature"],

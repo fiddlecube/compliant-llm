@@ -13,7 +13,7 @@ from dotenv import load_dotenv, set_key, get_key
 import socket
 from core.config_manager.ui_adapter import UIConfigAdapter
 from rich.console import Console
-from ui.constants.provider import PROVIDERS, PROVIDER_SETUP
+from ui.constants.provider import PROVIDER_SETUP
 
 console = Console()
 load_dotenv()
@@ -124,7 +124,8 @@ def run_test(prompt, selected_strategies, config):
         return "", str(e)
 
 def render_beautiful_json_output(json_output):
-    with st.expander("🔍 View JSON"):
+    container = st.container(height=500, border=True)
+    with container:
         st.code(json.dumps(json_output, indent=2), language="json")
 
 def create_app_ui():
@@ -180,7 +181,7 @@ def create_app_ui():
                         "Enter Model", provider["default_model"]
                     )
             for key in provider:
-                if key in ("name", "value", "default_model"):
+                if key in ("name", "value", "default_model", "provider_name"):
                     continue
                 label = key.replace("_", " ").title()
                 env_key = f"{key.upper()}"
@@ -191,7 +192,7 @@ def create_app_ui():
                     has_all_keys = True
                 inputs[key] = st.text_input(label, value=default_val, type="password" if "API_KEY" in env_key else "default")
 
-            submitted = st.form_submit_button("Save Config")
+            submitted = st.form_submit_button("Setup Config")
 
             if submitted:
                 if not provider_name:
@@ -210,8 +211,10 @@ def create_app_ui():
                 if not os.path.exists(env_path):
                     open(env_path, "w").close()
 
-                config = {'provider_name': provider['value'], 'model': model}
+                config = {'provider_name': provider['provider_name'], 'model': model}
+
                 for field, val in inputs.items():
+                    
                     env_key = f"{field.upper()}"
                     set_key(env_path, env_key, val)
                     # Set in-process environment for immediate use
@@ -220,6 +223,7 @@ def create_app_ui():
                     config[field] = val
 
                 st.session_state['saved_config'] = config
+                st.write("Configuration saved successfully", config)
     
     # Form for running tests
     with st.expander("Run New Test", expanded=True):

@@ -36,11 +36,16 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     start_time = datetime.now()
     # Use the provided configuration directly
     config = config_dict
-    
     # Extract provider configuration with sensible defaults
-    model_name = config.get('provider_name') or config.get('provider', {}).get('name', 'openai/gpt-4o')
-    # Get API key with fallback to environment variable
-    api_key = config.get('provider', {}).get('api_key') or os.getenv(model_name.split('/')[0].upper() + "_API_KEY", '')
+    # model_name = config.get('provider_name') or config.get('provider', {}).get('name')
+    provider_config = config.get('provider') or config.get('provider_name')
+    model_name = ''
+    if isinstance(provider_config, dict):
+        model_name = provider_config.get('model')
+    else:
+        model_name = provider_config
+    # Get API key
+    api_key = provider_config.get('api_key')
     
     # Create provider configuration in one step
     provider_config = {
@@ -142,7 +147,7 @@ def execute_rerun_test(config_dict, report_file):
     config = config_dict
     
     # Extract provider configuration with sensible defaults
-    model_name = config.get('provider_name') or config.get('provider', {}).get('name', 'openai/gpt-4o')
+    model_name = config.get('provider_name') or config.get('provider', {}).get('model')
     # Get API key with fallback to environment variable
     api_key = config.get('provider', {}).get('api_key') or os.getenv(model_name.split('/')[0].upper() + "_API_KEY", '')
     
@@ -153,7 +158,7 @@ def execute_rerun_test(config_dict, report_file):
         'temperature': config.get('temperature', 0.7),
         'timeout': config.get('timeout', 30)
     }
-    
+        
     # Create provider
     provider = LiteLLMProvider()
 
