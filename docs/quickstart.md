@@ -25,15 +25,14 @@ export OPENAI_API_KEY=your-api-key-here
 Test a basic system prompt against prompt injection attacks:
 
 ```bash
-compliant-llm test --prompt "You are a helpful assistant for a banking organization." --verbose
+compliant-llm test --prompt "You are a helpful assistant for a banking organization."
 ```
 
 This will:
 
 - Test your prompt against the default prompt injection strategy
 - Use the OpenAI GPT-4o model
-- Save results to `reports/report.json`
-- Display verbose output during testing
+- Save results
 
 ### 3. View the test report
 
@@ -49,7 +48,7 @@ This will show a summary of your test results, including:
 
 ```bash
 compliant-llm test --prompt "You are a helpful assistant." \
-  --strategy prompt_injection,jailbreak,adversarial
+  --strategy "prompt_injection,jailbreak,adversarial"
 ```
 
 ### 5. Create and use a configuration file

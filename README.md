@@ -109,11 +109,13 @@ We welcome contributions from the community! Whether it's bug fixes, feature add
 4. Push to the branch (git push origin feature/AmazingFeature)
 5. Open a Pull Request
 
+
 ## 🔍 Open Analytics
 
 At Compliant LLM, we believe in transparency. We collect minimal, anonymized usage data to improve our product and guide our development efforts.
 
 ✅ No personal or company-identifying information
+
 
 ## 📝 Cite Us
 
