@@ -55,6 +55,9 @@ provider: openai/gpt-4o
 
 # Anthropic provider
 provider: anthropic/claude-3-opus
+
+# Azure OpenAI provider
+provider: azure/gpt-4o
 ```
 
 ## Environment Variables
@@ -65,8 +68,13 @@ Compliant LLM uses environment variables for API keys. You should set these befo
 # For OpenAI models
 export OPENAI_API_KEY=your-api-key-here
 
-# For other providers (if needed)
+# For Anthropic models
 export ANTHROPIC_API_KEY=your-anthropic-key
+
+# For Azure OpenAI models
+export AZURE_API_KEY="my-azure-api-key"
+export AZURE_API_BASE="https://example-endpoint.openai.azure.com"
+export AZURE_API_VERSION="2023-05-15"
 ```
 
 ## Template Variables
