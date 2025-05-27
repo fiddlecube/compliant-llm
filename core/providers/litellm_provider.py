@@ -208,7 +208,7 @@ class LiteLLMProvider(LLMProvider):
             # Extract provider-specific configuration
             # TODO: @vini - simplify this
             provider_config = config.get("provider_config", {})
-            model = provider_config.get("model", "gpt-4o")
+            model = provider_config.get("provider_name")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
             api_key = provider_config.get("api_key")
@@ -246,5 +246,5 @@ class LiteLLMProvider(LLMProvider):
                 "success": False,
                 "error": str(e),
                 "provider": "litellm",
-                "model": config.get("model", "gpt-3.5-turbo")
+                "model": config.get("model")
             }
