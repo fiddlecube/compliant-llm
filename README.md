@@ -74,10 +74,11 @@ compliant-llm dashboard
 ## Roadmap
 
 - [ ] Full Application Pen Testing
-- [ ] Compliant MCP Servers
-- [ ] Multimodal Testing and Redteaming
-- [ ] CI/CD
+- [ ] Compliant and Logged MCP Servers
 - [ ] Support different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
+- [ ] Multimodal Testing
+- [ ] CI/CD
+- [ ] Access Control checks
 - [ ] Control Pane for different controls
 - [ ] Internal audits and documentation
 
