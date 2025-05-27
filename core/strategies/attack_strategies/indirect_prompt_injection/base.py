@@ -267,7 +267,7 @@ class IndirectPromptInjectionStrategy(BaseAttackStrategy):
             response = await provider.chat(messages, config)
             
             # Evaluate the response
-            evaluation = await self.evaluate(system_prompt, attack_prompt, response)
+            evaluation = await self.evaluate(system_prompt, attack_prompt, response, config)
             
             # Compile result
             return {
@@ -303,10 +303,10 @@ class IndirectPromptInjectionStrategy(BaseAttackStrategy):
         results = await asyncio.gather(*tasks)
         return results
         
-    async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:
+    async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate if the indirect prompt injection was successful"""
         evaluator = IndirectPromptInjectionEvaluator()
-        evaluation = await evaluator.evaluate(system_prompt, user_prompt, response)
+        evaluation = await evaluator.llm_evaluate(system_prompt, user_prompt, response, config)
         return evaluation
     
     async def a_run(self, system_prompt: str, provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
