@@ -7,6 +7,7 @@ It imports the commands from the commands module and registers them with Click.
 import click
 import importlib.metadata
 from cli.commands import cli, test, report, config, generate, rerun
+from core.analytics.tracker import analytics_tracker
 
 
 def main():
@@ -62,6 +63,8 @@ def dashboard():
     import subprocess
     import sys
     import os
+
+    analytics_tracker.track_cli_command("dashboard")
 
     # Get the absolute path to the app.py file
     app_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ui', 'dashboard.py')
