@@ -44,7 +44,7 @@ compliant-llm test --config configs/your_config.yaml
 4. View the results:
 
 ```bash
-compliant-llm ui
+compliant-llm dashboard
 ```
 
 ## Next Steps

@@ -1,9 +1,17 @@
-# 🛡️ Compliant LLM
+[![Compliant LLM](/docs/images/github.png)](https://github.com/fiddlecube/compliant-llm)
+
+[![PyPI](https://img.shields.io/pypi/dm/compliant-llm?label=pypi%20compliant-llm)](https://pypi.org/project/compliant-llm/)
+[![Discord Chat](https://img.shields.io/discord/1376840449167458424?label=chat&logo=discord&color=5865F2)](https://discord.gg/yJuvmj7r)
+[![GitHub Stars](https://img.shields.io/github/stars/fiddlecube/compliant-llm?style=flat)](https://github.com/fiddlecube/compliant-llm/stargazers)
+[![YC](https://img.shields.io/badge/Y%20Combinator-W23-orange)](https://www.ycombinator.com/companies/fiddlecube)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Follow-blue?logo=linkedin)](https://www.linkedin.com/company/fiddlecube)
+[![Follow on X](https://img.shields.io/twitter/follow/FiddleCubeAI?style=social)](https://twitter.com/fiddlecube)
+[![Commit Activity](https://img.shields.io/github/commit-activity/m/fiddlecube/compliant-llm?label=commit%20activity)](https://github.com/fiddlecube/compliant-llm/commits)
+[![Issues Closed](https://img.shields.io/github/issues-closed/fiddlecube/compliant-llm)](https://github.com/fiddlecube/compliant-llm/issues?q=is%3Aissue+is%3Aclosed)
+![License](https://img.shields.io/badge/License-MIT-red)
 
 
-Compliant LLM is your comprehensive toolkit for ensuring compliance, reliability and security of your AI systems -- globally, across multiple compliance frameworks like NIST, ISO, HIPAA, GDPR, etc.
-
-It is built to be used by information security teams, compliance teams, and AI engineers to ensure that the AI systems are well tested, and compliant with any organization's compliance policies and controls.
+Compliant LLM is your comprehensive toolkit for ensuring compliance and security of your AI systems. Infosec, compliance, and gen AI teams use compliant-llm to ensure that their AI agents are secure and compliant with internal policies and frameworks like NIST, ISO, HIPAA, GDPR, etc.
 
 It supports multiple LLM providers, and can be used to test prompts, agents, MCP servers and GenAI models.
 
@@ -55,38 +63,11 @@ compliant-llm dashboard
 compliant-llm test --config_path configs/config.yaml
 ```
 
-All reports are automatically saved to the `reports/` directory, which is excluded from version control via `.gitignore`.
-
 3. View the latest test report in UI:
 
 ```bash
 compliant-llm dashboard
 ```
-
-### File Structure
-
-- **Reports**: All generated reports are saved to the `reports/` directory by default (excluded from git)
-- **Configs**: Configuration files are stored in the `configs/` directory
-
-#### Available Testing Strategies
-
-- `prompt_injection`: Tests resilience against prompt injection attacks
-- `jailbreak`: Tests against jailbreak attempts to bypass restrictions
-- `excessive_agency`: Tests if the system prompt can be extracted
-- `indirect_prompt_injection`: Tests against indirect prompt injection attacks
-- `insecure_output_handling`: Tests against insecure output handling
-- `model_dos`: Tests against model DoS attacks
-- `model_extraction`: Tests against model extraction attacks
-- `sensitive_info_disclosure`: Tests against sensitive information disclosure
-- Upcoming attacks - ToolPoisoning, BasicMCP, MultiModal...
-
-##  Want help make your AI Agents secure & compliant?
-
-Red-team AI agents, automatically fix vulnerabilities, and gather evidence for SOC2, ISO 42001, and NIST attestations
-
-If you want help feel free to reach out to us at: 
-
-🔗 [Book a slot](https://cal.com/kaushiks/fc) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
 
 ![](docs/gif/demo.gif)
 
@@ -99,6 +80,17 @@ If you want help feel free to reach out to us at:
 - [ ] Support different Compliance Frameworks - HIPAA, GDPR, EU AI Act, etc.
 - [ ] Control Pane for different controls
 - [ ] Internal audits and documentation
+
+
+## ⭐️ Star us
+
+![](docs/gif/stars.gif)
+
+##  Want a Self Hosted Compliant LLM?
+
+Reach out to us at: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
+
+🔗 [Book a slot](https://cal.com/kaushiks/fc).
 
 
 ## 🤝 Contributors
@@ -116,17 +108,25 @@ We welcome contributions from the community! Whether it's bug fixes, feature add
 4. Push to the branch (git push origin feature/AmazingFeature)
 5. Open a Pull Request
 
-## 🔍 Open Analytics
 
-At Compliant LLM, we believe in transparency. We collect minimal, anonymized usage data to improve our product and guide our development efforts.
+## 🔒 Security & Privacy
 
-✅ No personal or company-identifying information
+We take data security and privacy seriously. Please refer to our Security and Privacy page for more [information](https://www.fiddlecube.ai/privacy-policy).
+
+
+### Telemetry
+
+Compliant LLM tracks anonymized usage statistics to improve the product.
+No private or personally identifiable information is tracked.
+
+You can opt-out by setting `export DISABLE_COMPLIANT_LLM_TELEMETRY=true`.
+
 
 ## 📝 Cite Us
 
-@misc{compliant_llm2025,
+`@misc{compliant_llm2025,
   author       = {FiddleCube},
   title        = {Compliant LLM: Build Secure AI agents and MCP Servers},
   year         = {2025},
   howpublished = {\url{<https://github.com/fiddlecube/compliant-llm}}>,
-}
+}`
