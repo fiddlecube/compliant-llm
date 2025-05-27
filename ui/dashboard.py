@@ -1,16 +1,19 @@
-import streamlit as st
-import subprocess
 import sys
+import time
+import psutil
+import subprocess
 from pathlib import Path
 from datetime import datetime
-import psutil
+import streamlit as st
 import random
 from typing import Set
 import json
 import os
+from dotenv import load_dotenv, set_key
 import socket
 from core.config_manager.ui_adapter import UIConfigAdapter
 from rich.console import Console
+from ui.constants.provider import PROVIDERS, PROVIDER_SETUP
 
 console = Console()
 
@@ -107,13 +110,15 @@ def get_available_strategies():
     return [
         "prompt_injection", "jailbreak", "excessive_agency",
         "indirect_prompt_injection", "insecure_output_handling",
-        "model_dos", "model_extraction", "sensitive_info_disclosure"
+        "model_dos", "model_extraction", "sensitive_info_disclosure",
+        "context_manipulation"
     ]
 
-def run_test(prompt, selected_strategies):
+def run_test(prompt, selected_strategies, config):
     try:
         adapter = UIConfigAdapter()
-        results = adapter.run_test(prompt, selected_strategies)
+        # adapter.update_config(config)
+        results = adapter.run_test(prompt, selected_strategies, config)
         return json.dumps(results), ""
     except Exception as e:
         return "", str(e)
@@ -126,6 +131,7 @@ def create_app_ui():
     st.title("Compliant LLM UI")
     st.write("Test and analyze your AI prompts for security vulnerabilities")
 
+    # sidebar of main page
     with st.sidebar:
         if st.button("Open Documentation"):
             try:
@@ -153,6 +159,57 @@ def create_app_ui():
         open_dashboard_with_report(st.session_state['selected_report'])
         del st.session_state['selected_report']
 
+    # Variable to control submit button state
+    submit_disabled = True
+    
+    # configuration payload
+    config = {}
+    
+    # main content
+    st.header("Setup Configuration")
+    
+    # Configuration form
+    # Initialize session state for saved config
+    if 'saved_config' not in st.session_state:
+        st.session_state['saved_config'] = {}
+
+    # Select provider outside the form so it reruns on change
+    provider_name = st.selectbox(
+        "Select Provider", [p["name"] for p in PROVIDER_SETUP]
+    )
+    provider = next(p for p in PROVIDER_SETUP if p["name"] == provider_name)
+
+    # Form for entering keys
+    with st.form("provider_form"):
+        # Dynamically create input fields for the selected provider
+        inputs = {}
+        for key in provider:
+            if key in ("name", "value"):
+                continue
+            label = key.replace("_", " ").title()
+            env_key = f"{provider['value'].upper()}_{key.upper()}"
+            default_val = os.getenv(env_key, "")
+            inputs[key] = st.text_input(label, value=default_val)
+
+        submitted = st.form_submit_button("Save Config")
+
+        if submitted:
+            env_path = ".env"
+            if not os.path.exists(env_path):
+                open(env_path, "w").close()
+
+            config = {'provider': provider['value']}
+            for field, val in inputs.items():
+                env_key = f"{provider['value'].upper()}_{field.upper()}"
+                set_key(env_path, env_key, val)
+                # Set in-process environment for immediate use
+                os.environ[env_key] = val
+                st.success(f"Configuration for {provider_name} saved to .env and loaded into session")
+                config[field] = val
+    st.write(config)
+    # st.session_state['saved_config'] = config
+    
+
     st.header("Run New Test")
     with st.form("test_form", clear_on_submit=True):
         col1, col2 = st.columns([2, 1])
@@ -161,7 +218,7 @@ def create_app_ui():
         with col2:
             st.write("### Select Testing Strategies")
             selected_strategies = st.multiselect("Choose strategies to test", get_available_strategies(), default=["prompt_injection", "jailbreak"])
-        submit_button = st.form_submit_button("Run Test")
+        submit_button = st.form_submit_button(label="Run Test", type="primary", disabled=submit_disabled)
 
     if submit_button:
         if not prompt.strip():
@@ -172,7 +229,7 @@ def create_app_ui():
             st.stop()
 
         with st.spinner("🔍 Running tests..."):
-            stdout, stderr = run_test(prompt, selected_strategies)
+            stdout, stderr = run_test(prompt, selected_strategies, config)
             reports = get_reports()
 
         st.subheader("✅ Test Results")

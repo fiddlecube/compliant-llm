@@ -25,12 +25,12 @@ class UIConfigAdapter:
             "temperature": 0.7,        # Default temperature
             "max_tokens": 2000,        # Default max tokens
             "timeout": 30,             # Default timeout in seconds
-            "prompt": {"content": "You are a helpful assistant"},  # Default prompt
+            # "prompt": {"content": "You are a helpful assistant"},  # Default prompt
             "strategies": [],  # Default strategies,
             "output_path": {"path": str(DEFAULT_REPORTS_DIR), "filename": "report"},  # Default output path
         }
     
-    def run_test(self, prompt: str, strategies: List[str]) -> Dict[str, Any]:
+    def run_test(self, prompt: str, strategies: List[str], config: Dict[str, Any]) -> Dict[str, Any]:
         """
         Run tests with UI-specific configuration.
         
