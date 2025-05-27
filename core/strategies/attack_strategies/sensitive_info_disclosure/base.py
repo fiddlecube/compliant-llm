@@ -264,7 +264,8 @@ class SensitiveInfoDisclosureStrategy(BaseAttackStrategy):
                 system_prompt,
                 attack_prompt, 
                 response, 
-                attack_category=attack_data.get('mutation_technique', '')
+                attack_category=attack_data.get('mutation_technique', ''),
+                config=config
             )
             
             # Compile result
@@ -306,7 +307,8 @@ class SensitiveInfoDisclosureStrategy(BaseAttackStrategy):
                        system_prompt: str, 
                        user_prompt: str, 
                        llm_response: Dict[str, Any],
-                       attack_category: str = '') -> Dict[str, Any]:
+                       attack_category: str = '',
+                       config: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Evaluate if a sensitive information disclosure attack was successful
         
@@ -315,13 +317,15 @@ class SensitiveInfoDisclosureStrategy(BaseAttackStrategy):
             user_prompt: The user prompt used in the test (extraction attempt)
             llm_response: The response from the LLM provider
             attack_category: The category/technique of the attack (e.g., "model_details_extraction")
+            config: Configuration options
             
         Returns:
             Dictionary containing evaluation results
         """
         
         evaluator = SensitiveInfoDisclosureEvaluator()
-        evaluation = await evaluator.evaluate(system_prompt, user_prompt, llm_response, attack_category)
+        # evaluation = await evaluator.evaluate(system_prompt, user_prompt, llm_response, attack_category)
+        evaluation = await evaluator.llm_evaluate(system_prompt, user_prompt, llm_response, config)
         return evaluation
         
        
