@@ -80,11 +80,9 @@ compliant-llm dashboard
 - `sensitive_info_disclosure`: Tests against sensitive information disclosure
 - Upcoming attacks - ToolPoisoning, BasicMCP, MultiModal...
 
-##  Want help make your AI Agents secure & compliant?
+##  Self-hosting or hosted solution
 
-Red-team AI agents, automatically fix vulnerabilities, and gather evidence for SOC2, ISO 42001, and NIST attestations
-
-If you want help feel free to reach out to us at: 
+Contact us for self-hosting or a hosted solution. Red-team AI agents, auto-fix vulnerabilities, and gather evidence for SOC2, ISO 42001, and NIST AI RMF.
 
 🔗 [Book a slot](https://cal.com/kaushiks/fc) or drop us a line: [founders@fiddlecube.ai](mailto:founders@fiddlecube.ai).
 
