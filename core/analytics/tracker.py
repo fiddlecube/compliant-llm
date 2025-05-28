@@ -1,6 +1,4 @@
 import os
-import uuid
-import logging
 from enum import Enum
 from typing import Optional
 from pydantic import BaseModel, Field
@@ -19,12 +17,6 @@ from opentelemetry.sdk.metrics.export import (
     PeriodicExportingMetricReader,
     ConsoleMetricExporter,
 )
-
-# ----------------------------
-# Logging
-# ----------------------------
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger(__name__)
 
 # ----------------------------
 # Opt-out utility
@@ -70,7 +62,6 @@ class AnalyticsTracker:
     def __init__(self):
         self.enabled = is_analytics_enabled()
         if not self.enabled:
-            logger.info("🔕 Analytics disabled by user opt-out.")
             self.tracer = None
             self.usage_counter = None
             self.error_counter = None
@@ -98,9 +89,8 @@ class AnalyticsTracker:
             tracer_provider.add_span_processor(BatchSpanProcessor(trace_exporter))
             tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
             self.tracer = trace.get_tracer("compliant-llm")
-            logger.info("✅ Azure Monitor traces initialized.")
         except Exception as e:
-            logger.error(f"❌ Failed to initialize tracing: {e}")
+            print(f"❌ Failed to initialize tracing: {e}")
             self.tracer = None
 
         # Initialize metrics
@@ -123,17 +113,13 @@ class AnalyticsTracker:
                 name="compliant_llm.errors",
                 description="Number of errors encountered"
             )
-            logger.info("✅ Azure Monitor metrics initialized.")
         except Exception as e:
-            logger.error(f"❌ Failed to initialize metrics: {e}")
             self.usage_counter = None
             self.error_counter = None
 
     def track(self, event: BaseEvent):
         if not self.enabled:
             return  # Opted out
-
-        logger.info(f"TRACKING EVENT: {event.name} ({event.type.value})")
 
         # --- Tracing ---
         try:
@@ -146,7 +132,7 @@ class AnalyticsTracker:
                 if isinstance(event, ErrorEvent):
                     span.set_attribute("error_msg", event.error_msg[:100])
         except Exception as e:
-            logger.error(f"❌ Error during tracing: {e}")
+            print(f"❌ Error during tracing: {e}")
 
         # --- Metrics ---
         attributes = {
@@ -164,7 +150,7 @@ class AnalyticsTracker:
             elif event.type == EventType.ERROR and self.error_counter:
                 self.error_counter.add(1, attributes)
         except Exception as e:
-            logger.error(f"❌ Error during metrics recording: {e}")
+            print(f"❌ Error during metrics recording: {e}")
 
 # ----------------------------
 # Usage Tracking Decorator
