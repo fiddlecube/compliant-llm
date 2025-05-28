@@ -167,7 +167,7 @@ class AnalyticsTracker:
 # ----------------------------
 # Usage Tracking Decorator
 # ----------------------------
-def track_usage(name: str, interaction_type: InteractionType = InteractionType.CLI):
+def track_usage(name: str, interaction_type: InteractionType = None):
     def decorator(func):
         def wrapper(*args, **kwargs):
             if analytics_tracker.enabled:
