@@ -160,6 +160,8 @@ class LiteLLMProvider(LLMProvider):
                 messages=chat_history,
                 temperature=temperature,
                 timeout=timeout,
+                num_retries=provider_config.get("num_retries", 3),
+                cooldown_time=provider_config.get("cooldown_time", 60),
                 # api_key=api_key
             )
 
@@ -222,6 +224,8 @@ class LiteLLMProvider(LLMProvider):
                 ],
                 temperature=temperature,
                 timeout=timeout,
+                num_retries=provider_config.get("num_retries", 3),
+                cooldown_time=provider_config.get("cooldown_time", 60),
                 # api_key=api_key
             )
             
