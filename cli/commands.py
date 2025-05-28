@@ -245,6 +245,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
 @click.option('--summary', '-s', is_flag=True, help='Show only summary statistics')
 def report(report_file, format, summary):
     """Analyze and view previous test results. If no file is specified, uses the latest report."""
+    analytics_tracker.track(UsageEvent(name="report", interaction_type=InteractionType.CLI))
     try:
         # If no report file is specified, find the latest one
         if not report_file:
@@ -306,11 +307,11 @@ def report(report_file, format, summary):
             click.echo(f"HTML report saved to {html_path}")
 
     except FileNotFoundError as e:
-        analytics_tracker.track(ErrorEvent(name="test", interaction_type=InteractionType.CLI, error_msg=str(e)))    
+        analytics_tracker.track(ErrorEvent(name="report", interaction_type=InteractionType.CLI, error_msg=str(e)))    
         click.echo(f"Error: Report file not found: {e}", err=True)
         sys.exit(1)
     except json.JSONDecodeError:
-        analytics_tracker.track(ErrorEvent(name="test", interaction_type=InteractionType.CLI, error_msg="Invalid JSON format in report file."))
+        analytics_tracker.track(ErrorEvent(name="report", interaction_type=InteractionType.CLI, error_msg="Invalid JSON format in report file."))
         click.echo("Error: Invalid JSON format in report file.", err=True)
         sys.exit(1)
 

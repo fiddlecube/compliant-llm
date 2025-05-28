@@ -12,8 +12,10 @@ import os
 from dotenv import load_dotenv, set_key, get_key
 import socket
 from core.config_manager.ui_adapter import UIConfigAdapter
+
 from rich.console import Console
 from ui.constants.provider import PROVIDER_SETUP
+from core.analytics.tracker import UsageEvent, InteractionType, ErrorEvent, analytics_tracker
 
 console = Console()
 load_dotenv()
@@ -119,8 +121,19 @@ def run_test(prompt, selected_strategies, config):
         adapter = UIConfigAdapter()
         # adapter.update_config(config)
         results = adapter.run_test(prompt, selected_strategies, config)
+        analytics_tracker.track(UsageEvent(
+            name="test",
+            interaction_type=InteractionType.DASHBOARD,
+            command="run_test"
+        ))
         return json.dumps(results), ""
     except Exception as e:
+        analytics_tracker.track(ErrorEvent(
+            name="test",
+            interaction_type=InteractionType.DASHBOARD,
+            command="run_test",
+            error_msg=str(e)
+        ))
         return "", str(e)
 
 def render_beautiful_json_output(json_output):
