@@ -14,10 +14,12 @@ from rich.table import Table
 from rich.progress import (
     Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 )
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Callable
 from rich import box
 from core.runner import execute_prompt_tests, execute_rerun_test
 from core.config_manager.cli_adapter import CLIConfigAdapter
+from core.analytics.tracker import analytics_tracker
+from core.analytics.tracker import UsageEvent, ErrorEvent, InteractionType
 
 
 def dict_to_cli_table(
@@ -120,6 +122,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
     cli_adapter = CLIConfigAdapter()
     
     try:
+        analytics_tracker.track(UsageEvent(name="test", interaction_type=InteractionType.CLI))
         # Load configuration from CLI arguments
         cli_adapter.load_from_cli(
             config_path=config_path,
@@ -160,13 +163,16 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
 
     except FileNotFoundError as e:
         click.echo(str(e), err=True)
+        analytics_tracker.track(ErrorEvent(name="test", interaction_type=InteractionType.CLI, error_msg=str(e)))
         sys.exit(1)
     except Exception as e:
         click.echo(f"Error processing configuration: {e}", err=True)
+        analytics_tracker.track(ErrorEvent(name="test", interaction_type=InteractionType.CLI, error_msg=str(e)))
         sys.exit(1)
     
     # Run the tests with a progress indicator
     console.print("\nRunning tests...")
+    
     with Progress(
         SpinnerColumn(),
         TextColumn("[bold blue]{task.description}"),
@@ -175,6 +181,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
         task = progress.add_task("[cyan]Testing prompt security", total=None)
         report_data = execute_prompt_tests(config_dict=runner_config)
         progress.update(task, completed=True)
+    
     
     console.print("[bold green]Tests completed successfully![/]")
     console.print(f"[bold cyan]Report saved successfully at {report_data['report_metadata']['path']}[/]")
@@ -238,6 +245,7 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
 @click.option('--summary', '-s', is_flag=True, help='Show only summary statistics')
 def report(report_file, format, summary):
     """Analyze and view previous test results. If no file is specified, uses the latest report."""
+    analytics_tracker.track(UsageEvent(name="report", interaction_type=InteractionType.CLI))
     try:
         # If no report file is specified, find the latest one
         if not report_file:
@@ -298,11 +306,13 @@ def report(report_file, format, summary):
                 f.write("</body></html>")
             click.echo(f"HTML report saved to {html_path}")
 
-    except FileNotFoundError:
-        click.echo(f"Report file not found: {report_file}", err=True)
+    except FileNotFoundError as e:
+        analytics_tracker.track(ErrorEvent(name="report", interaction_type=InteractionType.CLI, error_msg=str(e)))    
+        click.echo(f"Error: Report file not found: {e}", err=True)
         sys.exit(1)
     except json.JSONDecodeError:
-        click.echo(f"Invalid JSON in report file: {report_file}", err=True)
+        analytics_tracker.track(ErrorEvent(name="report", interaction_type=InteractionType.CLI, error_msg="Invalid JSON format in report file."))
+        click.echo("Error: Invalid JSON format in report file.", err=True)
         sys.exit(1)
 
 
@@ -398,7 +408,6 @@ Your responses should be:
 @click.option('--validate', '-v', help='Validate a configuration file')
 def config(list, show, validate):
     """Manage configuration files."""
-    
     if list:
         click.echo("Available configurations:")
         # Get the list of config directories from core.config
@@ -447,7 +456,7 @@ def config(list, show, validate):
             click.echo("Processed configuration for runner:")
             click.echo(yaml.dump(runner_config, default_flow_style=False))
         except FileNotFoundError as e:
-            click.echo(str(e), err=True)
+            click.echo(f"Error: Configuration file not found: {e}", err=True)
             sys.exit(1)
         except Exception as e:
             click.echo(f"Configuration validation failed: {e}", err=True)
@@ -471,6 +480,7 @@ def rerun(prompt, report_file):
     """
     # Create a rich console for showing output
     console = Console()
+    analytics_tracker.track(UsageEvent(name="rerun", interaction_type=InteractionType.CLI))
     # Validate inputs
     if not prompt:
         console.print("[red]Error: System prompt is required.[/red]")

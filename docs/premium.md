@@ -22,10 +22,10 @@
   - Documentation for different compliance frameworks
 
 - **Monitoring and Alerting**
-  - for Transparency, Explainability and Human Oversight
+  - For Transparency, Explainability and Human Oversight
 
 - **Training and Documentation**
-  - autogeneration for employee training
+  - Autogeneration for employee training
 
 - **Realtime attack vector updates**
   - Updates and notifications for new attacks, new policy updates, etc.

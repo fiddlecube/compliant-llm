@@ -11,10 +11,11 @@ from typing import Dict, List, Any, Optional
 
 from datetime import datetime
 from pathlib import Path
+from dotenv import load_dotenv, get_key
 
 DEFAULT_REPORTS_DIR = Path.home() / '.compliant-llm' / 'reports'
 
-
+load_dotenv()
 class ConfigManager:
     """Manages configuration for Compliant LLM."""
 
@@ -282,18 +283,18 @@ class ConfigManager:
             Provider name string
         """
         if not self.config:
-            return 'openai/gpt-4o'  # Default
+            return ''  # Default
         
         # Modern format with provider object
         if 'provider' in self.config:
             if isinstance(self.config['provider'], dict):
-                return self.config['provider'].get('name', 'openai/gpt-4o')
+                return self.config['provider'].get('provider_name') or self.config['provider'].get('model', '')  # noqa: E501
             return self.config['provider']
         # Legacy format
         elif 'provider_name' in self.config:
             return self.config['provider_name']
         
-        return 'openai/gpt-4o'  # Default
+        return ''  # Default
     
     def get_output_path(self) -> Dict[str, str]:
         """
@@ -334,10 +335,17 @@ class ConfigManager:
         provider = self.get_provider()
         
         # Format for the runner
+        api_key_key = f"{provider.upper()}_API_KEY"
+        api_key = os.getenv(api_key_key, 'n/a') or get_key(".env", api_key_key)
         runner_config = {
             'prompt': prompt,
             'strategies': strategies,
             'provider_name': provider,
+            'provider': {
+                'provider_name': provider,
+                'model': provider,
+                'api_key': api_key
+            }
         }
         
         # Advanced options - check if parallel testing is enabled
