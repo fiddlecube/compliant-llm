@@ -76,8 +76,10 @@ class AnalyticsTracker:
             self.error_counter = None
             return
 
-        instrumentation_key = os.getenv("AZURE_INSTRUMENTATION_KEY", "")
-        ingestion_endpoint = os.getenv("AZURE_INGESTION_ENDPOINT", "")
+        from .settings import azure_settings
+        
+        instrumentation_key = azure_settings["instrumentation_key"]
+        ingestion_endpoint = azure_settings["ingestion_endpoint"]
 
         # Resource
         resource = Resource.create({
