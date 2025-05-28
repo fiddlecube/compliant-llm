@@ -18,6 +18,14 @@ If you haven't installed Compliant LLM yet, follow the [installation instruction
 ```bash
 # For OpenAI models (recommended for first-time users)
 export OPENAI_API_KEY=your-api-key-here
+
+# For Anthropic models
+export ANTHROPIC_API_KEY=your-anthropic-key
+
+# For Azure OpenAI models
+export AZURE_API_KEY="my-azure-api-key"
+export AZURE_API_BASE="https://example-endpoint.openai.azure.com"
+export AZURE_API_VERSION="2023-05-15"
 ```
 
 ### 2. Run a simple test
@@ -25,31 +33,41 @@ export OPENAI_API_KEY=your-api-key-here
 Test a basic system prompt against prompt injection attacks:
 
 ```bash
-compliant-llm test --prompt "You are a helpful assistant for a banking organization." --verbose
+compliant-llm test --prompt "You are a helpful assistant for a banking organization."
 ```
 
 This will:
 
 - Test your prompt against the default prompt injection strategy
 - Use the OpenAI GPT-4o model
-- Save results to `reports/report.json`
-- Display verbose output during testing
+- Save results
 
-### 3. View the test report
+### 3. View the test report on the UI dashboard
 
 ```bash
-compliant-llm report --summary
+compliant-llm dashboard
 ```
 
-This will show a summary of your test results, including:
+![Dashboard View](https://github.com/fiddlecube/compliant-llm/blob/main/docs/images/ui_screenshot.png)
+
+Here you will be able to see all your past test runs.
+
+Clicking them open will show you detailed reports, including:
+
 - Number of successful/failed tests
 - Timestamp and settings used for the test
+- Test results
+- Test summary
+- NIST compliance status
+- Major risks and vulnerabilities identified
+
+You can also start a new test run using the UI.
 
 ### 4. Run tests with multiple strategies
 
 ```bash
 compliant-llm test --prompt "You are a helpful assistant." \
-  --strategy prompt_injection,jailbreak,adversarial
+  --strategy "prompt_injection,jailbreak,adversarial"
 ```
 
 ### 5. Create and use a configuration file
@@ -68,5 +86,4 @@ compliant-llm test --config configs/my_config.yaml
 
 ## Next Steps
 
-- Explore the [CLI Documentation](cli/commands.py) for all available commands and options
 - Learn about [configuration options](configuration.md) for advanced testing scenarios

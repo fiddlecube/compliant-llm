@@ -39,10 +39,10 @@ uv pip install -e .
 ```
 
 ### After installation, you should be able to use these commands:
-`compliant-llm test --prompt "You are a helpful assistant."`
-`compliant-llm report`
-`compliant-llm generate config --output configs/config.yaml`
-`compliant-llm config --list`
+`compliant-llm test --prompt "You are a helpful assistant."` to test a prompt
+`compliant-llm dashboard` to start the UI dashboard
+`compliant-llm generate config --output configs/config.yaml` to generate a config file
+`compliant-llm config --list` to list all the config options
 
 ## Verifying Installation
 
@@ -64,19 +64,21 @@ Compliant LLM requires API keys for the LLM providers you want to use. Set these
 export OPENAI_API_KEY=your-api-key-here
 ```
 
-### Anthropic API Key (Optional)
+### Anthropic API Key
 
 ```bash
 export ANTHROPIC_API_KEY=your-anthropic-key
 ```
 
-### Google API Key (Optional)
+### Azure OpenAI API Key
 
 ```bash
-export GOOGLE_API_KEY=your-google-key
+export AZURE_API_KEY="my-azure-api-key"
+export AZURE_API_BASE="https://example-endpoint.openai.azure.com"
+export AZURE_API_VERSION="2023-05-15"
 ```
 
-You can also create a `.env` file in your project root with these variables.
+When building from source, you can also create a `.env` file in your project root with these variables.
 
 
 #### Missing Dependencies

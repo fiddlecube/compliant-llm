@@ -1,19 +1,22 @@
-import streamlit as st
-import subprocess
 import sys
+import time
+import psutil
+import subprocess
 from pathlib import Path
 from datetime import datetime
-import psutil
+import streamlit as st
 import random
 from typing import Set
 import json
 import os
+from dotenv import load_dotenv, set_key, get_key
 import socket
 from core.config_manager.ui_adapter import UIConfigAdapter
 from rich.console import Console
+from ui.constants.provider import PROVIDER_SETUP
 
 console = Console()
-
+load_dotenv()
 # Constants
 BASE_DIR = Path(__file__).parent
 REPORTS_DIR = Path.home() / ".compliant-llm" / "reports"
@@ -107,25 +110,29 @@ def get_available_strategies():
     return [
         "prompt_injection", "jailbreak", "excessive_agency",
         "indirect_prompt_injection", "insecure_output_handling",
-        "model_dos", "model_extraction", "sensitive_info_disclosure"
+        "model_dos", "model_extraction", "sensitive_info_disclosure",
+        "context_manipulation"
     ]
 
-def run_test(prompt, selected_strategies):
+def run_test(prompt, selected_strategies, config):
     try:
         adapter = UIConfigAdapter()
-        results = adapter.run_test(prompt, selected_strategies)
+        # adapter.update_config(config)
+        results = adapter.run_test(prompt, selected_strategies, config)
         return json.dumps(results), ""
     except Exception as e:
         return "", str(e)
 
 def render_beautiful_json_output(json_output):
-    with st.expander("🔍 View JSON"):
+    container = st.container(height=500, border=True)
+    with container:
         st.code(json.dumps(json_output, indent=2), language="json")
 
 def create_app_ui():
     st.title("Compliant LLM UI")
     st.write("Test and analyze your AI prompts for security vulnerabilities")
 
+    # sidebar of main page
     with st.sidebar:
         if st.button("Open Documentation"):
             try:
@@ -152,49 +159,117 @@ def create_app_ui():
     if 'selected_report' in st.session_state:
         open_dashboard_with_report(st.session_state['selected_report'])
         del st.session_state['selected_report']
+    
 
-    st.header("Run New Test")
-    with st.form("test_form", clear_on_submit=True):
-        col1, col2 = st.columns([2, 1])
-        with col1:
+    # Form for entering keys
+    with st.expander("Setup Configuration", expanded=True):
+        has_all_keys = False
+        if 'saved_config' not in st.session_state:
+            st.session_state['saved_config'] = {}
+
+        # Select provider outside the form so it reruns on change
+        provider_name = st.selectbox(
+            "Select Provider", [p["name"] for p in PROVIDER_SETUP],
+            index=len(PROVIDER_SETUP) - 1
+        )
+        provider = next(p for p in PROVIDER_SETUP if p["name"] == provider_name)
+        
+        with st.form("provider_form", border=False):
+            # Dynamically create input fields for the selected provider
+            inputs = {}
+            model = st.text_input(
+                        "Enter Model", provider["default_model"]
+                    )
+            for key in provider:
+                if key in ("name", "value", "default_model", "provider_name"):
+                    continue
+                label = key.replace("_", " ").title()
+                env_key = f"{key.upper()}"
+                default_val = os.getenv(env_key, "") or get_key(".env", env_key)
+                if default_val is None:
+                    has_all_keys = False
+                else:
+                    has_all_keys = True
+                inputs[key] = st.text_input(label, value=default_val, type="password" if "API_KEY" in env_key else "default")
+
+            submitted = st.form_submit_button("Setup Config")
+
+            if submitted:
+                if not provider_name:
+                    st.error("Please select a provider")
+                    return
+                if not model:
+                    st.error("Please select a model")
+                    return
+                
+                empty_fields = [key for key, value in inputs.items() if not value.strip()]
+                if empty_fields:
+                    st.error(f"Please fill in all required fields: {', '.join(empty_fields)}")
+                    return
+                
+                env_path = ".env"
+                if not os.path.exists(env_path):
+                    open(env_path, "w").close()
+
+                config = {'provider_name': provider['provider_name'], 'model': model}
+
+                for field, val in inputs.items():
+                    
+                    env_key = f"{field.upper()}"
+                    set_key(env_path, env_key, val)
+                    # Set in-process environment for immediate use
+                    os.environ[env_key] = val
+                    # st.success(f"Configuration for {provider_name} saved to .env and loaded into session")
+                    config[field] = val
+
+                st.session_state['saved_config'] = config
+                st.write("Configuration saved successfully", config)
+    
+    # Form for running tests
+    with st.expander("Run New Test", expanded=True):
+        submit_button_disabled = True
+        provider_config = st.session_state['saved_config']
+
+        if provider_config or has_all_keys:
+            submit_button_disabled = False
+        with st.form("test_form", clear_on_submit=True, border=False):
             prompt = st.text_area("Enter your prompt:", height=150, placeholder="Enter your system prompt here...")
-        with col2:
             st.write("### Select Testing Strategies")
             selected_strategies = st.multiselect("Choose strategies to test", get_available_strategies(), default=["prompt_injection", "jailbreak"])
-        submit_button = st.form_submit_button("Run Test")
+            submit_button = st.form_submit_button(label="Run Test", type="primary", disabled=submit_button_disabled)
 
-    if submit_button:
-        if not prompt.strip():
-            st.error("🚫 Please enter a prompt!")
-            st.stop()
-        if not selected_strategies:
-            st.error("🚫 Please select at least one testing strategy!")
-            st.stop()
+        if submit_button:
+            if not prompt.strip():
+                st.error("🚫 Please enter a prompt!")
+                st.stop()
+            if not selected_strategies:
+                st.error("🚫 Please select at least one testing strategy!")
+                st.stop()
 
-        with st.spinner("🔍 Running tests..."):
-            stdout, stderr = run_test(prompt, selected_strategies)
-            reports = get_reports()
+            with st.spinner("🔍 Running tests..."):
+                stdout, stderr = run_test(prompt, selected_strategies, provider_config)
+                reports = get_reports()
 
-        st.subheader("✅ Test Results")
-        st.write("---")
+            st.subheader("✅ Test Results")
+            st.write("---")
 
-        if stdout:
-            try:
-                json_output = json.loads(stdout)
-                render_beautiful_json_output(json_output)
-            except json.JSONDecodeError:
-                st.warning("⚠️ Output is not valid JSON. Showing raw output instead:")
-                st.code(stdout, language="text")
-        else:
-            st.info("ℹ️ No test output received.")
+            if stdout:
+                try:
+                    json_output = json.loads(stdout)
+                    render_beautiful_json_output(json_output)
+                except json.JSONDecodeError:
+                    st.warning("⚠️ Output is not valid JSON. Showing raw output instead:")
+                    st.code(stdout, language="text")
+            else:
+                st.info("ℹ️ No test output received.")
 
-        if stderr:
-            st.error("❌ Error Output:")
-            st.code(stderr, language="bash")
+            if stderr:
+                st.error("❌ Error Output:")
+                st.code(stderr, language="bash")
 
-        if reports:
-            latest_report = reports[0]
-            open_dashboard_with_report(latest_report["path"])
+            if reports:
+                latest_report = reports[0]
+                open_dashboard_with_report(latest_report["path"])
 
 def main():
     create_app_ui()

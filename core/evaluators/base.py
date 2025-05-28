@@ -152,12 +152,7 @@ class BaseAttackEvaluator(BaseEvaluator):
         
         # create a deep copy of the config object
         # then replace the provide_config's model to gpt-o1-mini
-        eval_model = 'openai/gpt-4o'
-        provider_name = 'openai'
         config_copy = copy.deepcopy(config)
-        config_copy['provider_config']['model'] = eval_model
-        config_copy['provider_config']['provider_name'] = provider_name
-        config_copy['provider_name'] = provider_name
         try:
             # Call the evaluation model
             eval_response = await provider.execute_prompt(
@@ -166,6 +161,8 @@ class BaseAttackEvaluator(BaseEvaluator):
                 config=config_copy
             )
 
+            if not eval_response['success']:
+                raise Exception("Evaluation response is empty")
             # Parse the evaluation response
             eval_text = eval_response['response']
             
@@ -250,9 +247,7 @@ class BaseAttackEvaluator(BaseEvaluator):
             }
             
         except Exception as e:
-            import traceback
             print(f"Error in LLM evaluation: {str(e)}")
-            print(traceback.format_exc())
             
             # Return default values in case of error
             return {
