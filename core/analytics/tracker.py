@@ -90,7 +90,6 @@ class AnalyticsTracker:
             tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
             self.tracer = trace.get_tracer("compliant-llm")
         except Exception as e:
-            print(f"❌ Failed to initialize tracing: {e}")
             self.tracer = None
 
         # Initialize metrics
@@ -122,17 +121,15 @@ class AnalyticsTracker:
             return  # Opted out
 
         # --- Tracing ---
-        try:
-            with self.tracer.start_as_current_span(f"{event.type.value}:{event.name}") as span:
-                span.set_attribute("interaction_type", event.interaction_type.value)
-                span.set_attribute("event_type", event.type.value)
-                span.set_attribute("command", event.name)
-                if event.client_id:
-                    span.set_attribute("client_id", event.client_id)
-                if isinstance(event, ErrorEvent):
-                    span.set_attribute("error_msg", event.error_msg[:100])
-        except Exception as e:
-            print(f"❌ Error during tracing: {e}")
+       
+        with self.tracer.start_as_current_span(f"{event.type.value}:{event.name}") as span:
+            span.set_attribute("interaction_type", event.interaction_type.value)
+            span.set_attribute("event_type", event.type.value)
+            span.set_attribute("command", event.name)
+            if event.client_id:
+                span.set_attribute("client_id", event.client_id)
+            if isinstance(event, ErrorEvent):
+                span.set_attribute("error_msg", event.error_msg[:100])
 
         # --- Metrics ---
         attributes = {
@@ -144,13 +141,11 @@ class AnalyticsTracker:
         if isinstance(event, ErrorEvent):
             attributes["error_msg"] = event.error_msg[:100]
 
-        try:
-            if event.type == EventType.USAGE and self.usage_counter:
-                self.usage_counter.add(1, attributes)
-            elif event.type == EventType.ERROR and self.error_counter:
-                self.error_counter.add(1, attributes)
-        except Exception as e:
-            print(f"❌ Error during metrics recording: {e}")
+       
+        if event.type == EventType.USAGE and self.usage_counter:
+            self.usage_counter.add(1, attributes)
+        elif event.type == EventType.ERROR and self.error_counter:
+            self.error_counter.add(1, attributes)
 
 # ----------------------------
 # Usage Tracking Decorator
