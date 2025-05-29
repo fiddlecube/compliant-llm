@@ -26,7 +26,7 @@ class UIConfigAdapter:
         self.default_config = {
             "temperature": 0.7,        # Default temperature
             "max_tokens": 2000,        # Default max tokens
-            "timeout": 30,             # Default timeout in seconds
+            "timeout": 90,             # Default timeout in seconds
             "output_path": {"path": str(DEFAULT_REPORTS_DIR), "filename": "report"},  # Default output path
         }
     
@@ -50,7 +50,6 @@ class UIConfigAdapter:
             raise ValueError("At least one strategy is required")
         
         # Create test configuration
-        print("Running test with config", config)
         api_key_key = f"{config['provider_name'].upper()}_API_KEY"
         api_key = os.getenv(api_key_key, 'n/a') or get_key(".env", api_key_key)
 
