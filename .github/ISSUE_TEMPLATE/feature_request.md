@@ -16,10 +16,11 @@ A clear and concise description of what you want to happen.
 A clear and concise description of any alternative solutions or features you've considered.
 
 **Workflow of this feature -- Where are you going to use this feature?**
-[ ] compliance
-[ ] development and testing
-[ ] policy
-[ ] others 
+
+ - [ ] compliance
+ - [ ] development and testing
+ - [ ] policy
+ - [ ] others 
 
 
 
