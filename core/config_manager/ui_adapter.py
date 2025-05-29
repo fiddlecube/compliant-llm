@@ -50,6 +50,7 @@ class UIConfigAdapter:
             raise ValueError("At least one strategy is required")
         
         # Create test configuration
+        print("Running test with config", config)
         api_key_key = f"{config['provider_name'].upper()}_API_KEY"
         api_key = os.getenv(api_key_key, 'n/a') or get_key(".env", api_key_key)
 
@@ -59,7 +60,8 @@ class UIConfigAdapter:
             "provider": {
                 "provider_name": f"{config['provider_name']}/{config['model']}",
                 "model": f"{config['provider_name']}/{config['model']}",
-                "api_key": api_key
+                "api_key": api_key,
+                "api_base": "http://localhost:11434/"
             },
             "temperature": self.default_config["temperature"],
             "timeout": self.default_config["timeout"],
