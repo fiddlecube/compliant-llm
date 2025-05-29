@@ -63,8 +63,11 @@ compliant-llm dashboard
 ### Setup Provider
 ![choose](/docs/images/choose.png)
 
-### Run Tests
 ![setup](/docs/images/setup.png)
+
+### Run Tests
+
+![run](/docs/images/run_test.png)
 
 ## API Key Setup
 
