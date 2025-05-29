@@ -51,8 +51,20 @@ To verify that Compliant LLM is correctly installed, run:
 ```bash
 compliant-llm --version
 ```
-
 This should display the version number of Compliant LLM.
+
+## Configuration
+
+Compliant LLM can be configured using the dashboard. You can choose which provider to use: OpenAI, Anthropic, Azure OpenAI, Ollama. 
+
+```bash
+compliant-llm dashboard
+```
+### Setup Provider
+![choose](/docs/images/choose.png)
+
+### Run Tests
+![setup](/docs/images/setup.png)
 
 ## API Key Setup
 
@@ -76,6 +88,13 @@ export ANTHROPIC_API_KEY=your-anthropic-key
 export AZURE_API_KEY="my-azure-api-key"
 export AZURE_API_BASE="https://example-endpoint.openai.azure.com"
 export AZURE_API_VERSION="2023-05-15"
+```
+
+
+### Ollama Models
+
+```bash
+export OLLAMA_API_BASE="http://localhost:11434"
 ```
 
 When building from source, you can also create a `.env` file in your project root with these variables.
