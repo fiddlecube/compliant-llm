@@ -207,13 +207,10 @@ class LiteLLMProvider(LLMProvider):
             # Import litellm here to avoid dependency issues
             from litellm import acompletion
 
-            # Extract provider-specific configuration
-            # TODO: @vini - simplify this
             provider_config = config.get("provider_config", {})
             model = provider_config.get("provider_name")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
-            # api_key = provider_config.get("api_key")
 
             # Execute the prompt
             response = await acompletion(
