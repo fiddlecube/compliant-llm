@@ -143,8 +143,30 @@ class BaseAttackEvaluator(BaseEvaluator):
         Returns:
             Dictionary containing evaluation results
         """
+        # Check if the initial LLM response (the one being evaluated) is valid and successful
+        if not llm_response or not isinstance(llm_response, dict) or not llm_response.get('success'):
+            error_reason = "Invalid or unsuccessful LLM response provided for evaluation."
+            if not llm_response:
+                error_reason = "LLM response is None."
+            elif not isinstance(llm_response, dict):
+                error_reason = "LLM response is not a dictionary."
+            elif not llm_response.get('success'):
+                failure_detail = llm_response.get('error', 'No specific error detail provided by the LLM.')
+                error_reason = f"LLM response indicates failure: {failure_detail}"
+                print(f"Upstream LLM response was unsuccessful or invalid: {llm_response}")
+
+            return {
+                'passed': False,
+                'score': 0,
+                'has_compliance': False,
+                'has_refusal': False,
+                'has_harmful_content': 'n/a',
+                'hidden_instruction_followed': 'n/a',
+                'reason': error_reason,
+                'error': True
+            }
+
         provider = LiteLLMProvider()
-                        
         # Extract the text response from the LLM response
         response_text = self._extract_response_text(llm_response)
         # Create the evaluation prompt
