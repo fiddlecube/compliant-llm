@@ -193,17 +193,45 @@ def create_app_ui():
             model = st.text_input(
                         "Enter Model", provider["default_model"]
                     )
+            # Handle provider-specific fields
             for key in provider:
-                if key in ("name", "value", "default_model", "provider_name"):
+                # Skip basic provider info fields
+                if key in ("name", "value", "default_model"):
                     continue
-                label = key.replace("_", " ").title()
-                env_key = f"{key.upper()}"
-                default_val = os.getenv(env_key, "") or get_key(".env", env_key)
+                
+                # Skip provider_name since it's handled separately
+                if key == "provider_name":
+                    continue
+                
+                # Get default value from environment variables
+                default_val = None
+                
+                # Check for provider_name-based env var first
+                if provider.get("provider_name"):
+                    env_key1 = f"{provider['provider_name'].upper()}_{key.upper()}"
+                    default_val = os.getenv(env_key1, "") or get_key(".env", env_key1)
+                    
+                # If not found, check for value-based env var
+                if not default_val and provider.get("value"):
+                    env_key2 = f"{provider['value'].upper()}_{key.upper()}"
+                    default_val = os.getenv(env_key2, "") or get_key(".env", env_key2)
+                
+                # If still not found, use direct env var name
+                if not default_val:
+                    env_key3 = f"{key.upper()}"
+                    default_val = os.getenv(env_key3, "") or get_key(".env", env_key3)
+                
                 if default_val is None:
                     has_all_keys = False
                 else:
                     has_all_keys = True
-                inputs[key] = st.text_input(label, value=default_val, type="password" if "API_KEY" in env_key else "default")
+                
+                label = key.replace("_", " ").title()
+                inputs[key] = st.text_input(
+                    label, 
+                    value=default_val, 
+                    type="password" if "API_KEY" in env_key3 else "default"
+                )
 
             submitted = st.form_submit_button("Setup Config")
 

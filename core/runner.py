@@ -37,17 +37,21 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     # Use the provided configuration directly
     config = config_dict
     # Extract provider configuration with sensible defaults
-    provider_config = config.get('provider')
     model_name = ''
     api_key = None
     api_base = None
+
     
+    provider_config = config.get('provider') or config.get('provider_name')
+    model_name = ''
+
     if isinstance(provider_config, dict):
         model_name = provider_config.get('model')
-        api_key = provider_config.get('api_key')
-        api_base = provider_config.get('api_base')
     else:
         model_name = provider_config
+    # Get API key
+    api_key = provider_config.get('api_key')
+    api_base = provider_config.get('api_base')
     
     # Create provider configuration in one step
     provider_config = {
@@ -58,7 +62,8 @@ def execute_prompt_tests_with_orchestrator(config_dict):
         'timeout': config.get('timeout', 30)
     }
 
-    print("provider_config", provider_config)
+    print("provider_config-----------", provider_config)
+
     
     # Create provider
     provider = LiteLLMProvider()

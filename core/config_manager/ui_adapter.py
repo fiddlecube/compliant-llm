@@ -61,7 +61,7 @@ class UIConfigAdapter:
                 "provider_name": f"{config['provider_name']}/{config['model']}",
                 "model": f"{config['provider_name']}/{config['model']}",
                 "api_key": api_key,
-                "api_base": "http://localhost:11434/"
+                "api_base": config.get(f"{config['provider_name'].lower()}_api_base", "")
             },
             "temperature": self.default_config["temperature"],
             "timeout": self.default_config["timeout"],
