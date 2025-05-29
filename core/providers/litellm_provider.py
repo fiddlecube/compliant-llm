@@ -207,14 +207,11 @@ class LiteLLMProvider(LLMProvider):
         try:
             # Import litellm here to avoid dependency issues
             from litellm import acompletion
-            litellm._turn_off_debug()   
             provider_config = config.get("provider_config", {})
             model = provider_config.get("provider_name")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
             api_base = provider_config.get("api_base")
-
-            print("Executing prompt with model", provider_config)
 
             # Execute the prompt
             response = await acompletion(
@@ -248,9 +245,11 @@ class LiteLLMProvider(LLMProvider):
 
         except Exception as e:
             # Handle errors
+            provider_config = config.get("provider_config", {})
+            model = provider_config.get("provider_name", "")
             return {
                 "success": False,
                 "error": str(e),
                 "provider": "litellm",
-                "model": provider_config.get("provider_name")
+                "model": model
             }
