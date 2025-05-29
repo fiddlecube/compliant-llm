@@ -3,6 +3,7 @@ LiteLLM provider implementation.
 
 This module implements a provider that uses LiteLLM to interact with various LLM APIs.
 """
+import litellm
 from typing import Dict, Any, List
 import logging
 import re
@@ -147,8 +148,6 @@ class LiteLLMProvider(LLMProvider):
         try:
             # Import litellm here to avoid dependency issues
             from litellm import acompletion  # Using acompletion instead of completion for async
-            import litellm
-            litellm._turn_off_debug()
             chat_history = self.history + messages
             # Extract provider-specific configuration
             provider_config = config.get("provider_config", {})
@@ -208,9 +207,7 @@ class LiteLLMProvider(LLMProvider):
         try:
             # Import litellm here to avoid dependency issues
             from litellm import acompletion
-            import litellm
-            litellm._turn_off_debug()
-
+            litellm._turn_off_debug()   
             provider_config = config.get("provider_config", {})
             model = provider_config.get("provider_name")
             temperature = provider_config.get("temperature", 0.7)
@@ -227,7 +224,7 @@ class LiteLLMProvider(LLMProvider):
                     {"role": "user", "content": user_prompt}
                 ],
                 api_base=api_base,
-                # temperature=temperature,
+                temperature=temperature,
                 timeout=timeout,
                 num_retries=provider_config.get("num_retries", 3),
                 cooldown_time=provider_config.get("cooldown_time", 60),
