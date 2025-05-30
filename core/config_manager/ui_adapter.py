@@ -59,7 +59,7 @@ class UIConfigAdapter:
             "provider": {
                 "provider_name": f"{config['provider_name']}/{config['model']}",
                 "model": f"{config['provider_name']}/{config['model']}",
-                "api_key": api_key
+                "api_key": api_key,
             },
             "temperature": self.default_config["temperature"],
             "timeout": self.default_config["timeout"],

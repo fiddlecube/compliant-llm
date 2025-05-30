@@ -7,14 +7,14 @@ from pydantic import BaseModel, Field
 from opentelemetry import trace
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from azure.monitor.opentelemetry.exporter import AzureMonitorTraceExporter, AzureMonitorMetricExporter
 
 # OpenTelemetry metrics
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.metrics import set_meter_provider, get_meter_provider
 from opentelemetry.sdk.metrics.export import (
-    PeriodicExportingMetricReader
+    PeriodicExportingMetricReader,
 )
 
 # ----------------------------
@@ -86,7 +86,6 @@ class AnalyticsTracker:
             trace.set_tracer_provider(TracerProvider(resource=resource))
             tracer_provider = trace.get_tracer_provider()
             tracer_provider.add_span_processor(BatchSpanProcessor(trace_exporter))
-            tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
             self.tracer = trace.get_tracer("compliant-llm")
         except Exception as e:
             self.tracer = None
