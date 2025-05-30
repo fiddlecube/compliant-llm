@@ -6,9 +6,8 @@ Compliant LLM supports various LLM providers through the LiteLLM library. This s
 
 - [OpenAI](openai.md)
 - [Anthropic](anthropic.md)
-- [Azure OpenAI](azure.md)
-- [Google AI](google.md)
-- [Hugging Face](huggingface.md)
+- [Azure](azure.md)
+- [Google](google.md)
 - [vLLM](vllm.md)
 
 ## General Setup
