@@ -14,8 +14,7 @@ from azure.monitor.opentelemetry.exporter import AzureMonitorTraceExporter, Azur
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.metrics import set_meter_provider, get_meter_provider
 from opentelemetry.sdk.metrics.export import (
-    PeriodicExportingMetricReader,
-    ConsoleMetricExporter,
+    PeriodicExportingMetricReader
 )
 
 # ----------------------------
@@ -98,7 +97,6 @@ class AnalyticsTracker:
                 connection_string=f"InstrumentationKey={instrumentation_key};IngestionEndpoint={ingestion_endpoint}"
             )
             metric_readers = [
-                PeriodicExportingMetricReader(ConsoleMetricExporter()),
                 PeriodicExportingMetricReader(metric_exporter)
             ]
             meter_provider = MeterProvider(resource=resource, metric_readers=metric_readers)
