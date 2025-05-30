@@ -175,8 +175,7 @@ class BaseAttackEvaluator(BaseEvaluator):
         # create a deep copy of the config object
         # then replace the provide_config's model to gpt-o1-mini
         config_copy = copy.deepcopy(config)
-        print("====Config====", config)
-        print("====Config copy====", config_copy)
+
         try:
             # Call the evaluation model
             eval_response = await provider.execute_prompt(
@@ -184,8 +183,6 @@ class BaseAttackEvaluator(BaseEvaluator):
                 user_prompt=eval_prompt,
                 config=config_copy
             )
-
-            print("====Evaluation response====", eval_response)
 
             if not eval_response['success']:
                 raise Exception("Evaluation response is empty")

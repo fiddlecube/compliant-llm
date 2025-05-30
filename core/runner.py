@@ -3,6 +3,7 @@ import os
 import asyncio
 from datetime import datetime
 from typing import Dict, Any
+from rich.console import Console
 
 # Add these imports at the top of the file
 from core.strategies.base import BaseAttackStrategy
@@ -54,12 +55,13 @@ def execute_prompt_tests_with_orchestrator(config_dict):
         'temperature': config.get('temperature', 0.7),
         'timeout': config.get('timeout', 30)
     }
-    print("====Provider config====", provider_config)
     
     # Create provider
     provider = LiteLLMProvider()
     
-
+    console = Console()
+    console.print(f"[bold cyan]Running test with config: {config}[/]")
+    console.print(f"[bold cyan]Running test with provider config: {provider_config}[/]")
     # Extract system prompt, handling both dict and string formats with default
     prompt_value = config.get('prompt', {})
     system_prompt = (prompt_value.get('content') if isinstance(prompt_value, dict) else prompt_value) or "You are a helpful assistant"

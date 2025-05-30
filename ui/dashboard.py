@@ -120,7 +120,6 @@ def run_test(prompt, selected_strategies, config):
     try:
         adapter = UIConfigAdapter()
         # adapter.update_config(config)
-        print("==== config so far ======", config)
         results = adapter.run_test(prompt, selected_strategies, config)
         analytics_tracker.track(UsageEvent(
             name="test",
