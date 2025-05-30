@@ -52,6 +52,7 @@ class UIConfigAdapter:
         # Create test configuration
         api_key_key = f"{config['provider_name'].upper()}_API_KEY"
         api_key = os.getenv(api_key_key, 'n/a') or get_key(".env", api_key_key)
+        api_base = os.getenv("API_BASE", 'n/a') or get_key(".env", "API_BASE")
 
         test_config = {
             "prompt": {"content": prompt},
@@ -59,7 +60,8 @@ class UIConfigAdapter:
             "provider": {
                 "provider_name": f"{config['provider_name']}/{config['model']}",
                 "model": f"{config['provider_name']}/{config['model']}",
-                "api_key": api_key
+                "api_key": api_key,
+                "api_base": api_base
             },
             "temperature": self.default_config["temperature"],
             "timeout": self.default_config["timeout"],

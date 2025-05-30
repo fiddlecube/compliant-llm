@@ -191,7 +191,7 @@ class LiteLLMProvider(LLMProvider):
                 "success": False,
                 "error": str(e),
                 "provider": "litellm",
-                "model": provider_config.get("model", "openai/gpt-4o")
+                "model": provider_config.get("model", None)
             }
 
     async def execute_prompt(self, system_prompt: str, user_prompt: str, config: Dict[str, Any]) -> Dict[str, Any]:  # noqa: E501
