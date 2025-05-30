@@ -46,11 +46,13 @@ def execute_prompt_tests_with_orchestrator(config_dict):
         model_name = provider_config
     # Get API key
     api_key = provider_config.get('api_key')
+    api_base = provider_config.get('api_base')
     
     # Create provider configuration in one step
     provider_config = {
         'provider_name': model_name,
         'api_key': api_key,
+        'api_base': api_base,
         'temperature': config.get('temperature', 0.7),
         'timeout': config.get('timeout', 30)
     }

@@ -155,9 +155,10 @@ class LiteLLMProvider(LLMProvider):
             timeout = provider_config.get("timeout", 30)
             api_base = provider_config.get("api_base", "http://localhost:8000")
             # api_key = provider_config.get("api_key")
+
             # Execute the prompt asynchronously
             response = await acompletion(
-                model="hosted_vllm/llama3.2:3b", #model,
+                model=model,
                 api_base=api_base,
                 messages=chat_history,
                 temperature=temperature,
@@ -215,12 +216,12 @@ class LiteLLMProvider(LLMProvider):
             model = provider_config.get("provider_name")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
-            api_base = provider_config.get("api_base", "http://localhost:8000")
+            api_base = provider_config.get("api_base", None)
             # api_key = provider_config.get("api_key")
 
             # Execute the prompt
             response = await acompletion(
-                model="hosted_vllm/llama3.2:3b", #model,
+                model=model,
                 api_base=api_base,
                 messages=[
                     {"role": "system", "content": system_prompt},

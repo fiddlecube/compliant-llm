@@ -295,6 +295,26 @@ class ConfigManager:
             return self.config['provider_name']
         
         return ''  # Default
+
+    def get_api_base(self) -> str:
+        """
+        Get the API base from the configuration.
+        
+        Returns:
+            API base string
+        """
+        if not self.config:
+            return ''  # Default
+        
+        # Modern format with provider object
+        if 'provider' in self.config:
+            if isinstance(self.config['provider'], dict):
+                return self.config['provider'].get('api_base', '')
+        # Legacy format
+        elif 'api_base' in self.config:
+            return self.config['api_base']
+        
+        return ''  # Default
     
     def get_output_path(self) -> Dict[str, str]:
         """
@@ -333,7 +353,7 @@ class ConfigManager:
         prompt = self.get_prompt()
         strategies = self.get_strategies()
         provider = self.get_provider()
-        
+        api_base = self.get_api_base()
         # Format for the runner
         api_key_key = f"{provider.upper()}_API_KEY"
         api_key = os.getenv(api_key_key, 'n/a') or get_key(".env", api_key_key)
@@ -344,7 +364,8 @@ class ConfigManager:
             'provider': {
                 'provider_name': provider,
                 'model': provider,
-                'api_key': api_key
+                'api_key': api_key,
+                'api_base': api_base,
             }
         }
         
