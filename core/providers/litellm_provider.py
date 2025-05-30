@@ -159,13 +159,11 @@ class LiteLLMProvider(LLMProvider):
             # Execute the prompt asynchronously
             response = await acompletion(
                 model=model,
-                api_base=api_base,
                 messages=chat_history,
                 temperature=temperature,
                 timeout=timeout,
                 num_retries=provider_config.get("num_retries", 3),
                 cooldown_time=provider_config.get("cooldown_time", 60),
-                # api_key=api_key
             )
 
             # Properly extract the message and add to history in the correct format
@@ -222,7 +220,6 @@ class LiteLLMProvider(LLMProvider):
             # Execute the prompt
             response = await acompletion(
                 model=model,
-                api_base=api_base,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}

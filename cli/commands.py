@@ -113,8 +113,7 @@ def cli():
 @click.option('--verbose', '-v', is_flag=True, help='Show verbose output')
 @click.option('--timeout', type=int, default=None, help='Timeout in seconds for LLM requests')
 @click.option('--nist-compliance', '-n', help='Enable NIST compliance assessment', is_flag=True)
-@click.option('--api-base', help='LLM API base URL for Azure, vllm, ollama, etc')
-def test(config_path, prompt, strategy, provider, output, report, parallel, verbose, timeout, nist_compliance, api_base):
+def test(config_path, prompt, strategy, provider, output, report, parallel, verbose, timeout, nist_compliance):
     """Run tests on your system prompts."""
     # Create a rich console for showing output
     console = Console()
@@ -130,7 +129,6 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
             prompt=prompt,
             strategy=strategy,
             provider=provider,
-            api_base=api_base,
             output=output,
             parallel=parallel,
             timeout=timeout

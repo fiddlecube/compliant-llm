@@ -29,7 +29,6 @@ class CLIConfigAdapter:
                     prompt: Optional[str] = None,
                     strategy: Optional[str] = None,
                     provider: Optional[str] = None,
-                    api_base: Optional[str] = None,
                     output: Optional[str] = None,
                     parallel: Optional[bool] = None,
                     timeout: Optional[int] = None,
@@ -42,7 +41,6 @@ class CLIConfigAdapter:
             prompt: System prompt to test
             strategy: Test strategy to use (comma-separated for multiple)
             provider: LLM provider name
-            api_base: LLM API base URL for Azure, vllm, ollama, etc
             output: Output file path for results
             parallel: Whether to run tests in parallel
             timeout: Timeout in seconds for LLM requests
@@ -99,8 +97,6 @@ class CLIConfigAdapter:
             else:
                 config_dict['provider'] = provider
 
-            if api_base:
-                config_dict['provider']['api_base'] = api_base
                 
         # Set output path
         config_dict['output'] = {"path": str(DEFAULT_REPORTS_DIR), "filename": output or "report"}
