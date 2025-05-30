@@ -153,6 +153,8 @@ class BaseAttackEvaluator(BaseEvaluator):
         # create a deep copy of the config object
         # then replace the provide_config's model to gpt-o1-mini
         config_copy = copy.deepcopy(config)
+
+        print("config_copy", config_copy)
         try:
             # Call the evaluation model
             eval_response = await provider.execute_prompt(

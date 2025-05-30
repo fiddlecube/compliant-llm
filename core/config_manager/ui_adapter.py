@@ -26,7 +26,7 @@ class UIConfigAdapter:
         self.default_config = {
             "temperature": 0.7,        # Default temperature
             "max_tokens": 2000,        # Default max tokens
-            "timeout": 30,             # Default timeout in seconds
+            "timeout": 90,             # Default timeout in seconds
             "output_path": {"path": str(DEFAULT_REPORTS_DIR), "filename": "report"},  # Default output path
         }
     
@@ -59,7 +59,8 @@ class UIConfigAdapter:
             "provider": {
                 "provider_name": f"{config['provider_name']}/{config['model']}",
                 "model": f"{config['provider_name']}/{config['model']}",
-                "api_key": api_key
+                "api_key": api_key,
+                "api_base": config.get(f"{config['provider_name'].lower()}_api_base", "")
             },
             "temperature": self.default_config["temperature"],
             "timeout": self.default_config["timeout"],

@@ -3,6 +3,7 @@ LiteLLM provider implementation.
 
 This module implements a provider that uses LiteLLM to interact with various LLM APIs.
 """
+import litellm
 from typing import Dict, Any, List
 import logging
 import re
@@ -150,7 +151,7 @@ class LiteLLMProvider(LLMProvider):
             chat_history = self.history + messages
             # Extract provider-specific configuration
             provider_config = config.get("provider_config", {})
-            model = provider_config.get("provider_name", "gpt-4o")
+            model = provider_config.get("provider_name")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
             # api_key = provider_config.get("api_key")
@@ -188,7 +189,7 @@ class LiteLLMProvider(LLMProvider):
                 "success": False,
                 "error": str(e),
                 "provider": "litellm",
-                "model": provider_config.get("model", "openai/gpt-4o")
+                "model": provider_config.get("model")
             }
 
     async def execute_prompt(self, system_prompt: str, user_prompt: str, config: Dict[str, Any]) -> Dict[str, Any]:  # noqa: E501
@@ -206,14 +207,11 @@ class LiteLLMProvider(LLMProvider):
         try:
             # Import litellm here to avoid dependency issues
             from litellm import acompletion
-
-            # Extract provider-specific configuration
-            # TODO: @vini - simplify this
             provider_config = config.get("provider_config", {})
             model = provider_config.get("provider_name")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
-            # api_key = provider_config.get("api_key")
+            api_base = provider_config.get("api_base")
 
             # Execute the prompt
             response = await acompletion(
@@ -222,6 +220,7 @@ class LiteLLMProvider(LLMProvider):
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
+                api_base=api_base,
                 temperature=temperature,
                 timeout=timeout,
                 num_retries=provider_config.get("num_retries", 3),
@@ -247,9 +246,11 @@ class LiteLLMProvider(LLMProvider):
 
         except Exception as e:
             # Handle errors
+            provider_config = config.get("provider_config", {})
+            model = provider_config.get("provider_name", "")
             return {
                 "success": False,
                 "error": str(e),
                 "provider": "litellm",
-                "model": config.get("model")
+                "model": model
             }
