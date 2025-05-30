@@ -248,7 +248,6 @@ class AttackOrchestrator:
         Returns:
             Dict containing the results of rerunning the attacks
         """
-        strategy_start_time = datetime.now()
         # Find the report file to use
         report_dir = "reports"
         
