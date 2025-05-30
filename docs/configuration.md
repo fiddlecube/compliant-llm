@@ -12,6 +12,10 @@ Configuration files are stored in the `configs/` directory by default and use th
 - Output options
 - Custom test prompts
 
+## Provider Format
+
+Learn about providers in the [providers](providers/index.md) section.
+
 ## File Structure
 
 A basic configuration file includes the following elements:

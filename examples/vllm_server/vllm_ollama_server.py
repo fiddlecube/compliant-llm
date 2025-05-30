@@ -119,7 +119,7 @@ async def create_completion(request: Request):
                 }
             })
         else:
-            return JSONResponse({"error": f"Ollama error: {ollama_response.text}"}, status_code=500)
+            return JSONResponse({"error": f"Ollama error: {response.text}"}, status_code=500)
     except Exception as e:
         return JSONResponse({"error": f"Error: {str(e)}"}, status_code=500)
 
