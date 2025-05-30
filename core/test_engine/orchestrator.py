@@ -163,59 +163,26 @@ class AttackOrchestrator:
                 }]
         return strategy_classes
     
-    async def run_api_tests(self, strategies: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    async def run_api_test(self, strategy_class, attack_prompts) -> List[Dict[str, Any]]:
         """Run comprehensive red-teaming tests against the remote API"""
-        strategy_start_time = datetime.now()
         if not self.api_enabled or not self.api_url:
             return []
         
         results = []
-        final_results = []
-        # Get attack prompts from all strategies
-        for strategy_class in strategies:
-            strategy = strategy_class['obj']
-            console.print(f"[green] Running strategy: {strategy_class['name']}[/green]")
-            attack_prompts = await strategy.get_attack_prompts(self.config, "")
+        # Get attack prompts for each strategy
+        console.print(f"[green] Running strategy: {strategy_class.name}[/green]")
             
-            for attack_data in attack_prompts:
-                payload = {
-                    "messages": [
-                        {"role": "user", "content": attack_data.get('attack_instruction', '')}
-                    ]
-                }
-                
+        for attack_data in attack_prompts:
                 # Run blackbox test using the strategy's built-in method
                 api_config = {
                     'url': self.api_url,
                     'headers': self.api_headers
                 }
                 # Evaluate the response using the current strategy
-               
-
-                result = await strategy.a_run_blackbox_test(attack_data, api_config)
-
-                print("result", result)
-
-                evaluation = result['evaluation']
-                
-                result = {
-                'strategy': strategy_class['name'],
-                'system_prompt': "",
-                'attack_prompt': attack_data.get('attack_instruction', ''),
-                'instruction': attack_data.get('instruction', ''),
-                'category': attack_data.get('category', ''),
-                'response': result.get('response', {}),
-                'evaluation': evaluation,
-                'success': evaluation.get('passed', False),
-                'mutation_technique': attack_data.get('mutation_technique', ''),
-                }
+                result = await strategy_class.a_run_blackbox_test(attack_data, api_config, self.config)
                 results.append(result)
-                final_results.append({
-                    "strategy": strategy_class['name'],
-                    "results": results,
-                    "runtime_in_seconds": (datetime.now() - strategy_start_time).total_seconds()
-                })
-        return final_results
+
+        return results
 
 
     async def run_strategy_attack(self, strategy, system_prompt):
@@ -246,7 +213,6 @@ class AttackOrchestrator:
     
     async def orchestrate_attack(self, system_prompt: str, strategies: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Run the orchestrator with parallel execution using asyncio.gather"""
-        
         # Create tasks for all strategies
         if not self.api_enabled:
             strategy_tasks = [self.run_strategy_attack(strategy, system_prompt) for strategy in strategies]
@@ -258,8 +224,12 @@ class AttackOrchestrator:
         # Run API tests if enabled
         api_results = []
         if self.api_enabled:
-            api_results = await self.run_api_tests(strategies)
-            
+            self.config['provider'] = self.provider
+
+            for strategy in strategies:
+                strategy_class = strategy['obj']
+                attack_prompts = await strategy_class.get_attack_prompts(self.config, "")
+                api_results = await self.run_api_test(strategy_class, attack_prompts)
             
         # Combine results
         self.results = strategy_results

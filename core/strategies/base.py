@@ -89,7 +89,7 @@ class BaseAttackStrategy(ABC):
         
         return results
     
-    async def _run_blackbox_test(self, attack_data: Dict[str, Any], api_config: Dict[str, Any]) -> Dict[str, Any]:
+    async def _run_blackbox_test(self, attack_data: Dict[str, Any], api_config: Dict[str, Any], config: Dict[str, Any] = None) -> Dict[str, Any]:
         """Run a single blackbox test against an API.
 
         Called from within a_run_blackbox_test
@@ -117,11 +117,11 @@ class BaseAttackStrategy(ABC):
         except Exception as e:
             api_response = {'error': str(e)}
 
-        # Evaluate the response
         evaluation = await self.evaluate(
-            system_prompt="",  # Empty for blackbox testing
-            user_prompt=attack_data.get('attack_instruction', ''),
-            response=api_response
+            "",  # Empty for blackbox testing
+            attack_data.get('attack_instruction', ''),
+            api_response,
+            config
         )
 
         return {
@@ -137,7 +137,7 @@ class BaseAttackStrategy(ABC):
             'is_blackbox': True
         }
 
-    async def a_run_blackbox_test(self, api_config: Dict[str, Any], config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+    async def a_run_blackbox_test(self, attack_data: Any, api_config: Dict[str, Any], config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """Run blackbox testing against an API.
         
         This is a template method that orchestrates blackbox testing.
@@ -152,13 +152,10 @@ class BaseAttackStrategy(ABC):
         results = []
         start_time = datetime.now()
 
-        # Get attack prompts
-        attack_prompts = await self.get_attack_prompts(config or {}, "")
-
-        # Run each test
-        for attack_data in attack_prompts:
-            result = await self._run_blackbox_test(attack_data, api_config)
-            results.append(result)
+        # # Run each test
+        # for attack_data in attack_prompts:
+        result = await self._run_blackbox_test(attack_data, api_config, config)
+        results.append(result)
 
         return {
             "strategy": self.name,
