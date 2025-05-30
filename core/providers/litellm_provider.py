@@ -157,7 +157,7 @@ class LiteLLMProvider(LLMProvider):
             # api_key = provider_config.get("api_key")
             # Execute the prompt asynchronously
             response = await acompletion(
-                model="hosted_vllm/llama3.1:8b", #model,
+                model="hosted_vllm/llama3.2:3b", #model,
                 api_base=api_base,
                 messages=chat_history,
                 temperature=temperature,
@@ -220,7 +220,7 @@ class LiteLLMProvider(LLMProvider):
 
             # Execute the prompt
             response = await acompletion(
-                model="v1/completions", #model,
+                model="hosted_vllm/llama3.2:3b", #model,
                 api_base=api_base,
                 messages=[
                     {"role": "system", "content": system_prompt},
