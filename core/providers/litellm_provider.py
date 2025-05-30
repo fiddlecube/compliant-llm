@@ -225,6 +225,7 @@ class LiteLLMProvider(LLMProvider):
                 timeout=timeout,
                 num_retries=provider_config.get("num_retries", 3),
                 cooldown_time=provider_config.get("cooldown_time", 60),
+                turn_off_message_logging=True,
                 # api_key=api_key
             )
             
