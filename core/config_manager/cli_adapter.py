@@ -96,7 +96,6 @@ class CLIConfigAdapter:
                 config_dict['provider']['model'] = provider
             else:
                 config_dict['provider'] = provider
-
                 
         # Set output path
         config_dict['output'] = {"path": str(DEFAULT_REPORTS_DIR), "filename": output or "report"}
