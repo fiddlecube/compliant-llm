@@ -120,8 +120,6 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         try:
             # Execute against provider
             response = await provider.chat(messages, config)
-            print("====Config after chat====", config)
-            
             # clean up response here, remove unwanted elements
             
             # Evaluate the response
@@ -155,7 +153,6 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         
         
         # Process all attack prompts in parallel
-        attack_prompts = attack_prompts[:1]
         tasks = [self.process_attack_prompt(config, attack_data, provider, system_prompt) for attack_data in attack_prompts]
         results = await asyncio.gather(*tasks)
         return results

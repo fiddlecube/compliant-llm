@@ -94,8 +94,6 @@ async def create_completion(request: Request):
                         finish_reason = json_response.get("done_reason", "length")
                         break
 
-            print("====full_response====", full_response)
-            
             # Return OpenAI-compatible chat completion response
             return JSONResponse({
                 "id": f"chatcmpl-{int(time.time())}",
