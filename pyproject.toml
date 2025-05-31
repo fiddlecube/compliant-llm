@@ -23,6 +23,7 @@ dependencies = [
     "aiofiles",
     "plotly",
     "psutil",
+    "tinydb",
     "markdown",
     "opentelemetry-api",
     "opentelemetry-sdk",
