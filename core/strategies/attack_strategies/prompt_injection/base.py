@@ -120,7 +120,6 @@ class PromptInjectionStrategy(BaseAttackStrategy):
         try:
             # Execute against provider
             response = await provider.chat(messages, config)
-            
             # clean up response here, remove unwanted elements
             
             # Evaluate the response

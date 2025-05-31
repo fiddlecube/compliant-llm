@@ -175,7 +175,6 @@ def test(config_path, prompt, strategy, provider, output, report, parallel, verb
     
     with Progress(
         SpinnerColumn(),
-        TextColumn("[bold blue]{task.description}"),
         TimeElapsedColumn(),
     ) as progress:
         task = progress.add_task("[cyan]Testing prompt security", total=None)

@@ -295,7 +295,7 @@ class ConfigManager:
             return self.config['provider_name']
         
         return ''  # Default
-    
+
     def get_output_path(self) -> Dict[str, str]:
         """
         Get the output path for reports.
@@ -333,7 +333,6 @@ class ConfigManager:
         prompt = self.get_prompt()
         strategies = self.get_strategies()
         provider = self.get_provider()
-        
         # Format for the runner
         api_key_key = f"{provider.upper()}_API_KEY"
         api_key = os.getenv(api_key_key, 'n/a') or get_key(".env", api_key_key)
@@ -344,7 +343,7 @@ class ConfigManager:
             'provider': {
                 'provider_name': provider,
                 'model': provider,
-                'api_key': api_key
+                'api_key': api_key,
             }
         }
         

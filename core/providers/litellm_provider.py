@@ -153,7 +153,9 @@ class LiteLLMProvider(LLMProvider):
             model = provider_config.get("provider_name", "gpt-4o")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
+            api_base = provider_config.get("api_base", "http://localhost:8000")
             # api_key = provider_config.get("api_key")
+
             # Execute the prompt asynchronously
             response = await acompletion(
                 model=model,
@@ -162,7 +164,6 @@ class LiteLLMProvider(LLMProvider):
                 timeout=timeout,
                 num_retries=provider_config.get("num_retries", 3),
                 cooldown_time=provider_config.get("cooldown_time", 60),
-                # api_key=api_key
             )
 
             # Properly extract the message and add to history in the correct format
@@ -188,7 +189,7 @@ class LiteLLMProvider(LLMProvider):
                 "success": False,
                 "error": str(e),
                 "provider": "litellm",
-                "model": provider_config.get("model", "openai/gpt-4o")
+                "model": provider_config.get("model", None)
             }
 
     async def execute_prompt(self, system_prompt: str, user_prompt: str, config: Dict[str, Any]) -> Dict[str, Any]:  # noqa: E501
@@ -213,6 +214,7 @@ class LiteLLMProvider(LLMProvider):
             model = provider_config.get("provider_name")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
+            api_base = provider_config.get("api_base", None)
             # api_key = provider_config.get("api_key")
 
             # Execute the prompt
