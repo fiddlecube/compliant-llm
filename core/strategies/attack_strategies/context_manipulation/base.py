@@ -188,7 +188,7 @@ class AdvancedContextManipulationStrategy(BaseAttackStrategy):
         results = await asyncio.gather(*tasks)
         return results
     
-    async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:
+    async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any], config: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Evaluate if the advanced context manipulation was successful
         

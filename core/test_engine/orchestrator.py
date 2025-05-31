@@ -5,6 +5,7 @@ Attack orchestrator module.
 This module orchestrates attack strategies against LLM providers.
 """
 import asyncio
+import aiohttp
 import json
 import os
 from datetime import datetime
@@ -53,25 +54,60 @@ STRATEGY_MAP = {
     "data_poisoning": DataPoisoningStrategy
 }
 class AttackOrchestrator:
-    """Orchestrates attack strategies against LLM providers"""
-    
-    def __init__(self, 
-        strategies: List[BaseAttackStrategy], 
-        provider: LLMProvider, 
-        config: Dict[str, Any]):
-        """
-        Initialize the orchestrator
-        
-        Args:
-            strategies: List of attack strategies
-            provider: LLM provider
-            config: Configuration dictionary
-        """
-        self.strategies = strategies
+    """Orchestrates attack strategies against LLM providers and APIs"""
+
+    def __init__(
+        self,
+        strategies: List[BaseAttackStrategy],
+        provider: LLMProvider,
+        config: Dict[str, Any]
+    ):
+        self.strategies = strategies or []
         self.provider = provider
         self.config = config
         self.results: List[Dict[str, Any]] = []
         self.compliance_orchestrator = ComplianceOrchestrator(config)
+        self.api_enabled = False
+        self.api_url = None
+        self.api_key = None
+        self.api_headers: Dict[str, str] = {}
+        self.api_payloads: List[Dict[str, Any]] = []
+
+        self._init_api_config()
+
+        if not self.strategies:
+            self.strategies = self._default_strategies()
+            console.print("[yellow]No strategies provided, using defaults[/yellow]")
+
+    def _init_api_config(self):
+        blackbox_config = self.config.get('blackbox', {})
+        self.api_enabled = blackbox_config.get('enabled', False)
+
+        if not self.api_enabled:
+            return
+
+        self.api_url = blackbox_config.get('api_url')
+        self.api_key = blackbox_config.get('api_key')
+        self.api_headers = blackbox_config.get('headers', {})
+
+        if self.api_key:
+            self.api_headers['Authorization'] = f"Bearer {self.api_key}"
+
+        self.api_payloads = self._load_payloads(blackbox_config.get('payload', []))
+        
+
+    def _load_payloads(self, raw_payloads: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        return [
+            {
+                **({"messages": p["messages"]} if "messages" in p else {}),
+                **({"prompt": p["prompt"]} if "prompt" in p else {}),
+                **({"role": p["role"]} if "role" in p else {}),
+            }
+            for p in raw_payloads if p
+        ]
+
+    def _default_strategies(self) -> List[BaseAttackStrategy]:
+        return [PromptInjectionStrategy(), JailbreakStrategy()]
     
     @classmethod
     def _create_strategies_from_config(
@@ -126,6 +162,28 @@ class AttackOrchestrator:
                     "obj": JailbreakStrategy()
                 }]
         return strategy_classes
+    
+    async def run_api_test(self, strategy_class, attack_prompts) -> List[Dict[str, Any]]:
+        """Run comprehensive red-teaming tests against the remote API"""
+        if not self.api_enabled or not self.api_url:
+            return []
+        
+        results = []
+        # Get attack prompts for each strategy
+        console.print(f"[green] Running strategy: {strategy_class.name}[/green]")
+            
+        for attack_data in attack_prompts:
+                # Run blackbox test using the strategy's built-in method
+                api_config = {
+                    'url': self.api_url,
+                    'headers': self.api_headers
+                }
+                # Evaluate the response using the current strategy
+                result = await strategy_class.a_run_blackbox_test(attack_data, api_config, self.config)
+                results.append(result)
+
+        return results
+
 
     async def run_strategy_attack(self, strategy, system_prompt):
         """Helper function to run a single strategy and track its timing"""
@@ -155,15 +213,30 @@ class AttackOrchestrator:
     
     async def orchestrate_attack(self, system_prompt: str, strategies: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Run the orchestrator with parallel execution using asyncio.gather"""
-        
         # Create tasks for all strategies
-        strategy_tasks = [self.run_strategy_attack(strategy, system_prompt) for strategy in strategies]
+        if not self.api_enabled:
+            strategy_tasks = [self.run_strategy_attack(strategy, system_prompt) for strategy in strategies]
+            # Execute all tasks in parallel
+            strategy_results = await asyncio.gather(*strategy_tasks)
+        else:
+            strategy_results = []
         
-        # Execute all tasks in parallel
-        results = await asyncio.gather(*strategy_tasks)
-        
-        self.results = results
-        return results
+        # Run API tests if enabled
+        api_results = []
+        if self.api_enabled:
+            self.config['provider'] = self.provider
+
+            for strategy in strategies:
+                strategy_class = strategy['obj']
+                attack_prompts = await strategy_class.get_attack_prompts(self.config, "")
+                api_results = await self.run_api_test(strategy_class, attack_prompts)
+            
+        # Combine results
+        self.results = strategy_results
+        if self.api_enabled:
+            self.results = api_results
+    
+        return self.results
 
     async def rerun_attack(self, config_dict: Dict[str, Any], file_path: str) -> Dict[str, Any]:
         """Rerun attacks from a previous report with a new system prompt.

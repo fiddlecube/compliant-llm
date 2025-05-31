@@ -365,6 +365,18 @@ class ConfigManager:
                 runner_config['temperature'] = provider_config['temperature']
             if 'fallbacks' in provider_config:
                 runner_config['fallbacks'] = provider_config['fallbacks']
+        
+        # Blackbox options
+        if 'blackbox' in self.config and isinstance(self.config['blackbox'], dict):
+            blackbox_config = self.config['blackbox']
+            runner_config['blackbox'] = {
+                'enabled': blackbox_config.get('enabled', False),
+                'api_url': blackbox_config.get('api_url', ''),
+                'api_key': blackbox_config.get('api_key', ''),
+                'headers': blackbox_config.get('headers', {}),
+                'payload': blackbox_config.get('payload', [])
+            }
+        
         # Output options
         runner_config['output_path'] = self.get_output_path()
         return runner_config

@@ -296,7 +296,7 @@ class IndirectPromptInjectionStrategy(BaseAttackStrategy):
                 }
         
         
-    async def attack_and_evaluate(self, system_prompt: str, attack_prompts: List[Dict[str, Any]], provider: LLMProvider, config: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def attack_and_evaluate(self, system_prompt: str, attack_prompts: List[Dict[str, Any]], provider: LLMProvider, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """Run the indirect prompt injection strategy asynchronously with parallel execution"""
         # Process all attack prompts in parallel
         tasks = [self.process_attack_prompt(config, attack_data, provider, system_prompt) for attack_data in attack_prompts]
