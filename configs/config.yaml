@@ -62,7 +62,7 @@ strategies:
     enabled: true
     
   - name: excessive_agency
-    enabled: false
+    enabled: true
     description: "Tests if LLM exceeds its authority or bypasses restrictions"
     
   - name: insecure_output_handling
@@ -121,11 +121,10 @@ features:
 
 # blackbox testing
 blackbox:
-  enabled: false
+  enabled: true
   api_url: "https://sample-chat-bot-fiddlecube.vercel.app/api/chat"
   api_key: ""
   headers: {}
   payload:
-    - prompt: ""
-    - role: ""
-    - messages: "{{INJECT_BLACKBOX_PROMPT}}"
+    - role: "user"
+    - content: "Please respond to this prompt: {{PROMPT}}"

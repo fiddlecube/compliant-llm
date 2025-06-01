@@ -4,10 +4,11 @@ Base module for attack strategies.
 This module defines the base class for all attack strategies.
 """
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from core.providers.base import LLMProvider
 from datetime import datetime
 import aiohttp
+import asyncio
 
 
 import logging
@@ -89,45 +90,90 @@ class BaseAttackStrategy(ABC):
         
         return results
     
-    async def _run_blackbox_test(self, attack_data: Dict[str, Any], api_config: Dict[str, Any], config: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def _run_blackbox_test(
+        self,
+        attack_data: Dict[str, Any],
+        api_config: Dict[str, Any],
+        config: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """Run a single blackbox test against an API.
 
-        Called from within a_run_blackbox_test
-        
-        This is a template method that handles the common blackbox testing logic.
+        This method handles the common blackbox testing logic and is called from
+        within a_run_blackbox_test.
         
         Args:
             attack_data: Attack data containing prompt and metadata
             api_config: API configuration including URL, headers, etc.
+            config: Optional configuration for the test
             
         Returns:
             Dict containing test results
+            
+        Raises:
+            ValueError: If required fields are missing from the payload
+            Exception: If API request fails
         """
-
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    api_config['url'],
-                    json={"messages": [{"role": "user", "content": attack_data.get('attack_instruction', '')}]},
-                    headers=api_config.get('headers', {})
-                ) as response:
-                    if response.status != 200:
-                        raise Exception(f"API request failed with status {response.status}")
-                    api_response = await response.json()
+            # Validate API configuration
+            if not api_config.get('url'):
+                raise ValueError("API URL is required")
+            
+            # Extract content from payload once
+            content = None
+            for message in api_config['payload']['messages']:
+                if 'content' in message:
+                    content = message['content']
+                    break
+            
+            if not content:
+                raise ValueError("No content field found in messages")
+            
+            # Prepare the API request
+            url = api_config['url']
+            headers = api_config.get('headers', {})
+
+            # Make API request with retry logic
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    async with aiohttp.ClientSession() as session:
+                        async with session.post(
+                            url,
+                            headers=headers,
+                            json={"messages": [{"role": "user", "content": content }]},
+                        ) as response:
+                            if response.status != 200:
+                                error_msg = f"API request failed with status {response.status}"
+                                if attempt == max_retries - 1:
+                                    raise Exception(error_msg)
+                                await asyncio.sleep(1)  # Exponential backoff
+                                continue
+                            
+                            api_response = await response.json()
+                            break
+                except Exception as e:
+                    if attempt == max_retries - 1:
+                        raise
+                    await asyncio.sleep(1)  # Exponential backoff
+                    continue
+
         except Exception as e:
+            print(f"[red]API Test Failed: {str(e)}[/red]")
             api_response = {'error': str(e)}
 
+        # Evaluate the response
         evaluation = await self.evaluate(
             "",  # Empty for blackbox testing
-            attack_data.get('attack_instruction', ''),
+            content,
             api_response,
-            config
+            config or {}
         )
 
-        return {
+        # Prepare result
+        result = {
             'strategy': self.name,
             'system_prompt': "",
-            'attack_prompt': attack_data.get('attack_instruction', ''),
+            'attack_prompt': content,
             'instruction': attack_data.get('instruction', ''),
             'category': attack_data.get('category', ''),
             'response': api_response,
@@ -136,6 +182,8 @@ class BaseAttackStrategy(ABC):
             'mutation_technique': attack_data.get('mutation_technique', ''),
             'is_blackbox': True
         }
+
+        return result
 
     async def a_run_blackbox_test(self, attack_data: Any, api_config: Dict[str, Any], config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """Run blackbox testing against an API.

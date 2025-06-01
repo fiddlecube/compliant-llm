@@ -5,11 +5,11 @@ Attack orchestrator module.
 This module orchestrates attack strategies against LLM providers.
 """
 import asyncio
-import aiohttp
+from copy import deepcopy
 import json
 import os
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 from ..strategies.base import BaseAttackStrategy
 from ..providers.base import LLMProvider
 from rich.console import Console
@@ -71,7 +71,7 @@ class AttackOrchestrator:
         self.api_url = None
         self.api_key = None
         self.api_headers: Dict[str, str] = {}
-        self.api_payloads: List[Dict[str, Any]] = []
+        self.api_payload: Dict[str, Any] = {}
 
         self._init_api_config()
 
@@ -93,18 +93,8 @@ class AttackOrchestrator:
         if self.api_key:
             self.api_headers['Authorization'] = f"Bearer {self.api_key}"
 
-        self.api_payloads = self._load_payloads(blackbox_config.get('payload', []))
+        self.api_payload = blackbox_config.get('payload', {})
         
-
-    def _load_payloads(self, raw_payloads: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        return [
-            {
-                **({"messages": p["messages"]} if "messages" in p else {}),
-                **({"prompt": p["prompt"]} if "prompt" in p else {}),
-                **({"role": p["role"]} if "role" in p else {}),
-            }
-            for p in raw_payloads if p
-        ]
 
     def _default_strategies(self) -> List[BaseAttackStrategy]:
         return [PromptInjectionStrategy(), JailbreakStrategy()]
@@ -164,23 +154,41 @@ class AttackOrchestrator:
         return strategy_classes
     
     async def run_api_test(self, strategy_class, attack_prompts) -> List[Dict[str, Any]]:
-        """Run comprehensive red-teaming tests against the remote API"""
+        """Run comprehensive red-teaming tests against the remote API."""
         if not self.api_enabled or not self.api_url:
             return []
-        
+
         results = []
-        # Get attack prompts for each strategy
-        console.print(f"[green] Running strategy: {strategy_class.name}[/green]")
-            
+        console.print(f"[green]Running strategy: {strategy_class.name}[/green]")
+        base_payload = self.api_payload
+
         for attack_data in attack_prompts:
-                # Run blackbox test using the strategy's built-in method
-                api_config = {
-                    'url': self.api_url,
-                    'headers': self.api_headers
-                }
-                # Evaluate the response using the current strategy
-                result = await strategy_class.a_run_blackbox_test(attack_data, api_config, self.config)
-                results.append(result)
+            attack_instruction = attack_data.get('attack_instruction', '')
+
+            # Safely copy base payload
+            payload = deepcopy(base_payload)
+
+            # Replace {{PROMPT}} in list of dicts
+            if isinstance(payload, list) and all(isinstance(item, dict) for item in payload):
+                for item in payload:
+                    if "content" in item and "{{PROMPT}}" in item["content"]:
+                        item["content"] = item["content"].replace("{{PROMPT}}", attack_instruction)
+
+            # Normalize payload to messages format
+            if isinstance(payload, list):
+                payload = {"messages": payload}
+            elif isinstance(payload, dict) and "role" in payload and "content" in payload:
+                payload = {"messages": [payload]}
+
+            # Run the test using strategy's method
+            api_config = {
+                'url': self.api_url,
+                'headers': self.api_headers,
+                'payload': payload
+            }
+
+            result = await strategy_class.a_run_blackbox_test(attack_data, api_config, self.config)
+            results.append(result)
 
         return results
 
