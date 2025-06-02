@@ -9,7 +9,7 @@ import re
 import yaml
 import json
 from .base import LLMProvider
-
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -146,16 +146,15 @@ class LiteLLMProvider(LLMProvider):
     async def chat(self, messages: List[Dict[str, str]], config: Dict[str, Any]) -> Dict[str, Any]:  # noqa: E501
         try:
             # Import litellm here to avoid dependency issues
-            from litellm import acompletion  # Using acompletion instead of completion for async
+            from litellm import acompletion, _turn_on_debug  # Using acompletion instead of completion for async
             chat_history = self.history + messages
             # Extract provider-specific configuration
             provider_config = config.get("provider_config", {})
             model = provider_config.get("provider_name", "gpt-4o")
             temperature = provider_config.get("temperature", 0.7)
-            timeout = provider_config.get("timeout", 30)
-            api_base = provider_config.get("api_base", "http://localhost:8000")
-            # api_key = provider_config.get("api_key")
-
+            timeout = provider_config.get("timeout", 180)
+            # TODO: Enable this based on a flag from UI
+            # _turn_on_debug()
             # Execute the prompt asynchronously
             response = await acompletion(
                 model=model,
@@ -209,14 +208,10 @@ class LiteLLMProvider(LLMProvider):
             from litellm import acompletion
 
             # Extract provider-specific configuration
-            # TODO: @vini - simplify this
             provider_config = config.get("provider_config", {})
             model = provider_config.get("provider_name")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 30)
-            api_base = provider_config.get("api_base", None)
-            # api_key = provider_config.get("api_key")
-
             # Execute the prompt
             response = await acompletion(
                 model=model,
@@ -229,7 +224,6 @@ class LiteLLMProvider(LLMProvider):
                 num_retries=provider_config.get("num_retries", 3),
                 cooldown_time=provider_config.get("cooldown_time", 60),
                 turn_off_message_logging=True,
-                # api_key=api_key
             )
             
             # Extract the message content in the same way as the chat method

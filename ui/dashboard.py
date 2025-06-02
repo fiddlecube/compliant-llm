@@ -259,7 +259,7 @@ def create_app_ui():
         # Select provider outside the form so it reruns on change
         provider_name = st.selectbox(
             "Select Provider", [p["name"] for p in PROVIDER_SETUP],
-            index=len(PROVIDER_SETUP) - 1
+            index=0
         )
 
         # Form for creating new profile
