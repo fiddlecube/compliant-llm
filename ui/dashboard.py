@@ -145,6 +145,11 @@ def create_app_ui():
     st.title("Compliant LLM UI")
     st.write("Test and analyze your AI prompts for security vulnerabilities")
 
+    adapter = UIConfigAdapter()
+    # Initialize session state for selected profile if not already present
+    if 'selected_profile_id' not in st.session_state:
+        st.session_state.selected_profile_id = None
+
     # sidebar of main page
     with st.sidebar:
         if st.button("Open Documentation"):
@@ -154,24 +159,52 @@ def create_app_ui():
             except Exception as e:
                 st.error(f"Error opening documentation: {str(e)}")
 
-        st.header("Test Reports")
-        reports = get_reports()
-        if not reports:
-            st.info("No reports found. Run a test to generate reports.")
-        else:
-            st.write("### Recent Reports")
-            for i, report in enumerate(reports):
-                formatted_time = report['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
-                if st.button(
-                    f"Report {i+1}. (Runtime: {report['runtime']}, Run at: {formatted_time})",
-                    key=f"report_{report['name']}"):
-                    selected_report_path = report['path']
-                    st.session_state['selected_report'] = selected_report_path
-                    st.rerun()
+        st.sidebar.title("Model Profiles")
+        profiles = adapter.list_profiles() # Uses UIConfigAdapter.list_profiles()
 
-    if 'selected_report' in st.session_state:
-        open_dashboard_with_report(st.session_state['selected_report'])
-        del st.session_state['selected_report']
+        # Create a mapping from profile ID to display name (profile_name or truncated ID)
+        profile_options = {profile['id']: profile.get('profile_name', f"Profile {profile['id'][:8]}") for profile in profiles}
+
+        if not profiles:
+            st.sidebar.info("No saved profiles found.")
+            # Ensure selected_profile_id is None if no profiles exist or selection is cleared
+            if st.session_state.selected_profile_id is not None: 
+                st.session_state.selected_profile_id = None
+                # st.experimental_rerun() # Optional: rerun to clear main panel if a profile was deleted elsewhere
+        else:
+            # Use a temporary variable for selectbox to detect change, then update session_state
+            # This helps manage reruns more explicitly if needed.
+            current_selection_in_selectbox = st.sidebar.selectbox(
+                "Select a Profile:",
+                options=list(profile_options.keys()), # Pass IDs as options
+                format_func=lambda id_key: profile_options[id_key], # Use the map for display names
+                index=None if not st.session_state.selected_profile_id or st.session_state.selected_profile_id not in profile_options else list(profile_options.keys()).index(st.session_state.selected_profile_id),
+                key="profile_selector_widget" # A unique key for the widget itself
+            )
+            if st.session_state.selected_profile_id != current_selection_in_selectbox:
+                st.session_state.selected_profile_id = current_selection_in_selectbox
+                st.experimental_rerun() # Rerun to update the main panel with the new selection
+
+    ## TODO: this code needs to be modified and moved to a model config page, where we
+    ## need to load the past test runs for the config.
+    #     st.header("Test Reports")
+    #     reports = get_reports()
+    #     if not reports:
+    #         st.info("No reports found. Run a test to generate reports.")
+    #     else:
+    #         st.write("### Recent Reports")
+    #         for i, report in enumerate(reports):
+    #             formatted_time = report['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
+    #             if st.button(
+    #                 f"Report {i+1}. (Runtime: {report['runtime']}, Run at: {formatted_time})",
+    #                 key=f"report_{report['name']}"):
+    #                 selected_report_path = report['path']
+    #                 st.session_state['selected_report'] = selected_report_path
+    #                 st.rerun()
+
+    # if 'selected_report' in st.session_state:
+    #     open_dashboard_with_report(st.session_state['selected_report'])
+    #     del st.session_state['selected_report']
     
 
     # Form for entering keys
