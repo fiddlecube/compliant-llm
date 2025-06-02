@@ -52,7 +52,6 @@ class UIConfigAdapter:
 
         # Make a copy to avoid modifying the stored config directly with temporary overrides
         test_run_config = full_runner_config.copy()
-        test_run_config['provider'] = test_run_config # Ensure provider dict is also a copy
 
         # Apply overrides if any
         if prompt_override is not None:
@@ -64,7 +63,7 @@ class UIConfigAdapter:
         if strategies_override is not None:
             test_run_config['strategies'] = strategies_override
         
-        test_run_config['output_path'] = self.default_config['output_path']
+        test_run_config['output_path'] = test_run_config.get('output_path', self.default_config['output_path']) # if not specified in config, use default
 
         # Ensure essential keys are present (they should be from the stored config)
         if 'prompt' not in test_run_config or (isinstance(test_run_config.get('prompt'), dict) and 'content' not in test_run_config.get('prompt', {})):
@@ -73,7 +72,7 @@ class UIConfigAdapter:
         if 'strategies' not in test_run_config or not test_run_config['strategies']:
             if strategies_override is None: # only raise if no override was given
                 raise ValueError("Strategies are missing in the configuration and no override provided.")
-        if 'provider_name' not in test_run_config or 'provider' not in test_run_config or 'model' not in test_run_config['provider']:
+        if 'provider_name' not in test_run_config or 'model' not in test_run_config:
             raise ValueError("Provider information (provider_name, model) is missing in the configuration.")
 
         console = Console()
@@ -104,7 +103,7 @@ class UIConfigAdapter:
 
     # --- Profile Management Methods ---
 
-    def save_profile(self, runner_config_data: Dict[str, Any], profile_name: Optional[str] = None) -> str:
+    def upsert_profile(self, runner_config_data: Dict[str, Any], profile_name: Optional[str] = None) -> str:
         """Saves a new profile or updates an existing one based on the presence of 'id' in runner_config_data.
         Returns the ID of the saved/updated configuration.
         """

@@ -205,7 +205,6 @@ def create_app_ui():
             for i, report_path in enumerate(selected_profile['past_runs']):
                 try:
                     # Load report data
-                    print("Rport Path", report_path)
                     with open(report_path, 'r') as f:
                         report_data = json.load(f)
                     
@@ -278,7 +277,7 @@ def create_app_ui():
                     # Save config with profile name
                     config_to_save = st.session_state['saved_config'].copy()
                     config_to_save['profile_name'] = new_profile_name
-                    adapter.save_profile(config_to_save, profile_id)
+                    adapter.upsert_profile(config_to_save, profile_id)
                     
                     # Update session state
                     st.session_state.selected_profile_id = profile_id
@@ -337,7 +336,7 @@ def create_app_ui():
 
                 st.session_state['saved_config'] = config
                 profile_name = provider_name + "_" + model + "_" + str(uuid.uuid4())
-                adapter.save_profile(config, profile_name)
+                adapter.upsert_profile(config, profile_name)
                 st.write("Config saved successfully", config)
     
     # Form for running tests

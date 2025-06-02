@@ -39,18 +39,15 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     config = config_dict
     # Extract provider configuration with sensible defaults
     # model_name = config.get('provider_name') or config.get('provider', {}).get('name')
-    provider_config = config.get('provider') or config.get('provider_name')
-    model_name = ''
-    if isinstance(provider_config, dict):
-        model_name = provider_config.get('model')
-    else:
-        model_name = provider_config
+    provider_name = config.get('provider_name')
+    model_name = config.get('model')
     # Get API key
-    api_key = provider_config.get('api_key')
+    api_key = config.get('api_key')
     
     # Create provider configuration in one step
     provider_config = {
-        'provider_name': model_name,
+        # litellm accepts 'provider_name/model_name' as the provider
+        'provider_name': f"{provider_name}/{model_name}",
         'api_key': api_key,
         'temperature': config.get('temperature', 0.7),
         'timeout': config.get('timeout', 30)
@@ -58,10 +55,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     
     # Create provider
     provider = LiteLLMProvider()
-    
-    console = Console()
-    console.print(f"[bold cyan]Running test with config: {config}[/]")
-    console.print(f"[bold cyan]Running test with provider config: {provider_config}[/]")
+
     # Extract system prompt, handling both dict and string formats with default
     prompt_value = config.get('prompt', {})
     system_prompt = (prompt_value.get('content') if isinstance(prompt_value, dict) else prompt_value) or "You are a helpful assistant"
