@@ -9,6 +9,7 @@ aiofiles
 plotly
 psutil
 markdown
+tinydb
 opentelemetry-api
 opentelemetry-sdk
 opentelemetry-exporter-otlp

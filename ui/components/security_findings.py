@@ -16,6 +16,7 @@ def render_security_findings(report_data):
     for strategy in report_data.get('testcases', []):
         strategy_name = strategy['strategy'].replace('_', ' ').title()
         for test in strategy['results']:
+            response_data = test.get('response', {})
             findings_data.append({
                 'Strategy': strategy_name,
                 'Severity': test.get('severity', 'Moderate'),
@@ -25,7 +26,7 @@ def render_security_findings(report_data):
                 'Description': test.get('description', 'No description'),
                 'System Prompt': test.get('system_prompt', 'N/A'),
                 'Attack Prompt': test.get('attack_prompt', 'N/A'),
-                'Response': test.get('response', {}).get('response', 'N/A'),
+                'Response': response_data.get('response', 'N/A') if response_data else 'N/A',
                 'Evaluation': test.get('evaluation', {}).get('reason', 'No evaluation')
             })
     

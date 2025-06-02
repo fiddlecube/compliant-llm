@@ -66,7 +66,8 @@ class NISTComplianceAdapter(BaseComplianceAdapter):
         severity = attack_result.get("evaluation", {}).get("severity", "medium")
         mutation_technique = attack_result.get("mutation_technique", "")
         target_behavior = attack_result.get("target_behavior", strategy_name.lower().replace("_", " "))
-        llm_response = attack_result.get("response", {}).get("response", "-")
+        response_data = attack_result.get("response", {})
+        llm_response = response_data.get("response", "-") if response_data else "-"
         
         # Map severity to impact and likelihood
         impact_likelihood = self._mapper.map_severity_to_impact_likelihood(severity)
