@@ -92,7 +92,6 @@ class UIConfigAdapter:
         
         console.print("[bold green]Tests completed successfully![/]")
         report_file_path = report_data.get('report_metadata', {}).get('path')
-        print("Report Path::", report_file_path)
         if report_file_path:
             console.print(f"[bold cyan]Report saved successfully at {report_file_path}[/]")
             # Add report to config's past_runs

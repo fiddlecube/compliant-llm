@@ -372,7 +372,7 @@ def create_app_ui():
                 st.stop()
 
             with st.spinner("🔍 Running tests..."):
-                output = adapter.run_test(selected_profile['id'], prompt, selected_strategies)
+                output = adapter.run_test(provider_config["id"], prompt, selected_strategies)
                 reports = get_reports()
 
             st.subheader("✅ Test Results")
