@@ -109,7 +109,7 @@ class BaseAttackStrategy(ABC):
 
     async def _run_blackbox_test(
         self,
-        attack_data: Dict[str, Any],
+        attack_instruction: str,
         api_config: Dict[str, Any],
         config: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
@@ -138,8 +138,6 @@ class BaseAttackStrategy(ABC):
             # Prepare the API request
             url = api_config['url']
             headers = api_config.get('headers', {})
-
-            print("api_config['payload']::", api_config['payload'])
 
             # Make API request with retry logic
             max_retries = 3
@@ -173,7 +171,7 @@ class BaseAttackStrategy(ABC):
         # Evaluate the response
         evaluation = await self.evaluate(
             "",  # Empty for blackbox testing
-            api_config['payload'],
+            attack_instruction,
             api_response,
             config or {}
         )
@@ -182,19 +180,19 @@ class BaseAttackStrategy(ABC):
         result = {
             'strategy': self.name,
             'system_prompt': "",
-            'attack_prompt': attack_data.get('instruction', ''),
-            'instruction': attack_data.get('instruction', ''),
-            'category': attack_data.get('category', ''),
+            'attack_prompt': attack_instruction,
+            'instruction': attack_instruction,
+            'category': "blackbox",
             'response': api_response,
             'evaluation': evaluation,
             'success': evaluation.get('passed', False),
-            'mutation_technique': attack_data.get('mutation_technique', ''),
+            'mutation_technique': "",
             'is_blackbox': True
         }
 
         return result
 
-    async def a_run_blackbox_test(self, attack_data: Any, api_config: Dict[str, Any], config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+    async def a_run_blackbox_test(self, attack_instruction: str, api_config: Dict[str, Any], config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """Run blackbox testing against an API.
         
         This is a template method that orchestrates blackbox testing.
@@ -211,7 +209,7 @@ class BaseAttackStrategy(ABC):
 
         # # Run each test
         # for attack_data in attack_prompts:
-        result = await self._run_blackbox_test(attack_data, api_config, config)
+        result = await self._run_blackbox_test(attack_instruction, api_config, config)
         results.append(result)
 
         return {

@@ -202,7 +202,7 @@ class AttackOrchestrator:
                 'payload': payload
             }
 
-            result = await strategy_class.a_run_blackbox_test(attack_data, api_config, self.config)
+            result = await strategy_class.a_run_blackbox_test(attack_instruction, api_config, self.config)
             results.append(result)
 
         return results
