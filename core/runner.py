@@ -107,7 +107,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     
     
     # Save report (optional)
-    output = config_dict.get('output_path')  # Get from CLI argument
+    output = config_dict['output_path']  # Get from CLI argument
     save_report(report_data, output_path=output)
     return report_data
 

@@ -52,7 +52,7 @@ class UIConfigAdapter:
 
         # Make a copy to avoid modifying the stored config directly with temporary overrides
         test_run_config = full_runner_config.copy()
-        test_run_config['provider'] = test_run_config.get('provider', {}).copy() # Ensure provider dict is also a copy
+        test_run_config['provider'] = test_run_config # Ensure provider dict is also a copy
 
         # Apply overrides if any
         if prompt_override is not None:
@@ -60,11 +60,11 @@ class UIConfigAdapter:
             if 'prompt' not in test_run_config or not isinstance(test_run_config.get('prompt'), dict):
                  test_run_config['prompt'] = {}
             test_run_config['prompt']['content'] = prompt_override 
-            # If your runner_config stores prompt directly as a string:
-            # test_run_config['prompt'] = prompt_override
 
         if strategies_override is not None:
             test_run_config['strategies'] = strategies_override
+        
+        test_run_config['output_path'] = self.default_config['output_path']
 
         # Ensure essential keys are present (they should be from the stored config)
         if 'prompt' not in test_run_config or (isinstance(test_run_config.get('prompt'), dict) and 'content' not in test_run_config.get('prompt', {})):
@@ -75,39 +75,6 @@ class UIConfigAdapter:
                 raise ValueError("Strategies are missing in the configuration and no override provided.")
         if 'provider_name' not in test_run_config or 'provider' not in test_run_config or 'model' not in test_run_config['provider']:
             raise ValueError("Provider information (provider_name, model) is missing in the configuration.")
-
-        # To be deleted: API key will be loaded from tinydb
-        # API Key Handling - API key is NOT stored, fetched at runtime
-        # provider_details = test_run_config.get('provider', {})
-        # The provider_name in runner_config might be just 'openai', not 'openai/gpt-4o'
-        # The model field usually contains the specific model like 'gpt-4o'
-        # The API key usually depends on the base provider (e.g., OPENAI_API_KEY)
-        # Let's assume 'provider_name' in the config root is the base provider e.g. 'openai'
-        # base_provider_name = test_run_config.get('provider_name', '').split('/')[0]
-        # api_key_env_var = f"{base_provider_name.upper()}_API_KEY"
-        # api_key = os.getenv(api_key_env_var) or get_key(".env", api_key_env_var)
-        
-        # if not api_key or api_key == 'n/a':
-            # print(f"Warning: API key for {base_provider_name.upper()} not found in environment variables or .env file.")
-            # Decide if this is a fatal error or if the runner handles it
-
-        # test_run_config['provider']['api_key'] = api_key
-        # Ensure provider_name and model in the provider dict are correctly set for the runner
-        # The runner might expect provider_name to be like 'openai/gpt-4o'
-        # test_run_config['provider']['provider_name'] = f"{base_provider_name}/{test_run_config['provider']['model']}"
-        # This depends on what execute_prompt_tests_with_orchestrator expects for provider_name within the provider dict.
-        # Based on original code, it seems it expects 'provider_name': 'openai/gpt-4o', 'model': 'openai/gpt-4o'
-        # Let's ensure the 'provider' dict has the combined name for 'provider_name' and 'model' if not already structured that way.
-        # The ConfigManager.get_runner_config already structures it like:
-        # 'provider_name': 'openai', (at root)
-        # 'provider': {'provider_name': 'openai', 'model': 'openai', 'api_key': ...}
-        # The original UIConfigAdapter.run_test used: 
-        # 'provider_name': f"{config['provider_name']}/{config['model']}"
-        # 'model': f"{config['provider_name']}/{config['model']}"
-        # Let's assume the stored runner_config has 'provider_name' (e.g. 'openai') at root,
-        # and 'provider': {'model': 'gpt-4o'} at least.
-        # We need to ensure the 'provider' dict passed to orchestrator is what it expects.
-        # The orchestrator likely uses the 'provider_name' from the root of test_run_config for LiteLLM.
 
         console = Console()
         console.print(f"[bold cyan]Running test with profile ID '{config_id}':[/]")
@@ -125,6 +92,7 @@ class UIConfigAdapter:
         
         console.print("[bold green]Tests completed successfully![/]")
         report_file_path = report_data.get('report_metadata', {}).get('path')
+        print("Report Path::", report_file_path)
         if report_file_path:
             console.print(f"[bold cyan]Report saved successfully at {report_file_path}[/]")
             # Add report to config's past_runs
