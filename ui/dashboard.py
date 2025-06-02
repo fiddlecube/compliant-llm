@@ -1,5 +1,7 @@
+import profile
 import sys
 import time
+import uuid
 import psutil
 import subprocess
 from pathlib import Path
@@ -269,7 +271,10 @@ def create_app_ui():
                     config[field] = val
 
                 st.session_state['saved_config'] = config
-                st.write("Configuration saved successfully", config)
+                profile_name = provider_name + "_" + model + "_" + str(uuid.uuid4())
+                adapter.save_profile(config, profile_name)
+                st.write("Profile saved successfully", profile_name)
+                st.write("Config saved successfully", config)
     
     # Form for running tests
     with st.expander("Run New Test", expanded=True):
