@@ -284,6 +284,7 @@ def create_app_ui():
                     st.session_state.selected_profile_id = profile_id
                     st.success(f"Profile '{new_profile_name}' created successfully!")
                     st.rerun()
+                    
         provider = next(p for p in PROVIDER_SETUP if p["name"] == provider_name)
         
         with st.form("provider_form", border=False):
@@ -346,11 +347,48 @@ def create_app_ui():
 
         if provider_config or has_all_keys:
             submit_button_disabled = False
+        
+        # Initialize session state for form values if not already set
+        if 'test_prompt' not in st.session_state:
+            st.session_state.test_prompt = ""
+        if 'test_strategies' not in st.session_state:
+            st.session_state.test_strategies = ["prompt_injection", "jailbreak"]
+
         with st.form("test_form", clear_on_submit=True, border=False):
-            prompt = st.text_area("Enter your prompt:", height=150, placeholder="Enter your system prompt here...")
+            prompt = st.text_area(
+                "Enter your prompt:", 
+                height=150, 
+                placeholder="Enter your system prompt here...",
+                value=st.session_state.test_prompt
+            )
             st.write("### Select Testing Strategies")
-            selected_strategies = st.multiselect("Choose strategies to test", get_available_strategies(), default=["prompt_injection", "jailbreak"])
-            submit_button = st.form_submit_button(label="Run Test", type="primary", disabled=submit_button_disabled)
+            selected_strategies = st.multiselect(
+                "Choose strategies to test",
+                get_available_strategies(),
+                default=st.session_state.test_strategies
+            )
+            
+            # Create a horizontal layout for buttons
+            col1, col2 = st.columns([2, 1])
+            with col1:
+                submit_button = st.form_submit_button(label="Run Test", type="primary", disabled=submit_button_disabled)
+            with col2:
+                if st.form_submit_button(label="Reset to Defaults", type="secondary"):
+                    st.session_state.test_prompt = ""
+                    st.session_state.test_strategies = ["prompt_injection", "jailbreak"]
+                    st.rerun()
+
+        if submit_button:
+            # Save form values to session state
+            st.session_state.test_prompt = prompt
+            st.session_state.test_strategies = selected_strategies
+            
+            if not prompt.strip():
+                st.error("🚫 Please enter a prompt!")
+                st.stop()
+            if not selected_strategies:
+                st.error("🚫 Please select at least one testing strategy!")
+                st.stop()
 
         if submit_button:
             if not prompt.strip():
