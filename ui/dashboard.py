@@ -205,39 +205,28 @@ def create_app_ui():
             for i, report_path in enumerate(selected_profile['past_runs']):
                 try:
                     # Load report data
+                    print("Rport Path", report_path)
                     with open(report_path, 'r') as f:
                         report_data = json.load(f)
                     
                     # Format report info
                     formatted_time = datetime.fromtimestamp(os.path.getctime(report_path)).strftime('%Y-%m-%d %H:%M:%S')
+
+
                     
                     # Create report summary button
                     if st.button(
                         f"Report {i+1}. (Run at: {formatted_time})",
                         key=f"report_{report_path}"):
                         st.session_state.selected_report_path = report_path
-                        st.rerun()
+                        st.session_state.viewing_report = True
                 except Exception as e:
                     st.error(f"Error loading report: {str(e)}")
+        if 'selected_report_path' in st.session_state:
+            open_dashboard_with_report(st.session_state['selected_report_path'])
+            del st.session_state['selected_report_path']
     else:
         st.info("Select a config or create a new config to view its test reports.")
-
-    # If a report is selected, show its contents
-    if 'selected_report_path' in st.session_state:
-        try:
-            with open(st.session_state.selected_report_path, 'r') as f:
-                report_data = json.load(f)
-            
-            # Display report details
-            st.subheader("Report Details")
-            st.json(report_data)
-            
-            # Remove from session state after viewing
-            del st.session_state.selected_report_path
-            st.rerun()
-        except Exception as e:
-            st.error(f"Error viewing report: {str(e)}")
-    
 
     # Configuration Section
     with st.expander("Setup New Configuration", expanded=not st.session_state.selected_profile_id):
