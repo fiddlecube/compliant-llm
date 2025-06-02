@@ -20,6 +20,7 @@ dependencies = [
     "litellm",
     "python-dotenv",
     "pytest",
+    "pytest-asyncio",
     "aiofiles",
     "plotly",
     "psutil",
