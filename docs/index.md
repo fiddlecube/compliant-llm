@@ -34,6 +34,10 @@ Compliant LLM is your comprehensive toolkit for securing your AI systems. Whethe
   - Running Tests
   - Releasing a new version
 
+- [🧪 Testing](/?file=testing/index)
+  - Prompt testing
+  - Blackbox testing
+
 - [🔒 Compliant LLM - Premium Features](/?file=premium)
   - Internal policy hub integration
   - Single controlpane for multiple compliance frameworks
