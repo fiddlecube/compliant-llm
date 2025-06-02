@@ -145,15 +145,13 @@ class LiteLLMProvider(LLMProvider):
     async def chat(self, messages: List[Dict[str, str]], config: Dict[str, Any]) -> Dict[str, Any]:  # noqa: E501
         try:
             # Import litellm here to avoid dependency issues
-            from litellm import acompletion, _turn_on_debug  # Using acompletion instead of completion for async
+            from litellm import acompletion  # Using acompletion instead of completion for async
             chat_history = self.history + messages
             # Extract provider-specific configuration
             provider_config = config.get("provider_config", {})
             model = provider_config.get("provider_name", "gpt-4o")
             temperature = provider_config.get("temperature", 0.7)
             timeout = provider_config.get("timeout", 180)
-            # TODO: Enable this based on a flag from UI
-            # _turn_on_debug()
             # Execute the prompt asynchronously
             response = await acompletion(
                 model=model,
