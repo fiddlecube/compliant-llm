@@ -10,5 +10,4 @@ PROVIDER_SETUP = [
     {"name": "Ollama", "value": "ollama", "provider_name": "ollama", "ollama_api_base": "http://localhost:11434", "default_model": "llama3.2:1b"},
     {"name": "Nvidia Nim", "value": "nvidia_nim", "provider_name": "nvidia_nim", "nvidia_nim_api_base": "", "nvidia_nim_api_key": "", "default_model": ""},
     {"name": "Meta Llama", "value": "meta_llama", "provider_name": "meta_llama", "llama_api_key": "", "default_model": "Llama-3.3-70B-Instruct"},
-    {"name": "Cohere", "value": "cohere", "provider_name": "cohere", "cohere_api_key": "", "default_model": ""},
 ]
