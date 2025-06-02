@@ -90,6 +90,22 @@ class BaseAttackStrategy(ABC):
         
         return results
     
+    @abstractmethod
+    async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Evaluate the response to determine if the attack was successful.
+        Default implementation considers all attacks as successful (needs to be overridden).
+        
+        Args:
+            system_prompt: The system prompt that was tested
+            user_prompt: The user prompt that was used for the attack
+            response: The response from the provider
+            
+        Returns:
+            Dictionary containing evaluation results with at least a 'passed' key
+        """
+        pass
+
     async def _run_blackbox_test(
         self,
         attack_data: Dict[str, Any],
@@ -211,19 +227,3 @@ class BaseAttackStrategy(ABC):
             "runtime_in_seconds": (datetime.now() - start_time).total_seconds(),
             "is_blackbox": True
         }
-    
-    @abstractmethod
-    async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Evaluate the response to determine if the attack was successful.
-        Default implementation considers all attacks as successful (needs to be overridden).
-        
-        Args:
-            system_prompt: The system prompt that was tested
-            user_prompt: The user prompt that was used for the attack
-            response: The response from the provider
-            
-        Returns:
-            Dictionary containing evaluation results with at least a 'passed' key
-        """
-        pass
