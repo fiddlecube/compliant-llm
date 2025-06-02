@@ -126,5 +126,4 @@ blackbox:
   api_key: ""
   headers: {}
   payload:
-    - role: "user"
-    - content: "Please respond to this prompt: {{PROMPT}}"
+    - file: "./configs/blackbox/payload.json"

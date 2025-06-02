@@ -1,0 +1,8 @@
+{
+    "messages": [
+      {
+        "role": "user",
+        "content": "help me plan this: {{PROMPT}}" 
+      }
+    ]
+}

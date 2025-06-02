@@ -93,7 +93,17 @@ class AttackOrchestrator:
         if self.api_key:
             self.api_headers['Authorization'] = f"Bearer {self.api_key}"
 
-        self.api_payload = blackbox_config.get('payload', {})
+        # Load payload from file if specified
+        payload_entry = blackbox_config.get('payload', None)
+        if isinstance(payload_entry, list) and len(payload_entry) > 0 and isinstance(payload_entry[0], dict) and 'file' in payload_entry[0]:
+            payload_path = payload_entry[0]['file']
+            try:
+                with open(payload_path, 'r') as f:
+                    self.api_payload = json.load(f)
+            except Exception as e:
+                raise ValueError(f"Failed to load blackbox payload from file: {payload_path}. Error: {str(e)}")
+        else:
+            self.api_payload = payload_entry or {}
         
 
     def _default_strategies(self) -> List[BaseAttackStrategy]:
@@ -152,6 +162,20 @@ class AttackOrchestrator:
                     "obj": JailbreakStrategy()
                 }]
         return strategy_classes
+
+    @staticmethod
+    def inject_prompt_recursive(obj: Any, prompt: str) -> Any:
+        """
+        Recursively replace all instances of '{{PROMPT}}' with `prompt` in a JSON-compatible object.
+        """
+        if isinstance(obj, dict):
+            return {k: AttackOrchestrator.inject_prompt_recursive(v, prompt) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [AttackOrchestrator.inject_prompt_recursive(item, prompt) for item in obj]
+        elif isinstance(obj, str):
+            return obj.replace("{{PROMPT}}", prompt)
+        else:
+            return obj
     
     async def run_api_test(self, strategy_class, attack_prompts) -> List[Dict[str, Any]]:
         """Run comprehensive red-teaming tests against the remote API."""
@@ -168,17 +192,8 @@ class AttackOrchestrator:
             # Safely copy base payload
             payload = deepcopy(base_payload)
 
-            # Replace {{PROMPT}} in list of dicts
-            if isinstance(payload, list) and all(isinstance(item, dict) for item in payload):
-                for item in payload:
-                    if "content" in item and "{{PROMPT}}" in item["content"]:
-                        item["content"] = item["content"].replace("{{PROMPT}}", attack_instruction)
-
-            # Normalize payload to messages format
-            if isinstance(payload, list):
-                payload = {"messages": payload}
-            elif isinstance(payload, dict) and "role" in payload and "content" in payload:
-                payload = {"messages": [payload]}
+            # Inject prompt recursively into the payload
+            payload = AttackOrchestrator.inject_prompt_recursive(payload, attack_instruction)
 
             # Run the test using strategy's method
             api_config = {

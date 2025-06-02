@@ -9,6 +9,7 @@ from core.providers.base import LLMProvider
 from datetime import datetime
 import aiohttp
 import asyncio
+import json
 
 
 import logging
@@ -134,19 +135,11 @@ class BaseAttackStrategy(ABC):
             if not api_config.get('url'):
                 raise ValueError("API URL is required")
             
-            # Extract content from payload once
-            content = None
-            for message in api_config['payload']['messages']:
-                if 'content' in message:
-                    content = message['content']
-                    break
-            
-            if not content:
-                raise ValueError("No content field found in messages")
-            
             # Prepare the API request
             url = api_config['url']
             headers = api_config.get('headers', {})
+
+            print("api_config['payload']::", api_config['payload'])
 
             # Make API request with retry logic
             max_retries = 3
@@ -156,7 +149,7 @@ class BaseAttackStrategy(ABC):
                         async with session.post(
                             url,
                             headers=headers,
-                            json={"messages": [{"role": "user", "content": content }]},
+                            json=api_config['payload']
                         ) as response:
                             if response.status != 200:
                                 error_msg = f"API request failed with status {response.status}"
@@ -180,7 +173,7 @@ class BaseAttackStrategy(ABC):
         # Evaluate the response
         evaluation = await self.evaluate(
             "",  # Empty for blackbox testing
-            content,
+            api_config['payload'],
             api_response,
             config or {}
         )
@@ -189,7 +182,7 @@ class BaseAttackStrategy(ABC):
         result = {
             'strategy': self.name,
             'system_prompt': "",
-            'attack_prompt': content,
+            'attack_prompt': attack_data.get('instruction', ''),
             'instruction': attack_data.get('instruction', ''),
             'category': attack_data.get('category', ''),
             'response': api_response,
