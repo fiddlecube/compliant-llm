@@ -380,8 +380,7 @@ def create_app_ui():
         if submit_button:
             # Save form values to session state
             st.session_state.test_prompt = prompt
-            current_strategies = set(selected_strategies)
-            st.session_state.test_strategies = list(current_strategies)
+            st.session_state.test_strategies = selected_strategies
             
             if not prompt.strip():
                 st.error("🚫 Please enter a prompt!")
@@ -391,7 +390,10 @@ def create_app_ui():
                 st.stop()
 
             with st.spinner("🔍 Running tests..."):
-                output = adapter.run_test(provider_config["id"], prompt, st.session_state.test_strategies)
+                output = adapter.run_test(provider_config["id"], prompt, selected_strategies)
+                # resetting this to defaults after tests are run
+                st.session_state.test_prompt = ""
+                st.session_state.test_strategies = ["prompt_injection", "jailbreak"]
                 reports = get_reports()
 
             st.subheader("✅ Test Results")
