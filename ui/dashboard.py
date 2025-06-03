@@ -389,14 +389,6 @@ def create_app_ui():
                 st.error("🚫 Please select at least one testing strategy!")
                 st.stop()
 
-        if submit_button:
-            if not prompt.strip():
-                st.error("🚫 Please enter a prompt!")
-                st.stop()
-            if not selected_strategies:
-                st.error("🚫 Please select at least one testing strategy!")
-                st.stop()
-
             with st.spinner("🔍 Running tests..."):
                 output = adapter.run_test(provider_config["id"], prompt, selected_strategies)
                 reports = get_reports()
