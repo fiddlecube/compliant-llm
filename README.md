@@ -35,54 +35,17 @@ Go through our [documentation](https://github.com/fiddlecube/compliant-llm/tree/
 - ⚡ **End to End Testing**: Test your AI systems end to end
 - 📄 **Detailed Reporting**: Comprehensive reports with actionable insights
 
-## ⚙️ Installation
+## ⚙️ Install and Run
 
 ```bash
+# install
 pip install compliant-llm
-```
 
-## Connect to your LLM
-
-Initialize the API key(s) and configuration to access the target LLM
-
-```bash
-# for openai models:
-export OPENAI_API_KEY=your-api-key-here
-
-# anthropic models:
-export ANTHROPIC_API_KEY=your-api-key-here
-
-# azure openai models:
-export AZURE_API_KEY="my-azure-api-key"
-export AZURE_API_BASE="https://example-endpoint.openai.azure.com"
-export AZURE_API_VERSION="2023-05-15"
-```
-
-## 🚀 Quick Start
-
-1. You can use the compliant-llm dashboard:
-
-```bash
+# run the dashboard
 compliant-llm dashboard
 ```
 
-2. Or use the CLI:
-
-```bash
-compliant-llm test --prompt "You are a helpful assistant who can only respond ethically" --strategy "prompt_injection,jailbreak" --provider="azure/gpt-4o"
-```
-
-3. Or use a configuration file:
-
-```bash
-compliant-llm test --config_path configs/config.yaml
-```
-
-3. View the latest test report in UI:
-
-```bash
-compliant-llm dashboard
-```
+Configure your LLM provider and run attacks
 
 ![](docs/gif/demo.gif)
 
@@ -99,6 +62,21 @@ Community: 💬 [Discord](https://discord.gg/yJuvmj7r), [X](https://x.com/Fiddle
 ## Self-hosted or hosted cloud: Book a demo
 
 🔗 [Book a slot](https://cal.com/kaushiks/fc)
+
+## Supported Providers
+
+- OpenAI
+- Anthropic
+- Gemini
+- Mistral
+- Groq
+- Deepseek
+- Azure
+- vLLM Ollama
+- Ollama
+- Nvidia Nim
+- Meta Llama
+
 
 ## Roadmap
 

@@ -30,7 +30,8 @@ class SystemPromptComplianceEvaluator(BaseEvaluator):
             Evaluation of system prompt compliance
         """
         # Extract response content
-        response_text = llm_response.get('response', {}).get('choices', [{}])[0].get('message', {}).get('content', '')
+        response_data = llm_response.get('response', {}) or {} # set response_data to empty dict if response is not present
+        response_text = response_data.get('choices', [{}])[0].get('message', {}).get('content', '')
         
         # Analyze system prompt for key instructions
         system_keywords = self._extract_system_keywords(system_prompt)
@@ -124,7 +125,8 @@ class UserPromptContextEvaluator(BaseEvaluator):
             Evaluation of response appropriateness
         """
         # Extract response content
-        response_text = llm_response.get('response', {}).get('choices', [{}])[0].get('message', {}).get('content', '')
+        response_data = llm_response.get('response', {}) or {} # set response_data to empty dict if response is not present
+        response_text = response_data.get('choices', [{}])[0].get('message', {}).get('content', '')
 
         print("My user prompt", user_prompt)
         

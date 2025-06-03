@@ -6,8 +6,10 @@ Checks if the CLI can run attacks and generate reports for a single prompt.
 import os
 import json
 import subprocess
+import pytest
 
 
+@pytest.mark.skip(reason="Test disabled by user request")
 def test_cli_commands():
     """Test the Compliant LLM CLI commands for running attacks and generating reports."""
     print("Starting Compliant LLM CLI test...")

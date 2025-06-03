@@ -1,5 +1,7 @@
+import profile
 import sys
 import time
+import uuid
 import psutil
 import subprocess
 from pathlib import Path
@@ -145,6 +147,11 @@ def create_app_ui():
     st.title("Compliant LLM UI")
     st.write("Test and analyze your AI prompts for security vulnerabilities")
 
+    adapter = UIConfigAdapter()
+    # Initialize session state for selected profile if not already present
+    if 'selected_profile_id' not in st.session_state:
+        st.session_state.selected_profile_id = None
+
     # sidebar of main page
     with st.sidebar:
         if st.button("Open Documentation"):
@@ -154,37 +161,129 @@ def create_app_ui():
             except Exception as e:
                 st.error(f"Error opening documentation: {str(e)}")
 
-        st.header("Test Reports")
-        reports = get_reports()
-        if not reports:
-            st.info("No reports found. Run a test to generate reports.")
+        st.sidebar.title("Model Profiles")
+        profiles = adapter.list_profiles() # Uses UIConfigAdapter.list_profiles()
+
+        if not profiles:
+            st.sidebar.info("No saved profiles found.")
+            # Ensure selected_profile_id is None if no profiles exist or selection is cleared
+            if st.session_state.selected_profile_id is not None: 
+                st.session_state.selected_profile_id = None
+                # st.experimental_rerun() # Optional: rerun to clear main panel if a profile was deleted elsewhere
+        else:
+            # Initialize selection variables
+            current_selection = None
+            current_selection_in_selectbox = None
+            
+            # Use a temporary variable for selectbox to detect change
+            current_selection = st.sidebar.selectbox(
+                "Select a Profile:",
+                options=profiles,  # Pass profiles directly
+                format_func=lambda profile: profile.get('profile_name', f"Profile {profile['id'][:8]}") if profile else "No profiles available",
+                index=None if not st.session_state.selected_profile_id else next((i for i, p in enumerate(profiles) if p['id'] == st.session_state.selected_profile_id), None),
+                key="profile_selector_widget"
+            )
+            
+            # If a profile is selected, update session state with its ID
+            if current_selection:
+                current_selection_in_selectbox = current_selection['id']
+                if st.session_state.selected_profile_id != current_selection_in_selectbox:
+                    st.session_state.selected_profile_id = current_selection_in_selectbox
+                    st.rerun() # Rerun to update the main panel with the new selection
+
+    # Get selected profile
+    selected_profile = None
+    if st.session_state.selected_profile_id:
+        selected_profile = adapter.get_profile(st.session_state.selected_profile_id)
+    
+    # Get past runs for the selected profile
+    if selected_profile and 'past_runs' in selected_profile and isinstance(selected_profile['past_runs'], list):
+        if not selected_profile['past_runs']:
+            st.info("No test reports found for this profile. Run a test to generate reports.")
         else:
             st.write("### Recent Reports")
-            for i, report in enumerate(reports):
-                formatted_time = report['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
-                if st.button(
-                    f"Report {i+1}. (Runtime: {report['runtime']}, Run at: {formatted_time})",
-                    key=f"report_{report['name']}"):
-                    selected_report_path = report['path']
-                    st.session_state['selected_report'] = selected_report_path
-                    st.rerun()
+            for i, report_path in enumerate(selected_profile['past_runs']):
+                try:
+                    # Load report data
+                    with open(report_path, 'r') as f:
+                        report_data = json.load(f)
+                    
+                    # Format report info
+                    formatted_time = datetime.fromtimestamp(os.path.getctime(report_path)).strftime('%Y-%m-%d %H:%M:%S')
 
-    if 'selected_report' in st.session_state:
-        open_dashboard_with_report(st.session_state['selected_report'])
-        del st.session_state['selected_report']
-    
 
-    # Form for entering keys
-    with st.expander("Setup Configuration", expanded=True):
-        has_all_keys = False
-        if 'saved_config' not in st.session_state:
-            st.session_state['saved_config'] = {}
+                    
+                    # Create report summary button
+                    if st.button(
+                        f"Report {i+1}. (Run at: {formatted_time})",
+                        key=f"report_{report_path}"):
+                        st.session_state.selected_report_path = report_path
+                        st.session_state.viewing_report = True
+                except Exception as e:
+                    st.error(f"Error loading report: {str(e)}")
+        if 'selected_report_path' in st.session_state:
+            open_dashboard_with_report(st.session_state['selected_report_path'])
+            del st.session_state['selected_report_path']
+    else:
+        st.info("Select a config or create a new config to view its test reports.")
+
+    # Configuration Section
+    with st.expander("Setup New Configuration", expanded=not st.session_state.selected_profile_id):
+        # Load config from selected profile if available
+        if st.session_state.selected_profile_id:
+            selected_profile = adapter.get_profile(st.session_state.selected_profile_id)
+            if selected_profile:
+                st.session_state['saved_config'] = selected_profile
+                
+                # Display profile details in a nice card
+                with st.sidebar.container():
+                    st.markdown("### Selected Profile")
+                    st.markdown(f"**Name:** {selected_profile.get('profile_name', 'Unnamed Profile')}")
+                    st.markdown(f"**ID:** {selected_profile['id']}")
+                    
+                    # Display additional profile info if available
+                    if 'provider' in selected_profile:
+                        st.markdown(f"**Provider:** {selected_profile['provider']}")
+                    if 'model' in selected_profile:
+                        st.markdown(f"**Model:** {selected_profile['model']}")
+                    
+                    # Add a delete button
+                    if st.button("Delete Profile", key="delete_profile_btn"):
+                        adapter.delete_profile(selected_profile['id'])
+                        st.session_state.selected_profile_id = None
+                        st.rerun()
+        else:
+            if 'saved_config' not in st.session_state:
+                st.session_state['saved_config'] = {}
 
         # Select provider outside the form so it reruns on change
         provider_name = st.selectbox(
             "Select Provider", [p["name"] for p in PROVIDER_SETUP],
-            index=len(PROVIDER_SETUP) - 1
+            index=0
         )
+
+        # Form for creating new profile
+        if st.button("Create New Profile"):
+            with st.form("new_profile_form"):
+                new_profile_name = st.text_input("Profile Name", placeholder="Enter profile name")
+                if st.form_submit_button("Save Profile"):
+                    if not new_profile_name:
+                        st.error("Please enter a profile name")
+                        return
+                    
+                    # Generate unique ID
+                    profile_id = str(uuid.uuid4())
+                    
+                    # Save config with profile name
+                    config_to_save = st.session_state['saved_config'].copy()
+                    config_to_save['profile_name'] = new_profile_name
+                    adapter.upsert_profile(config_to_save, profile_id)
+                    
+                    # Update session state
+                    st.session_state.selected_profile_id = profile_id
+                    st.success(f"Profile '{new_profile_name}' created successfully!")
+                    st.rerun()
+                    
         provider = next(p for p in PROVIDER_SETUP if p["name"] == provider_name)
         
         with st.form("provider_form", border=False):
@@ -236,20 +335,59 @@ def create_app_ui():
                     config[field] = val
 
                 st.session_state['saved_config'] = config
-                st.write("Configuration saved successfully", config)
+                profile_name = provider_name + "_" + model + "_" + str(uuid.uuid4())
+                adapter.upsert_profile(config, profile_name)
+                st.write("Config saved successfully", config)
     
     # Form for running tests
     with st.expander("Run New Test", expanded=True):
         submit_button_disabled = True
-        provider_config = st.session_state['saved_config']
+        provider_config = selected_profile or st.session_state['saved_config']
 
         if provider_config or has_all_keys:
             submit_button_disabled = False
+        
+        # Initialize session state for form values if not already set
+        if 'test_prompt' not in st.session_state:
+            st.session_state.test_prompt = ""
+        if 'test_strategies' not in st.session_state:
+            st.session_state.test_strategies = ["prompt_injection", "jailbreak"]
+
         with st.form("test_form", clear_on_submit=True, border=False):
-            prompt = st.text_area("Enter your prompt:", height=150, placeholder="Enter your system prompt here...")
+            prompt = st.text_area(
+                "Enter your prompt:", 
+                height=150, 
+                placeholder="Enter your system prompt here...",
+                value=st.session_state.test_prompt
+            )
             st.write("### Select Testing Strategies")
-            selected_strategies = st.multiselect("Choose strategies to test", get_available_strategies(), default=["prompt_injection", "jailbreak"])
-            submit_button = st.form_submit_button(label="Run Test", type="primary", disabled=submit_button_disabled)
+            selected_strategies = st.multiselect(
+                "Choose strategies to test",
+                get_available_strategies(),
+                default=st.session_state.test_strategies
+            )
+            
+            # Create a horizontal layout for buttons
+            col1, col2 = st.columns([2, 1])
+            with col1:
+                submit_button = st.form_submit_button(label="Run Test", type="primary", disabled=submit_button_disabled)
+            with col2:
+                if st.form_submit_button(label="Reset to Defaults", type="secondary"):
+                    st.session_state.test_prompt = ""
+                    st.session_state.test_strategies = ["prompt_injection", "jailbreak"]
+                    st.rerun()
+
+        if submit_button:
+            # Save form values to session state
+            st.session_state.test_prompt = prompt
+            st.session_state.test_strategies = selected_strategies
+            
+            if not prompt.strip():
+                st.error("🚫 Please enter a prompt!")
+                st.stop()
+            if not selected_strategies:
+                st.error("🚫 Please select at least one testing strategy!")
+                st.stop()
 
         if submit_button:
             if not prompt.strip():
@@ -260,25 +398,20 @@ def create_app_ui():
                 st.stop()
 
             with st.spinner("🔍 Running tests..."):
-                stdout, stderr = run_test(prompt, selected_strategies, provider_config)
+                output = adapter.run_test(provider_config["id"], prompt, selected_strategies)
                 reports = get_reports()
 
             st.subheader("✅ Test Results")
             st.write("---")
 
-            if stdout:
+            if  output:
                 try:
-                    json_output = json.loads(stdout)
-                    render_beautiful_json_output(json_output)
+                    render_beautiful_json_output(output)
                 except json.JSONDecodeError:
                     st.warning("⚠️ Output is not valid JSON. Showing raw output instead:")
-                    st.code(stdout, language="text")
+                    st.code(output, language="text")
             else:
                 st.info("ℹ️ No test output received.")
-
-            if stderr:
-                st.error("❌ Error Output:")
-                st.code(stderr, language="bash")
 
             if reports:
                 latest_report = reports[0]

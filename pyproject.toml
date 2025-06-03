@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "compliant-llm"
-version = "0.1.7"
+version = "0.1.8"
 description = "Tool for testing AI system prompts against various attack vectors"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -20,9 +20,11 @@ dependencies = [
     "litellm",
     "python-dotenv",
     "pytest",
+    "pytest-asyncio",
     "aiofiles",
     "plotly",
     "psutil",
+    "tinydb",
     "markdown",
     "opentelemetry-api",
     "opentelemetry-sdk",

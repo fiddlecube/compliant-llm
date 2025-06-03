@@ -4,7 +4,8 @@ from pathlib import Path
 from datetime import datetime
 
 
-def save_report(report_data, output_path={"path": "reports", "filename": "report"}):
+
+def save_report(report_data, output_path):
     # Create directories if they don't exist
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     file_path = f"{output_path['path']}/{output_path['filename']}_{timestamp}.json"

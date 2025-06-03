@@ -222,7 +222,8 @@ def test_execute_prompt_tests_with_orchestrator():
         # Build config
         config = {
             'system_prompt': 'You are a helpful assistant',
-            'provider': {'name': 'test-model'},
+            'provider_name': 'test',
+            'model': 'test-model',
             'strategies': ['jailbreak', 'prompt_injection']
         }
         
