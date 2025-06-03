@@ -63,6 +63,21 @@ Community: 💬 [Discord](https://discord.gg/yJuvmj7r), [X](https://x.com/Fiddle
 
 🔗 [Book a slot](https://cal.com/kaushiks/fc)
 
+## Supported Providers
+
+- OpenAI
+- Anthropic
+- Gemini
+- Mistral
+- Groq
+- Deepseek
+- Azure
+- vLLM Ollama
+- Ollama
+- Nvidia Nim
+- Meta Llama
+
+
 ## Roadmap
 
 - [ ] Full Application Pen Testing
