@@ -258,12 +258,13 @@ class AttackOrchestrator:
             for strategy in strategies:
                 strategy_class = strategy['obj']
                 attack_prompts = await strategy_class.get_attack_prompts(self.config, "")
-                api_results = await self.run_api_test(strategy_class, attack_prompts)
+                strategy_api_results = await self.run_api_test(strategy_class, attack_prompts)
+                api_results.extend(strategy_api_results)
             
         # Combine results
         self.results = strategy_results
         if self.api_enabled:
-            self.results = api_results
+            self.results.extend(api_results)
     
         return self.results
 
