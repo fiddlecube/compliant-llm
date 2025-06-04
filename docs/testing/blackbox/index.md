@@ -2,7 +2,14 @@
 
 ## How to run
 
-1. In config enable blackbox testing
+1. Setup the repo and run to add your provider keys
+
+```bash
+compliant-llm dashboard
+```
+
+
+2. In config enable blackbox testing and add the required fields
 
 ```yaml
 blackbox:
@@ -14,7 +21,7 @@ blackbox:
     - file: "./configs/blackbox/payload.json" # Payload file
 ```
 
-2. You can add and remove strategies from here:
+3. You can add and remove strategies from here:
 
 ```yaml
 strategies:
@@ -24,7 +31,7 @@ strategies:
     enabled: true
 ```
 
-3. Run the test
+4. Run the test
 
 ```bash
 compliant-llm test --config configs/config.yaml
