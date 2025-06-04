@@ -286,7 +286,7 @@ class DataPoisoningStrategy(BaseAttackStrategy):
             }
         
     async def a_run(self, system_prompt: str, provider: LLMProvider, config: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:        
-        """Run the insecure output handling attack strategy asynchronously.
+        """Run the Data Poisoning attack strategy asynchronously.
         
         Args:
             system_prompt (str): The system prompt to analyze
@@ -337,7 +337,7 @@ class DataPoisoningStrategy(BaseAttackStrategy):
         DataPoisoningStrategy._cached_attack_data[cache_key] = processed_results
         return processed_results
     
-    async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, Any]:
+    async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any], config: Dict[str, Any] = None) -> Dict[str, Any]:
         """Evaluate if an insecure output handling attack was successful.
         
         Args:

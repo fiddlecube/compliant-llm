@@ -47,7 +47,6 @@ class TestCLIConfigAdapter(unittest.TestCase):
         
         # Check that the config was updated correctly
         self.assertEqual(mock_cm_instance.config['prompt']['content'], 'overridden prompt')
-        self.assertEqual(mock_cm_instance.config['provider']['name'], 'overridden-provider')
         self.assertTrue(mock_cm_instance.config['features']['parallel_testing'])
     
     @patch('core.config_manager.cli_adapter.ConfigManager')

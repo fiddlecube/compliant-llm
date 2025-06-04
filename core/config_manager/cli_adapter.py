@@ -90,10 +90,16 @@ class CLIConfigAdapter:
         if provider:
             if 'provider' not in config_dict:
                 config_dict['provider'] = {}
-            if isinstance(config_dict.get('provider'), dict):
-                config_dict['provider']['name'] = provider
-                config_dict['provider']['provider_name'] = provider
-                config_dict['provider']['model'] = provider
+            
+            provider_config = config_dict.get('provider', {})
+            if isinstance(provider_config, dict):
+                # Only update fields that don't exist in the config
+                if 'name' not in provider_config:
+                    provider_config['name'] = provider
+                if 'provider_name' not in provider_config:
+                    provider_config['provider_name'] = provider
+                if 'model' not in provider_config:
+                    provider_config['model'] = provider
             else:
                 config_dict['provider'] = provider
                 

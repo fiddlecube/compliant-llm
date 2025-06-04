@@ -82,7 +82,7 @@ class BaseAttackEvaluator(BaseEvaluator):
             response_text = llm_response
         return response_text
 
-    def get_evaluation_prompt(self, system_prompt: str, attack_prompt: str, llm_response: str) -> str:
+    def get_evaluation_prompt(self, system_prompt: str, attack_prompt: str, llm_response: Dict[str, Any]) -> str:
         """
         Create an evaluation prompt template for attack evaluation
         
@@ -106,7 +106,7 @@ class BaseAttackEvaluator(BaseEvaluator):
     {attack_prompt}
     ```
 
-    AI RESPONSE:
+    RESPONSE SENT FROM AI BACK TO THE USER:
     ```
     {llm_response}
     ```
@@ -144,16 +144,12 @@ class BaseAttackEvaluator(BaseEvaluator):
             Dictionary containing evaluation results
         """
         # Check if the initial LLM response (the one being evaluated) is valid and successful
-        if not llm_response or not isinstance(llm_response, dict) or not llm_response.get('success'):
-            error_reason = "Invalid or unsuccessful LLM response provided for evaluation."
+        if not llm_response or not isinstance(llm_response, dict):
+            error_reason = "Invalid LLM response provided for evaluation."
             if not llm_response:
                 error_reason = "LLM response is None."
             elif not isinstance(llm_response, dict):
                 error_reason = "LLM response is not a dictionary."
-            elif not llm_response.get('success'):
-                failure_detail = llm_response.get('error', 'No specific error detail provided by the LLM.')
-                error_reason = f"LLM response indicates failure: {failure_detail}"
-                print(f"Upstream LLM response was unsuccessful or invalid: {llm_response}")
 
             return {
                 'passed': False,
@@ -165,12 +161,11 @@ class BaseAttackEvaluator(BaseEvaluator):
                 'reason': error_reason,
                 'error': True
             }
-
         provider = LiteLLMProvider()
         # Extract the text response from the LLM response
-        response_text = self._extract_response_text(llm_response)
+        # response_text = self._extract_response_text(llm_response)
         # Create the evaluation prompt
-        eval_prompt = self.get_evaluation_prompt(system_prompt, attack_prompt, response_text)
+        eval_prompt = self.get_evaluation_prompt(system_prompt, attack_prompt, llm_response)
         
         # create a deep copy of the config object
         # then replace the provide_config's model to gpt-o1-mini

@@ -70,15 +70,15 @@ strategies:
     description: "Tests if LLM generates unsafe output like XSS, SQL injection, etc."
     
   - name: model_dos
-    enabled: true
+    enabled: false
     description: "Tests denial of service vulnerabilities and resource exhaustion"
     
   - name: sensitive_info_disclosure
-    enabled: true
+    enabled: false
     description: "Tests if LLM discloses sensitive internal information"
     
   - name: model_extraction
-    enabled: true
+    enabled: false
     description: "Tests if model parameters or training data can be extracted"
     
   - name: indirect_prompt_injection
@@ -95,7 +95,7 @@ strategies:
 
 # Provider configuration
 provider:
-  provider_name: azure/gpt-4o
+  provider_name: openai/gpt-4o
   fallbacks:
     - anthropic/claude-3-opus
     - google/gemini-pro
@@ -121,11 +121,9 @@ features:
 
 # blackbox testing
 blackbox:
-  enabled: false
-  api_url: ""
+  enabled: true
+  api_url: "https://sample-chat-bot-fiddlecube.vercel.app/api/chat"
   api_key: ""
   headers: {}
   payload:
-    - prompt: ""
-    - role: ""
-    - messages: "{{INJECT_BLACKBOX_PROMPT}}"
+    - file: "./configs/blackbox/payload.json"

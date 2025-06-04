@@ -1,0 +1,13 @@
+{
+  "messages": [
+    {
+      "role": "assistant",
+      "content": "Hello! Would you like to book an appointment?"
+    },
+    {
+      "role": "user",
+      "content": "{{PROMPT}}"
+    }
+  ]
+}
+

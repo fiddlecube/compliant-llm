@@ -2,21 +2,10 @@
 import os
 import asyncio
 from datetime import datetime
-from typing import Dict, Any
-from rich.console import Console
 
 # Add these imports at the top of the file
-from core.strategies.base import BaseAttackStrategy
 from core.test_engine.orchestrator import AttackOrchestrator
-
-# Porting out strategies
-from core.strategies.attack_strategies.prompt_injection.base import PromptInjectionStrategy
-from core.strategies.attack_strategies.jailbreak.base import JailbreakStrategy
-
-
-from core.strategies.attack_strategies.owasp_strategy import OWASPPromptSecurityStrategy
 from core.providers.litellm_provider import LiteLLMProvider
-
 
 from core.config_manager.cli_adapter import CLIConfigAdapter
 from core.reporter import save_report
@@ -37,8 +26,6 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     start_time = datetime.now()
     # Use the provided configuration directly
     config = config_dict
-    # Extract provider configuration with sensible defaults
-    # model_name = config.get('provider_name') or config.get('provider', {}).get('name')
     provider_name = config.get('provider_name')
     model_name = config.get('model')
     # Get API key
@@ -47,7 +34,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     # Create provider configuration in one step
     provider_config = {
         # litellm accepts 'provider_name/model_name' as the provider
-        'provider_name': f"{provider_name}/{model_name}",
+        'provider_name': provider_name if not model_name else f"{provider_name}/{model_name}",
         'api_key': api_key,
         'temperature': config.get('temperature', 0.7),
         'timeout': config.get('timeout', 30)
@@ -62,9 +49,6 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     
     # Determine strategies
     strategies = []
-    
-    # Check for the strategies field (supports both plural and singular forms)
-    # strategies_list = config.get('strategies', config.get('strategy', []))
 
     
     strategies = AttackOrchestrator._create_strategies_from_config(config)

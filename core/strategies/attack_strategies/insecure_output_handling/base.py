@@ -317,7 +317,7 @@ class InsecureOutputHandlingStrategy(BaseAttackStrategy):
         
         return processed_results
     
-    async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any]) -> Dict[str, Any]:
+    async def evaluate(self, system_prompt: str, user_prompt: str, llm_response: Dict[str, Any], config: Dict[str, Any] = None) -> Dict[str, Any]:
         """Evaluate if an insecure output handling attack was successful.
         
         Args:

@@ -97,8 +97,8 @@ class JailbreakStrategy(BaseAttackStrategy):
             return JailbreakStrategy._cached_attack_data[cache_key]
         
         for entry in sampled_entries:
+
             original_prompt = entry['original_prompt']
-            
             if 'mutations' in entry and entry['mutations']:
                 # Get the mutation object (which has technique and obfuscated_prompt)
                 mutation = random.choice(entry['mutations'])
@@ -193,7 +193,7 @@ class JailbreakStrategy(BaseAttackStrategy):
         results = await asyncio.gather(*tasks)
         return results
     
-    async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, Any]:
+    async def evaluate(self, system_prompt: str, user_prompt: str, response: Dict[str, Any], config: Dict[str, Any] = None) -> Dict[str, Any]:
         """Evaluate if the jailbreak was successful"""
         evaluator = JailbreakEvaluator()
         llm_evaluate = await evaluator.llm_evaluate(system_prompt, user_prompt, response, config)
