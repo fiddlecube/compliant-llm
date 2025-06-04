@@ -17,7 +17,7 @@ def _get_table():
         _db_instance = TinyDB(CONFIG_DB_FILE)
     return _db_instance.table('model_config')
 
-def save_config(runner_config_data: Dict[str, Any], profile_name: str | None = None) -> None:
+def save_config(runner_config_data: Dict[str, Any], profile_name: Optional[str] = None) -> None:
     """Saves or updates a model configuration profile."""
     table = _get_table()
 
