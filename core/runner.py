@@ -37,8 +37,6 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     start_time = datetime.now()
     # Use the provided configuration directly
     config = config_dict
-    # Extract provider configuration with sensible defaults
-    # model_name = config.get('provider_name') or config.get('provider', {}).get('name')
     provider_name = config.get('provider_name')
     model_name = config.get('model')
     # Get API key
@@ -47,7 +45,7 @@ def execute_prompt_tests_with_orchestrator(config_dict):
     # Create provider configuration in one step
     provider_config = {
         # litellm accepts 'provider_name/model_name' as the provider
-        'provider_name': f"{provider_name}/{model_name}",
+        'provider_name': provider_name if not model_name else f"{provider_name}/{model_name}",
         'api_key': api_key,
         'temperature': config.get('temperature', 0.7),
         'timeout': config.get('timeout', 30)

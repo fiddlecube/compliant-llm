@@ -59,10 +59,10 @@ strategies:
     enabled: true
   
   - name: jailbreak
-    enabled: true
+    enabled: false
     
   - name: excessive_agency
-    enabled: true
+    enabled: false
     description: "Tests if LLM exceeds its authority or bypasses restrictions"
     
   - name: insecure_output_handling

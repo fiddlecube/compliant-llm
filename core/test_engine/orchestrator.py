@@ -53,6 +53,15 @@ STRATEGY_MAP = {
     "insecure_output_handling": InsecureOutputHandlingStrategy,
     "data_poisoning": DataPoisoningStrategy
 }
+
+
+def _default_strategies() -> List[BaseAttackStrategy]:
+    return [
+        PromptInjectionStrategy(), 
+        JailbreakStrategy(), 
+        ExcessiveAgencyStrategy(), 
+        InsecureOutputHandlingStrategy()
+    ]
 class AttackOrchestrator:
     """Orchestrates attack strategies against LLM providers and APIs"""
 
@@ -76,7 +85,7 @@ class AttackOrchestrator:
         self._init_api_config()
 
         if not self.strategies:
-            self.strategies = self._default_strategies()
+            self.strategies = _default_strategies()
             console.print("[yellow]No strategies provided, using defaults[/yellow]")
 
     def _init_api_config(self):
@@ -105,9 +114,6 @@ class AttackOrchestrator:
         else:
             self.api_payload = payload_entry or {}
         
-
-    def _default_strategies(self) -> List[BaseAttackStrategy]:
-        return [PromptInjectionStrategy(), JailbreakStrategy()]
     
     @classmethod
     def _create_strategies_from_config(
