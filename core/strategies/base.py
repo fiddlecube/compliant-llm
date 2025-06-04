@@ -136,7 +136,7 @@ class BaseAttackStrategy(ABC):
                 raise ValueError("API URL is required")
             
             # Prepare the API request
-            url = api_config['url']
+            url = api_config.get('url')
             headers = api_config.get('headers', {})
 
             # Make API request with retry logic
@@ -147,7 +147,7 @@ class BaseAttackStrategy(ABC):
                         async with session.post(
                             url,
                             headers=headers,
-                            json=api_config['payload']
+                            json=api_config.get('payload')
                         ) as response:
                             if response.status != 200:
                                 error_msg = f"API request failed with status {response.status}"
