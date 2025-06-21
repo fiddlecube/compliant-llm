@@ -32,7 +32,6 @@ from core.strategies.attack_strategies.excessive_agency.base import ExcessiveAge
 from core.strategies.attack_strategies.insecure_output_handling.base import InsecureOutputHandlingStrategy
 from core.strategies.attack_strategies.context_manipulation.base import AdvancedContextManipulationStrategy
 from core.strategies.attack_strategies.data_poisoning.base import DataPoisoningStrategy
-from core.strategies.attack_strategies.instruction_following.base import InstructionFollowingStrategy
 
 from core.compliance_mappings.orchestrator import ComplianceOrchestrator
 
@@ -52,8 +51,7 @@ STRATEGY_MAP = {
     "model_extraction": ModelExtractionStrategy,
     "excessive_agency": ExcessiveAgencyStrategy,
     "insecure_output_handling": InsecureOutputHandlingStrategy,
-    "data_poisoning": DataPoisoningStrategy,
-    "instruction_following": InstructionFollowingStrategy
+    "data_poisoning": DataPoisoningStrategy
 }
 
 

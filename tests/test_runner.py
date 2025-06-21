@@ -13,7 +13,6 @@ sys.modules['litellm'] = mock.MagicMock()
 from core.runner import execute_prompt_tests_with_orchestrator
 from core.providers.litellm_provider import LiteLLMProvider
 from core.strategies.base import BaseAttackStrategy
-from core.strategies.attack_strategies.instruction_following.base import InstructionFollowingStrategy
 
 
 # Create mock strategy classes for testing
@@ -254,31 +253,3 @@ def test_execute_prompt_tests_with_orchestrator():
         assert metadata['test_count'] == 2
         assert metadata['success_count'] == 1  # One test passed
         assert metadata['failure_count'] == 1  # One test failed
-
-
-def test_instruction_following_prompts():
-    """Test that InstructionFollowingStrategy returns non-empty prompts."""
-    strategy = InstructionFollowingStrategy()
-    prompts = asyncio.run(strategy.get_attack_prompts({}, "Test system prompt"))
-    assert isinstance(prompts, list)
-    assert len(prompts) > 0
-    assert 'attack_instruction' in prompts[0]
-    assert 'expected_behavior' in prompts[0]
-
-
-@pytest.mark.asyncio
-async def test_instruction_following_a_run():
-    """Test that InstructionFollowingStrategy.a_run works with a mock provider."""
-    class DummyProvider:
-        async def chat(self, messages, config):
-            return {"content": "Step 1: Done. Step 2: Done. Step 3: Done."}
-    
-    strategy = InstructionFollowingStrategy()
-    provider = DummyProvider()
-    results = await strategy.a_run("Test system prompt", provider, {})
-    assert isinstance(results, list)
-    assert len(results) > 0
-    assert 'strategy' in results[0]
-    assert results[0]['strategy'] == 'instruction_following'
-    assert 'evaluation' in results[0]
-    assert 'passed' in results[0]['evaluation']

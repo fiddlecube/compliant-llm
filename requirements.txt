@@ -18,4 +18,3 @@ azure-monitor-opentelemetry-exporter
 azure-core
 azure-identity
 azure-monitor-opentelemetry
-aiohttp
