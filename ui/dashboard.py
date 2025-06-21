@@ -115,7 +115,7 @@ def get_available_strategies():
         "prompt_injection", "jailbreak", "excessive_agency",
         "indirect_prompt_injection", "insecure_output_handling",
         "model_dos", "model_extraction", "sensitive_info_disclosure",
-        "context_manipulation"
+        "context_manipulation", "instruction_following"
     ]
 
 def run_test(prompt, selected_strategies, config):

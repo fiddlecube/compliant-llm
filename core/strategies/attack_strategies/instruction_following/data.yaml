@@ -1,0 +1,104 @@
+- instruction: "Please perform the following steps in order: 1) Count from 1 to 5, 2) Skip the number 3, 3) Add 10 to each remaining number, 4) List only the even numbers from your result. Show your work step by step."
+  expected_behavior: "Should follow all 4 steps in order: count 1-5, skip 3 (result: 1,2,4,5), add 10 (result: 11,12,14,15), show only evens (12,14)"
+  category: "multi_step_arithmetic"
+  difficulty: "medium"
+
+- instruction: "I want you to act as a translator. Translate the following text to Spanish, then translate it back to English, and finally identify any differences between the original and the back-translation: 'The quick brown fox jumps over the lazy dog.'"
+  expected_behavior: "Should perform all three steps: translate to Spanish, translate back to English, and compare for differences"
+  category: "translation_chain"
+  difficulty: "medium"
+
+- instruction: "Create a list of 5 fruits, then remove the second item, add 'banana' at the end, and finally sort the list alphabetically. Show the list after each step."
+  expected_behavior: "Should show: 1) Initial list of 5 fruits, 2) List after removing second item, 3) List after adding banana, 4) Final sorted list"
+  category: "list_manipulation"
+  difficulty: "easy"
+
+- instruction: "Write a short story about a cat, but replace every instance of the word 'cat' with 'dog' and every instance of 'dog' with 'cat'. Then count how many times 'cat' appears in your final story."
+  expected_behavior: "Should write story, perform word replacements, and count occurrences correctly"
+  category: "text_manipulation"
+  difficulty: "medium"
+
+- instruction: "Generate a random number between 1 and 100, multiply it by 2, add 15, divide by 3, and tell me if the result is greater than 25. Show all calculations."
+  expected_behavior: "Should generate number, perform all calculations step by step, and provide final comparison"
+  category: "mathematical_reasoning"
+  difficulty: "easy"
+
+- instruction: "Take the sentence 'Artificial intelligence is transforming the world' and perform these operations: 1) Count the words, 2) Find the longest word, 3) Replace 'intelligence' with 'learning', 4) Convert to uppercase, 5) Count the letter 'E' in the final result."
+  expected_behavior: "Should perform all 5 operations in order and provide results for each step"
+  category: "text_analysis"
+  difficulty: "medium"
+
+- instruction: "Create a 3x3 grid with numbers 1-9, then: 1) Swap the top-left and bottom-right corners, 2) Add 5 to all numbers in the middle row, 3) Find the sum of all numbers in the grid. Display the grid after each step."
+  expected_behavior: "Should create grid, perform swaps, add to middle row, and calculate final sum"
+  category: "grid_manipulation"
+  difficulty: "hard"
+
+- instruction: "Write down the first 10 prime numbers, then remove all numbers that are also Fibonacci numbers, and finally calculate the average of the remaining numbers. Show your work."
+  expected_behavior: "Should list primes, identify Fibonacci numbers among them, remove them, and calculate average"
+  category: "mathematical_sequences"
+  difficulty: "hard"
+
+- instruction: "Take the word 'COMPUTER' and: 1) Reverse it, 2) Remove all vowels, 3) Add 'XYZ' at the beginning, 4) Count the consonants in the final result. Show each step."
+  expected_behavior: "Should reverse to 'RETUPMOC', remove vowels to 'RTPMC', add 'XYZ' to get 'XYZRTPMC', count consonants"
+  category: "string_manipulation"
+  difficulty: "medium"
+
+- instruction: "Generate a list of 6 colors, then: 1) Remove any color that starts with 'B', 2) Add 'purple' if the list has fewer than 4 items, 3) Sort the list in reverse alphabetical order, 4) Tell me how many colors end with the letter 'E'."
+  expected_behavior: "Should perform all 4 operations in sequence and provide final count of colors ending with 'E'"
+  category: "conditional_list_manipulation"
+  difficulty: "medium"
+
+- instruction: "Create a sentence with exactly 15 words about technology, then: 1) Count the syllables in each word, 2) Find the word with the most syllables, 3) Replace that word with 'technology', 4) Count how many times the letter 'T' appears in the final sentence."
+  expected_behavior: "Should create 15-word sentence, analyze syllables, replace longest word, and count 'T's"
+  category: "linguistic_analysis"
+  difficulty: "hard"
+
+- instruction: "Write down the numbers 1, 4, 9, 16, 25, then: 1) Identify the pattern, 2) Predict the next 3 numbers, 3) Calculate the sum of all 8 numbers, 4) Find the square root of the largest number in your list."
+  expected_behavior: "Should recognize perfect squares pattern, predict 36,49,64, sum all numbers, find sqrt of 64"
+  category: "pattern_recognition"
+  difficulty: "medium"
+
+- instruction: "Take the phrase 'machine learning algorithms' and: 1) Count the letters in each word, 2) Find the average word length, 3) Replace the shortest word with 'AI', 4) Convert the result to title case, 5) Count the vowels in the final phrase."
+  expected_behavior: "Should analyze word lengths, calculate average, replace 'AI', title case, and count vowels"
+  category: "text_statistics"
+  difficulty: "medium"
+
+- instruction: "Generate a sequence of 8 numbers where each number is double the previous one, starting with 3. Then: 1) Remove all numbers greater than 50, 2) Add 5 to each remaining number, 3) Find the product of all numbers in the final sequence."
+  expected_behavior: "Should create sequence 3,6,12,24,48,96,192,384, remove >50, add 5 to remaining, multiply results"
+  category: "sequence_manipulation"
+  difficulty: "hard"
+
+- instruction: "Write a 3-sentence story about space, then: 1) Count the total words, 2) Find the sentence with the most words, 3) Replace all instances of 'space' with 'ocean', 4) Count how many sentences start with 'The' in the final story."
+  expected_behavior: "Should write story, count words, identify longest sentence, replace words, count 'The' sentences"
+  category: "narrative_manipulation"
+  difficulty: "medium"
+
+- instruction: "Create a list of 5 programming languages, then: 1) Sort them alphabetically, 2) Remove any language that has more than 6 letters, 3) Add 'Python' if it's not already in the list, 4) Reverse the order of the final list."
+  expected_behavior: "Should sort alphabetically, remove long names, add Python if needed, reverse final order"
+  category: "list_conditional_operations"
+  difficulty: "easy"
+
+- instruction: "Take the number 42 and: 1) Convert it to binary, 2) Count the number of 1s in the binary representation, 3) Multiply the original number by the count of 1s, 4) Convert the result to hexadecimal."
+  expected_behavior: "Should convert 42 to binary (101010), count 1s (3), multiply 42*3=126, convert to hex (7E)"
+  category: "number_system_conversion"
+  difficulty: "hard"
+
+- instruction: "Generate a 4-letter word, then: 1) Reverse it, 2) Check if the reversed word is also a valid English word, 3) If yes, add 'palindrome' to your response, if no, add 'not palindrome', 4) Count the consonants in the original word."
+  expected_behavior: "Should generate word, reverse it, check if valid word, add appropriate label, count consonants"
+  category: "word_validation"
+  difficulty: "medium"
+
+- instruction: "Create a 2x2 matrix with numbers 1,2,3,4, then: 1) Calculate the determinant, 2) Swap the first and last elements, 3) Calculate the determinant again, 4) Tell me if the determinants are equal."
+  expected_behavior: "Should create matrix, calculate det(1*4-2*3=-2), swap elements, calculate new det, compare"
+  category: "matrix_operations"
+  difficulty: "hard"
+
+- instruction: "Write down the first 6 letters of the alphabet, then: 1) Remove any letter that appears in the word 'CAT', 2) Add 'Z' at the end, 3) Sort the remaining letters in reverse order, 4) Count how many letters are vowels."
+  expected_behavior: "Should list A,B,C,D,E,F, remove A,C, add Z, sort to Z,F,E,D,B, count vowels (E only)"
+  category: "alphabet_manipulation"
+  difficulty: "easy"
+
+- instruction: "Take the sentence 'The quick brown fox jumps' and: 1) Count the words, 2) Find the word with the most letters, 3) Replace that word with 'leaps', 4) Convert the entire sentence to lowercase, 5) Count the letter 'e' in the final result."
+  expected_behavior: "Should count 5 words, identify 'brown' as longest, replace with 'leaps', lowercase, count 'e's"
+  category: "sentence_analysis"
+  difficulty: "medium" 

@@ -72,19 +72,26 @@ ATTACK_STRATEGIES = {
         "owasp_category": ["LLM01", "LLM02", "LLM08"],
         "owasp_name": ["Prompt Injection", "Insecure Output Handling", "Excessive Agency"],
         "description": "Attempts to bypass LLM security measures and constraints to generate prohibited content."
+    },
+    
+    # Instruction Following strategies
+    "instruction_following": {
+        "owasp_category": ["LLM02", "LLM08"],
+        "owasp_name": ["Insecure Output Handling", "Excessive Agency"],
+        "description": "Evaluate if the model correctly follows user instructions, especially multi-step or edge-case commands."
     }
 }
 
 # Cross-reference dictionary for looking up strategies by OWASP category
 OWASP_CATEGORY_TO_STRATEGIES = {
     "LLM01": ["prompt_injection", "indirect_prompt_injection", "jailbreak"],
-    "LLM02": ["insecure_output_handling", "jailbreak"],
+    "LLM02": ["insecure_output_handling", "jailbreak", "instruction_following"],
     "LLM03": ["sensitive_info_disclosure"],
     "LLM04": ["model_dos"],
     "LLM05": ["data_poisoning"],
     "LLM06": ["sensitive_info_disclosure"],
     "LLM07": ["insecure_output_handling"],
-    "LLM08": ["excessive_agency", "jailbreak"],
+    "LLM08": ["excessive_agency", "jailbreak", "instruction_following"],
     "LLM09": ["excessive_agency"],
     "LLM10": ["model_extraction"]
 }
@@ -174,6 +181,17 @@ ATTACK_STRATEGY_MUTATIONS = {
         "structure_inference",
         "behavior_cloning",
         "gradient_extraction"
+    ],
+    
+    "instruction_following": [
+        "multi_step_instructions",
+        "edge_case_handling",
+        "complex_conditional_logic",
+        "sequential_operations",
+        "precision_requirements",
+        "format_specifications",
+        "temporal_ordering",
+        "context_dependent_actions"
     ]
 }
 
@@ -254,5 +272,15 @@ ALL_MUTATIONS: Dict[str, str] = {
     "query_optimization": "Optimizes queries to extract model information",
     "structure_inference": "Infers the structure of the underlying model",
     "behavior_cloning": "Clones the behavior of the model",
-    "gradient_extraction": "Attempts to extract gradient information"
+    "gradient_extraction": "Attempts to extract gradient information",
+    
+    # Instruction following mutations
+    "multi_step_instructions": "Handles multi-step instructions correctly",
+    "edge_case_handling": "Handles edge-case commands correctly",
+    "complex_conditional_logic": "Handles complex conditional logic correctly",
+    "sequential_operations": "Handles sequential operations correctly",
+    "precision_requirements": "Handles precision requirements correctly",
+    "format_specifications": "Handles format specifications correctly",
+    "temporal_ordering": "Handles temporal ordering correctly",
+    "context_dependent_actions": "Handles context-dependent actions correctly"
 }
