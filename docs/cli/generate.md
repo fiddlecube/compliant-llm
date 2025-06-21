@@ -114,7 +114,7 @@ strategies_config:
 
 Generated prompt files contain sample system prompts with appropriate guidelines and constraints for the specific domain.
 
-## See Also
+## Related Commands
 
 - [Test Command](test.md) - For testing prompts
-- [Configuration Guide](../configuration/index.md) - For detailed configuration information
+- [Configuration Guide](../configuration.md) - For detailed configuration information

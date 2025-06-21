@@ -13,32 +13,32 @@ Compliant LLM is your comprehensive toolkit for securing your AI systems. Whethe
 
 ## 📚 Documentation Contents
 
-- [🚀 Getting Started](/?file=getting_started)
+- [🚀 Getting Started](getting_started.md)
   - Installation
   - Quick Start Guide
   - Basic Usage Examples
 
-- [⚙️ Configuration Guide](/?file=configuration)
+- [⚙️ Configuration Guide](configuration.md)
   - YAML Configuration
   - Environment Variables
   - Advanced Settings
 
-- [📦 Installation](/?file=installation)
+- [📦 Installation](installation.md)
   - System Requirements
   - Installation Methods
   - Environment Setup
 
-- [🛠️ Development](/?file=development)
+- [🛠️ Development](development.md)
   - Setting up the development environment
   - Running Commands
   - Running Tests
   - Releasing a new version
 
-- [🧪 Testing](/?file=testing/index)
+- [🧪 Testing](testing/index.md)
   - Prompt testing
   - Blackbox testing
 
-- [🔒 Compliant LLM - Premium Features](/?file=premium)
+- [🔒 Compliant LLM - Premium Features](premium.md)
   - Internal policy hub integration
   - Single controlpane for multiple compliance frameworks
   - Audit Trail and reporting

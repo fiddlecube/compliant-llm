@@ -125,7 +125,7 @@ Validating configs/my_config.yaml...
   - Invalid strategy: invalid_strategy
 ```
 
-## See Also
+## Related Commands
 
 - [Test Command](test.md) - For running prompt tests
-- [Configuration Guide](../configuration/index.md) - For detailed configuration information
+- [Configuration Guide](../configuration.md) - For detailed configuration information

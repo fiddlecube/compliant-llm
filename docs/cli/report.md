@@ -104,7 +104,7 @@ Report files are in JSON format with the following structure:
 }
 ```
 
-## See Also
+## Related Commands
 
 - [Test Command](test.md) - For running prompt tests
-- [Configuration Guide](../configuration/index.md) - For information about test configuration
+- [Configuration Guide](../configuration.md) - For information about test configuration
