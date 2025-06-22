@@ -1,127 +1,124 @@
 # Release Guide
 
-This guide provides instructions for releasing new versions of Compliant LLM.
+A guide for developers to release a new version of the project
 
-## Pre-release Checklist
+## Setup
 
-Before creating a release, ensure you have completed the following:
+```bash
+# Clone the repository
+git clone https://github.com/fiddlecube/compliant-llm.git
+cd compliant-llm
 
-1. **Code Review**: All changes have been reviewed and approved
-2. **Testing**: All tests pass locally and in CI/CD
-3. **Documentation**: Documentation is up to date
-4. **Version Update**: Version numbers are updated in all relevant files
-5. **Changelog**: CHANGELOG.md is updated with new features and fixes
+# Install in development mode
+uv pip install -e .
+```
+
+## Release Process
 
 Follow the [RELEASE_CHECKLIST](https://github.com/fiddlecube/compliant-llm/blob/main/RELEASE_CHECKLIST.md) before each release or pre-release.
 
-## Pre-release Process
+After testing the release candidate thoroughly, first create a pre-release.
 
-### 1. Update Version Numbers
+### Pre-release Guide
 
-Update the version number in the following files:
+Publish the package to TestPyPI and test it before a full release.
 
-- `pyproject.toml`
-- `setup.py`
-- `core/__init__.py`
+For creating a pre-release:
 
-### 2. Update CHANGELOG.md
-
-Add a new section for the release with:
-
-- New features
-- Bug fixes
-- Breaking changes
-- Known issues
-
-### 3. Create Pre-release Tag
+- Create a branch in the format `vX.Y.Z-alphaN` where `N` is the release candidate number.
 
 ```bash
-git tag -a v0.1.0-rc.1 -m "Release candidate 1 for v0.1.0"
-git push origin v0.1.0-rc.1
+# Create a new branch
+git checkout -b vX.Y.Z-alphaN
 ```
 
-### 4. Test Pre-release
+- Update version number in `pyproject.toml`
 
-Test the pre-release by running the CLI commands in the [Getting Started](https://github.com/fiddlecube/compliant-llm/blob/main/docs/getting_started.md) section.
+```toml
+version = "X.Y.Z-alphaN"
+```
 
-### 5. Create GitHub Pre-release
+- Commit the changes
 
-1. Go to GitHub releases page
-2. Click "Draft a new release"
-3. Select the pre-release tag
-4. Add release notes
-5. Mark as pre-release
-6. Publish
+```bash
+git add pyproject.toml
 
-## Full Release Process
+git commit -m "Release vX.Y.Z-alphaN"
+```
 
-### 1. Final Testing
+- Add the tag `vX.Y.Z-alphaN` to the branch
 
-- Run all tests locally
-- Test installation from PyPI
-- Verify all documentation links work
-- Test on different platforms
+```bash
+git tag vX.Y.Z-alphaN
+```
 
-### 2. Update Documentation
+- Push the branch and tag to GitHub
+
+```bash
+git push origin vX.Y.Z-alphaN
+git push origin vX.Y.Z-alphaN --tags
+```
+
+Once the tag is pushed, you will see a github action running that will publish the package to TestPyPI.
+
+Test the pre-release by installing it from TestPyPI:
+
+```bash
+pip install -i https://test.pypi.org/simple compliant-llm==X.Y.Z-aN # Note: make sure to match the version number to install the correct pre-release
+```
+
+Test the pre-release by running the CLI commands in the [Quick Start](https://github.com/fiddlecube/compliant-llm/blob/main/docs/quickstart.md) section.
+
+Merge the release branch into main and push it to GitHub.
+
+### Full Release Guide
+
+Publish the package to PyPI and release it to the public.
+
+For creating a full release:
 
 - Make sure you list all the major changes in [CHANGELOG.md](https://github.com/fiddlecube/compliant-llm/blob/main/CHANGELOG.md)
-- Update any version-specific documentation
-- Verify all links are working
-
-### 3. Build and Upload to PyPI
+- Create a branch in the format `vX.Y.Z` where `X.Y.Z` is the release version.
 
 ```bash
-# Build the package
-python -m build
-
-# Upload to PyPI
-python -m twine upload dist/*
+# Create a new branch
+git checkout -b vX.Y.Z
 ```
 
-### 4. Create Release Tag
+- Update version number in `pyproject.toml`
+
+```toml
+version = "X.Y.Z"
+```
+
+- Commit the changes
 
 ```bash
-git tag -a v0.1.0 -m "Release v0.1.0"
-git push origin v0.1.0
+git add pyproject.toml
+
+git commit -m "Release vX.Y.Z"
 ```
 
-### 5. Create GitHub Release
+- Add the tag `vX.Y.Z` to the branch
 
-1. Go to GitHub releases page
-2. Click "Draft a new release"
-3. Select the release tag
-4. Add comprehensive release notes
-5. Publish
+```bash
+git tag vX.Y.Z
+```
 
-### 6. Post-release Tasks
+- Push the branch and tag to GitHub
 
-- Update development version numbers
-- Announce release on social media
-- Update any external documentation
-- Monitor for any issues
+```bash
+git push origin vX.Y.Z
+git push origin vX.Y.Z --tags
+```
 
-## Testing the Release
+Once the tag is pushed, you will see a github action running that will publish the package to PyPI.
 
-Test the full release by running the CLI commands in the [Getting Started](https://github.com/fiddlecube/compliant-llm/blob/main/docs/getting_started.md) section.
+Test the full release by installing it from PyPI:
 
-## Rollback Plan
+```bash
+pip install compliant-llm==X.Y.Z
+```
 
-If issues are discovered after release:
-
-1. **Immediate**: Mark the release as deprecated on PyPI
-2. **Short-term**: Create a patch release with fixes
-3. **Long-term**: Update documentation with known issues
-
-## Release Schedule
-
-- **Patch releases**: As needed for critical bug fixes
-- **Minor releases**: Monthly for new features
-- **Major releases**: Quarterly for breaking changes
-
-## Communication
-
-- Update the project README with latest version
-- Post release notes on GitHub
-- Notify stakeholders and contributors
-- Update any external references
+Test the full release by running the CLI commands in the [Quick Start](https://github.com/fiddlecube/compliant-llm/blob/main/docs/quickstart.md) section.
 
