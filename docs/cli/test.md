@@ -91,7 +91,7 @@ Enable verbose output for more detailed information:
 python -m cli.main test --prompt "You are a helpful assistant." --verbose
 ```
 
-## See Also
+## Related Commands
 
 - [Report Command](report.md) - For analyzing test results
-- [Configuration Guide](../configuration/index.md) - For creating configuration files
+- [Configuration Guide](../configuration.md) - For creating configuration files

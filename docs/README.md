@@ -10,7 +10,7 @@ It supports multiple LLM providers, and can be used to test prompts, agents, MCP
 
 - 🎯 **Security Testing**: Test against 8+ attack strategies including prompt injection, jailbreaking, and context manipulation
 - 📊 **Compliance Analysis**: Ensure your systems meet industry standards and best practices
-- 🤖 **Provider Support**: Works with multiple LLM providers via LiteLLM. See [Supported Providers](./supported-providers.md) for more details.
+- 🤖 **Provider Support**: Works with multiple LLM providers via LiteLLM. See [Supported Providers](./supported_providers.md) for more details.
 - 📈 **Visual Dashboard**: Interactive UI for analyzing test results
 - ⚡ **End to End Testing**: Test your AI systems end to end
 - 📄 **Detailed Reporting**: Comprehensive reports with actionable insights
@@ -32,7 +32,7 @@ It supports multiple LLM providers, and can be used to test prompts, agents, MCP
   - Installation Methods
   - Environment Setup
 
-- [🧑🏻‍💻 Release Guide](./release_guide.md)
+- [🧑🏻‍💻 Release Guide](./releaseguide.md)
   - Release Process
   - Pre-release Guide
   - Full Release Guide

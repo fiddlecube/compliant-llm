@@ -37,4 +37,4 @@ To perform black-box testing with Compliant LLM, you'll need:
 
 This approach helps identify potential security gaps in the LLM's implementation and response handling.
 
-[How to run](/?file=testing/blackbox/index)
+[How to run](blackbox/index.md)
